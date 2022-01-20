@@ -133,3 +133,6 @@ dmypy.json
 
 # json files
 high_score.json
+
+# vim
+.vim
