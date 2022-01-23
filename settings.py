@@ -1,6 +1,6 @@
 # UI
 # block size must be an integer
-BLOCK_SIZE = 10
+BLOCK_SIZE = 12
 UI_SCALE = 2 * BLOCK_SIZE
 
 # paddings must be an integer multiple of block size
