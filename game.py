@@ -67,7 +67,7 @@ class Game:
             hover_status.update(result[0])
             is_clicked.update(result[1])
 
-            if self.event_manager.check_key_or_button(KEYDOWN, K_RETURN) or\
+            if self.event_manager.check_key_or_button(KEYDOWN, K_RETURN) or \
                     is_clicked["start_button"]:
                 self.start_game()
 
@@ -245,10 +245,7 @@ class Game:
             self.health.increase_health(-1)
 
     def check_collision_with_wall(self):
-        hit_wall = False
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
-            hit_wall = True
-        if hit_wall:
             self.health.increase_health(-2)
 
     def check_health(self):
