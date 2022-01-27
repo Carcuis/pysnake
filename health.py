@@ -8,8 +8,8 @@ class Health:
         self.parent_surface = parent_surface
         self.parent_game = parent_game
         self.image = pygame.image.load("resources/imgs/heart.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UI_SCALE, UI_SCALE))
-        self.value = INIT_HEALTH
+        self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
+        self.value = Global.INIT_HEALTH
 
     def draw(self):
         for i in range(self.value):
@@ -19,10 +19,10 @@ class Health:
 
     def increase_health(self, _value):
         # filter: [0, MAX_HEALTH]
-        self.value = max(min(MAX_HEALTH, self.value + _value), 0)
+        self.value = max(min(Global.MAX_HEALTH, self.value + _value), 0)
 
     def reset(self):
-        self.value = INIT_HEALTH
+        self.value = Global.INIT_HEALTH
 
 
 class Hungry:
@@ -30,7 +30,7 @@ class Hungry:
         self.parent_surface = parent_surface
         self.parent_game = parent_game
         self.image = pygame.image.load("resources/imgs/hunger_bigger.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (UI_SCALE, UI_SCALE))
+        self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.hungry_step_count = 0
 
         self.__value = 0
@@ -43,7 +43,7 @@ class Hungry:
 
     def get_satiety(self):
         # interval: [0, INIT_SATIETY]
-        return INIT_SATIETY - self.__value
+        return Global.INIT_SATIETY - self.__value
 
     def get_hungry_value(self):
         # interval: [0, INIT_SATIETY]
@@ -53,7 +53,7 @@ class Hungry:
     def increase_satiety(self, _value):
         # filter: [0, MAX_SATIETY]
         # decrease hungry value to increase satiety
-        self.__value = max(min(MAX_SATIETY, self.__value - _value), 0)
+        self.__value = max(min(Global.MAX_SATIETY, self.__value - _value), 0)
 
         # reset hungry step count after satiety actually increased
         if _value > 0:

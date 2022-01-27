@@ -15,7 +15,7 @@ class Text:
             alpha=255,
             bg_color=None,
             name=None,
-            font_size=UI_SCALE,
+            font_size=Global.UI_SCALE,
             bold=False,
             italic=False):
         self.text_array.append(

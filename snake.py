@@ -8,17 +8,17 @@ class Snake:
         self.parent_game = parent_game
 
         self.head_block = pygame.image.load("resources/imgs/yellow-fdd926-10x10.png").convert()
-        self.head_block = pygame.transform.scale(self.head_block, (BLOCK_SIZE, BLOCK_SIZE))
+        self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.body_block = pygame.image.load("resources/imgs/green-23d12f-10x10.png").convert()
-        self.body_block = pygame.transform.scale(self.body_block, (BLOCK_SIZE, BLOCK_SIZE))
+        self.body_block = pygame.transform.scale(self.body_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
 
-        self.init_length = INIT_LENGTH
+        self.init_length = Global.INIT_LENGTH
         self.length = self.init_length
-        self.x = [10 * BLOCK_SIZE + BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
-        self.y = [2 * BLOCK_SIZE] * self.length
+        self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
+        self.y = [2 * Global.BLOCK_SIZE] * self.length
 
         self.move_lock = False
-        self.move_speed = INIT_SPEED
+        self.move_speed = Global.INIT_SPEED
         self.direction = "right"
         self.direction_lock = False
         self.buffer_direction = ""
@@ -50,7 +50,7 @@ class Snake:
 
     def walk(self):
         # move delay
-        if self.parent_game.tick_count < FPS / (3 * self.move_speed - 2):
+        if self.parent_game.tick_count < Global.FPS / (3 * self.move_speed - 2):
             self.move_lock = True
             return
         self.parent_game.tick_count = 0
@@ -61,7 +61,7 @@ class Snake:
             self.y[i] = self.y[i - 1]
 
         # move head
-        step = BLOCK_SIZE
+        step = Global.BLOCK_SIZE
         if self.direction == "left":
             self.x[0] -= step
         elif self.direction == "right":
@@ -90,13 +90,13 @@ class Snake:
         """
         :return: (bool: over_border, int: directory: 0->None 1->left 2->right 3->top 4->bottom)
         """
-        if self.x[0] < LEFT_PADDING:
+        if self.x[0] < Global.LEFT_PADDING:
             return True, 1
-        if self.x[0] >= SCREEN_SIZE[0] - RIGHT_PADDING:
+        if self.x[0] >= Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING:
             return True, 2
-        if self.y[0] < TOP_PADDING:
+        if self.y[0] < Global.TOP_PADDING:
             return True, 3
-        if self.y[0] >= SCREEN_SIZE[1] - BOTTOM_PADDING:
+        if self.y[0] >= Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING:
             return True, 4
         return False, 0
 
@@ -106,16 +106,16 @@ class Snake:
 
         if directory == 1:
             # to right
-            self.x[0] = SCREEN_SIZE[0] - BLOCK_SIZE - RIGHT_PADDING
+            self.x[0] = Global.SCREEN_SIZE[0] - Global.BLOCK_SIZE - Global.RIGHT_PADDING
         elif directory == 2:
             # to left
-            self.x[0] = LEFT_PADDING
+            self.x[0] = Global.LEFT_PADDING
         elif directory == 3:
             # to bottom
-            self.y[0] = SCREEN_SIZE[1] - BLOCK_SIZE - BOTTOM_PADDING
+            self.y[0] = Global.SCREEN_SIZE[1] - Global.BLOCK_SIZE - Global.BOTTOM_PADDING
         elif directory == 4:
             # to top
-            self.y[0] = TOP_PADDING
+            self.y[0] = Global.TOP_PADDING
 
     def increase_length(self, length):
         if length < 0:
@@ -130,13 +130,13 @@ class Snake:
         self.move_speed = max(1, self.move_speed + speed)
 
     def reset(self):
-        self.init_length = INIT_LENGTH
+        self.init_length = Global.INIT_LENGTH
         self.length = self.init_length
-        self.x = [10 * BLOCK_SIZE + BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
-        self.y = [2 * BLOCK_SIZE] * self.length
+        self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
+        self.y = [2 * Global.BLOCK_SIZE] * self.length
 
         self.move_lock = False
-        self.move_speed = INIT_SPEED
+        self.move_speed = Global.INIT_SPEED
         self.direction = "right"
         self.direction_lock = False
         self.buffer_direction = ""
