@@ -334,7 +334,7 @@ class Game:
                                          (0.5, 0.45), name="sub_title_2", font_size=int(2.5*UI_SCALE))
             game_over_board.text.add(
                 "> Restart <" if hover_status["restart_button"] else "Restart",
-                pygame.Color("green") if hover_status["restart_button"] else pygame.Color("white"),
+                pygame.Color("cyan") if hover_status["restart_button"] else pygame.Color("white"),
                 (0.5, 0.65),
                 bold=True if hover_status["restart_button"] else False,
                 alpha=255 if hover_status["restart_button"] else 200,
