@@ -12,7 +12,7 @@ class Global:
 
     # grid count must be integers
     GRID_COL = 80
-    GRID_ROW = 1
+    GRID_ROW = 50
 
     # do not change this variable
     SCREEN_SIZE = (GRID_COL * BLOCK_SIZE + LEFT_PADDING + RIGHT_PADDING,
