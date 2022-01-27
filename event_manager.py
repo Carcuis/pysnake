@@ -35,15 +35,17 @@ class EventManager:
         check if mouse button or keyboard key up or down
         :param event_type: mouse: MOUSEBUTTONDOWN or MOUSEBUTTONUP
                            key: KEYDOWN or KEYUP
-        :param attribute: mouse: 1->left 2->middle 3->right 4->wheel_up 5->wheel_down / key
+        :param attribute: (set or value) mouse: 1->left 2->middle 3->right 4->wheel_up 5->wheel_down / key
         :return: bool: whether match event_type and button
         """
-        if event_type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN):
-            for event in self.event_list:
-                if event.type == event_type and event.button == attribute:
-                    return True
-        elif event_type in (KEYUP, KEYDOWN):
-            for event in self.event_list:
-                if event.type == event_type and event.key == attribute:
-                    return True
+        for event in self.event_list:
+            if event.type == event_type:
+                if event_type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN):
+                    if isinstance(attribute, set):
+                        return event.button in attribute
+                    return event.button == attribute
+                elif event_type in (KEYUP, KEYDOWN):
+                    if isinstance(attribute, set):
+                        return event.key in attribute
+                    return event.key == attribute
         return False

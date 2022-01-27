@@ -1,7 +1,7 @@
 import getpass
 import pygame
 from pygame.locals import *
-from settings import Global
+from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
 from board import Board
@@ -162,10 +162,7 @@ class Game:
                 hover_status.update(result[0])
                 is_clicked.update(result[1])
 
-            if self.event_manager.check_key_or_button(KEYDOWN, K_p) or \
-                    self.event_manager.check_key_or_button(KEYDOWN, K_ESCAPE) or \
-                    self.event_manager.check_key_or_button(KEYDOWN, K_SPACE) or \
-                    is_clicked["resume_button"]:
+            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or is_clicked["resume_button"]:
                 release = True
 
             if is_clicked["back_to_main_menu_button"]:
@@ -189,25 +186,15 @@ class Game:
         self.surface.fill(color)
 
     def parse_event(self):
-        if self.event_manager.check_key_or_button(KEYDOWN, K_LEFT) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_h) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_KP4):
+        if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
-        elif self.event_manager.check_key_or_button(KEYDOWN, K_RIGHT) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_l) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_KP6):
+        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.right_list):
             self.snake.change_direction("right")
-        elif self.event_manager.check_key_or_button(KEYDOWN, K_UP) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_k) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_KP8):
+        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list):
             self.snake.change_direction("up")
-        elif self.event_manager.check_key_or_button(KEYDOWN, K_DOWN) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_j) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_KP5):
+        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
             self.snake.change_direction("down")
-        elif self.event_manager.check_key_or_button(KEYDOWN, K_p) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_ESCAPE) or \
-                self.event_manager.check_key_or_button(KEYDOWN, K_SPACE) or \
+        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or \
                 self.event_manager.check_key_or_button(MOUSEBUTTONDOWN, 3):
             self.pause()
 

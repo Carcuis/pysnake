@@ -1,3 +1,6 @@
+from pygame.locals import *
+
+
 class Global:
     # UI
     # block size must be an integer
@@ -38,3 +41,25 @@ class Global:
 
     # others
     WALL_MAX_COUNT_IN_THOUSANDTHS = 20
+
+
+class KeyBoard:
+    pause_list = {
+        K_SPACE, K_ESCAPE, K_p
+    }
+    select_list = {
+        K_RETURN,
+    }
+
+    up_list = {
+        K_k, K_UP, K_KP8
+    }
+    down_list = {
+        K_j, K_DOWN, K_KP5
+    }
+    left_list = {
+        K_h, K_LEFT, K_KP4
+    }
+    right_list = {
+        K_l, K_RIGHT, K_KP6
+    }
