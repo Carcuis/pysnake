@@ -63,3 +63,7 @@ class KeyBoard:
     right_list = {
         K_l, K_RIGHT, K_KP6
     }
+
+    quit_game_list = {
+        K_q, K_ESCAPE
+    }

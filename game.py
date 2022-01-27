@@ -4,7 +4,7 @@ from pygame.locals import *
 from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
-from board import Board
+from board import Board, Button
 from snake import Snake
 from food import FoodManager
 from health import Health, Hungry
@@ -38,45 +38,33 @@ class Game:
     def main_menu(self):
         maintain = True
 
-        hover_status = {"start_button": False, "exit_button": False}
-        is_clicked = {"start_button": False, "exit_button": False}
+        start_button = Button(
+            title="Start", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
+        )
+        exit_button = Button(
+            title="Exit game", color=(pygame.Color("white"), pygame.Color("red")), position=(0.5, 0.85)
+        )
 
         while maintain:
             self.event_manager.get_event()
+            start_button.update_status(self.event_manager)
+            exit_button.update_status(self.event_manager)
+
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.draw_banner()
 
-            self.current_text_board.text.add(
-                "> Start <" if hover_status["start_button"] else "Start",
-                pygame.Color("green") if hover_status["start_button"] else pygame.Color("white"),
-                (0.5, 0.65),
-                bold=True if hover_status["start_button"] else False,
-                alpha=255 if hover_status["start_button"] else 200,
-                name="start_button", font_size=2*Global.UI_SCALE)
-            self.current_text_board.text.add(
-                "> Exit game <" if hover_status["exit_button"] else "Exit game",
-                pygame.Color("red") if hover_status["exit_button"] else pygame.Color("white"),
-                (0.5, 0.85),
-                bold=True if hover_status["exit_button"] else False,
-                alpha=255 if hover_status["exit_button"] else 200,
-                name="exit_button", font_size=2*Global.UI_SCALE)
+            self.current_text_board.text.add(**start_button.get_param_list())
+            self.current_text_board.text.add(**exit_button.get_param_list())
 
             self.current_text_board.draw()
 
-            result = self.get_board_button_status(self.current_text_board)
-            hover_status.update(result[0])
-            is_clicked.update(result[1])
-
             if self.event_manager.check_key_or_button(KEYDOWN, K_RETURN) or \
-                    is_clicked["start_button"]:
+                    start_button.is_triggered:
                 self.start_game()
 
-            if self.event_manager.check_key_or_button(KEYDOWN, K_q) or \
-                    self.event_manager.check_key_or_button(KEYDOWN, K_ESCAPE) or \
-                    is_clicked["exit_button"]:
+            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.quit_game_list) or \
+                    exit_button.is_triggered:
                 self.quit_game()
-
-            self.current_text_board.clear()
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
@@ -114,15 +102,21 @@ class Game:
 
     def pause(self):
         blur_surface = pre_surface = self.surface.copy()
-        pause_board = Board(self.surface)
+        self.current_text_board = Board(self.surface)
 
-        hover_status = {"resume_button": False, "back_to_main_menu_button": False}
-        is_clicked = {"resume_button": False, "back_to_main_menu_button": False}
+        resume_button = Button(
+            title="Resume", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
+        )
+        back_to_main_menu_button = Button(
+            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
+        )
 
         maintain = True
         release = False
         while maintain:
             self.event_manager.get_event()
+            resume_button.update_status(self.event_manager)
+            back_to_main_menu_button.update_status(self.event_manager)
 
             if not release:
                 if self.__blur_kernel_size < 59:
@@ -139,37 +133,21 @@ class Game:
             self.surface.blit(blur_surface, (0, 0))
 
             if not release:
-                pause_board.text.add(
-                    "Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
-                pause_board.text.add(
-                    "> Resume <" if hover_status["resume_button"] else "Resume",
-                    pygame.Color("green") if hover_status["resume_button"] else pygame.Color("white"),
-                    (0.5, 0.65),
-                    bold=True if hover_status["resume_button"] else False,
-                    alpha=255 if hover_status["resume_button"] else 200,
-                    name="resume_button", font_size=2 * Global.UI_SCALE)
-                pause_board.text.add(
-                    "> Back to main menu <" if hover_status["back_to_main_menu_button"] else "Back to main menu",
-                    pygame.Color("yellow") if hover_status["back_to_main_menu_button"] else pygame.Color("white"),
-                    (0.5, 0.75),
-                    bold=True if hover_status["back_to_main_menu_button"] else False,
-                    alpha=255 if hover_status["back_to_main_menu_button"] else 200,
-                    name="back_to_main_menu_button", font_size=2 * Global.UI_SCALE)
+                self.current_text_board.text.add(
+                    "Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE
+                )
+                self.current_text_board.text.add(**resume_button.get_param_list())
+                self.current_text_board.text.add(**back_to_main_menu_button.get_param_list())
 
-                pause_board.draw()
+                self.current_text_board.draw()
 
-                result = self.get_board_button_status(pause_board)
-                hover_status.update(result[0])
-                is_clicked.update(result[1])
-
-            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or is_clicked["resume_button"]:
+            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or resume_button.is_triggered:
                 release = True
 
-            if is_clicked["back_to_main_menu_button"]:
+            if back_to_main_menu_button.is_triggered:
                 self.__blur_kernel_size = 1
                 self.main_menu()
 
-            pause_board.clear()
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
@@ -180,7 +158,6 @@ class Game:
         self.health.draw()
         self.hungry.draw()
         self.current_text_board.draw()
-        self.current_text_board.clear()
 
     def set_base_color(self, color):
         self.surface.fill(color)
@@ -271,7 +248,7 @@ class Game:
 
     def game_over(self):
         blur_surface = pre_surface = self.surface.copy()
-        game_over_board = Board(self.surface)
+        self.current_text_board = Board(self.surface)
         final_score = self.get_score()
         user_name = getpass.getuser()
         # print(f"Your score: {self.get_score()}")
@@ -296,13 +273,19 @@ class Game:
         if break_record:
             Util.write_data_to_json_file(file_name, data)
 
-        hover_status = {"restart_button": False, "back_to_main_menu_button": False}
-        is_clicked = {"restart_button": False, "back_to_main_menu_button": False}
+        restart_button = Button(
+            title="Restart", color=(pygame.Color("white"), pygame.Color("cyan")), position=(0.5, 0.65)
+        )
+        back_to_main_menu_button = Button(
+            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
+        )
 
         maintain = True
 
         while maintain:
             self.event_manager.get_event()
+            restart_button.update_status(self.event_manager)
+            back_to_main_menu_button.update_status(self.event_manager)
 
             if self.__blur_kernel_size < 59:
                 blur_surface = Util.gaussian_blur(pre_surface, self.__blur_kernel_size)
@@ -310,45 +293,31 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            game_over_board.text.add("Game over", pygame.Color("firebrick1"),
-                                     (0.5, 0.25), name="title", font_size=5*Global.UI_SCALE)
+            self.current_text_board.text.add("Game over", pygame.Color("firebrick1"),
+                                             (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
             if break_record:
-                game_over_board.text.add(f"New Best Score: {final_score}", pygame.Color("darkorange"),
-                                         (0.5, 0.45), bold=True, name="sub_title_1", font_size=2*Global.UI_SCALE)
+                self.current_text_board.text.add(f"New Best Score: {final_score}", pygame.Color("darkorange"),
+                                                 (0.5, 0.45), bold=True, name="sub_title_1",
+                                                 font_size=2 * Global.UI_SCALE)
             else:
-                game_over_board.text.add(f"Best record: {best_score}", pygame.Color("white"),
-                                         (0.5, 0.1), name="sub_title_1", alpha=200, font_size=int(1.5*Global.UI_SCALE))
-                game_over_board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
-                                         (0.5, 0.45), name="sub_title_2", font_size=int(2.5*Global.UI_SCALE))
-            game_over_board.text.add(
-                "> Restart <" if hover_status["restart_button"] else "Restart",
-                pygame.Color("cyan") if hover_status["restart_button"] else pygame.Color("white"),
-                (0.5, 0.65),
-                bold=True if hover_status["restart_button"] else False,
-                alpha=255 if hover_status["restart_button"] else 200,
-                name="restart_button", font_size=2*Global.UI_SCALE)
-            game_over_board.text.add(
-                "> Back to main menu <" if hover_status["back_to_main_menu_button"] else "Back to main menu",
-                pygame.Color("yellow") if hover_status["back_to_main_menu_button"] else pygame.Color("white"),
-                (0.5, 0.75),
-                bold=True if hover_status["back_to_main_menu_button"] else False,
-                alpha=255 if hover_status["back_to_main_menu_button"] else 200,
-                name="back_to_main_menu_button", font_size=2*Global.UI_SCALE)
+                self.current_text_board.text.add(f"Best record: {best_score}", pygame.Color("white"),
+                                                 (0.5, 0.1), name="sub_title_1", alpha=200,
+                                                 font_size=int(1.5 * Global.UI_SCALE))
+                self.current_text_board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
+                                                 (0.5, 0.45), name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
 
-            game_over_board.draw()
+            self.current_text_board.text.add(**restart_button.get_param_list())
+            self.current_text_board.text.add(**back_to_main_menu_button.get_param_list())
 
-            result = self.get_board_button_status(game_over_board)
-            hover_status.update(result[0])
-            is_clicked.update(result[1])
+            self.current_text_board.draw()
 
-            if is_clicked["restart_button"]:
+            if restart_button.is_triggered:
                 self.start_game()
 
-            if is_clicked["back_to_main_menu_button"]:
+            if back_to_main_menu_button.is_triggered:
                 self.__blur_kernel_size = 1
                 self.main_menu()
 
-            game_over_board.clear()
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
@@ -376,25 +345,6 @@ class Game:
                                          pygame.Color("white"), "middle_top", alpha=255)
         self.current_text_board.text.add(f"level: {self.level}",
                                          pygame.Color("chartreuse"), "middle_bottom", alpha=255)
-
-    def get_board_button_status(self, _board):
-        hover_status = dict()
-        is_clicked = dict()
-
-        for i in range(len(_board.text.text_array)):
-            rect = _board.text.text_surface_array[i].get_rect()
-            rect.topleft = _board.text.text_array[i]["left_top"]
-            if rect.collidepoint(self.event_manager.mouse_pos):
-                hover_status[_board.text.text_array[i]["name"]] = True
-                if self.event_manager.check_key_or_button(MOUSEBUTTONUP, 1):
-                    is_clicked[_board.text.text_array[i]["name"]] = True
-                else:
-                    is_clicked[_board.text.text_array[i]["name"]] = False
-            else:
-                hover_status[_board.text.text_array[i]["name"]] = False
-                is_clicked[_board.text.text_array[i]["name"]] = False
-
-        return hover_status, is_clicked
 
     def reset_game(self):
         self.snake.reset()
