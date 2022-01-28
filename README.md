@@ -1,5 +1,5 @@
 # PySnake
-![banner](resources/imgs/banner.png)
+![banner](resources/img/banner.png)
 
 A python snake game based on pygame.
 

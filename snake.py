@@ -7,9 +7,9 @@ class Snake:
         self.parent_screen = parent_screen
         self.parent_game = parent_game
 
-        self.head_block = pygame.image.load("resources/imgs/yellow-fdd926-10x10.png").convert()
+        self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
         self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.body_block = pygame.image.load("resources/imgs/green-23d12f-10x10.png").convert()
+        self.body_block = pygame.image.load("resources/img/green-23d12f-10x10.png").convert()
         self.body_block = pygame.transform.scale(self.body_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
 
         self.init_length = Global.INIT_LENGTH
