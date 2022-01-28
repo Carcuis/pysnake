@@ -4,7 +4,7 @@ from pygame.locals import *
 from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
-from board import Board, Button
+from board import Board, Button, ButtonManager
 from snake import Snake
 from food import FoodManager
 from health import Health, Hungry
@@ -45,10 +45,11 @@ class Game:
             title="Exit game", color=(pygame.Color("white"), pygame.Color("red")), position=(0.5, 0.85)
         )
 
+        button_manager = ButtonManager(start_button, exit_button)
+
         while maintain:
             self.event_manager.get_event()
-            start_button.update_status(self.event_manager)
-            exit_button.update_status(self.event_manager)
+            button_manager.update_status(self.event_manager)
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.draw_banner()
@@ -58,12 +59,10 @@ class Game:
 
             self.current_text_board.draw()
 
-            if self.event_manager.check_key_or_button(KEYDOWN, K_RETURN) or \
-                    start_button.is_triggered:
+            if start_button.is_triggered:
                 self.start_game()
 
-            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.quit_game_list) or \
-                    exit_button.is_triggered:
+            if exit_button.is_triggered:
                 self.quit_game()
 
             Util.update_screen()
@@ -111,12 +110,13 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
         )
 
+        button_manager = ButtonManager(resume_button, back_to_main_menu_button)
+
         maintain = True
         release = False
         while maintain:
             self.event_manager.get_event()
-            resume_button.update_status(self.event_manager)
-            back_to_main_menu_button.update_status(self.event_manager)
+            button_manager.update_status(self.event_manager)
 
             if not release:
                 if self.__blur_kernel_size < 59:
@@ -277,12 +277,13 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
         )
 
+        button_manager = ButtonManager(restart_button, back_to_main_menu_button)
+
         maintain = True
 
         while maintain:
             self.event_manager.get_event()
-            restart_button.update_status(self.event_manager)
-            back_to_main_menu_button.update_status(self.event_manager)
+            button_manager.update_status(self.event_manager)
 
             if self.__blur_kernel_size < 59:
                 blur_surface = Util.gaussian_blur(pre_surface, self.__blur_kernel_size)

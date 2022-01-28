@@ -122,7 +122,7 @@ class Button:
 
     def update_status(self, _event_manager: EventManager):
         """
-        Update button hover and click status.
+        Update button's hover and click status.
         :param _event_manager: in game event_manager
         """
         if self.rect.collidepoint(_event_manager.mouse_pos):
@@ -134,7 +134,7 @@ class Button:
 
     def get_param_list(self):
         """
-        Generate button to-text param.
+        Generate button's to-text param.
         :return: Dict
         """
         self._param_dict["name"] = self.title
@@ -154,3 +154,64 @@ class Button:
             self._param_dict["alpha"] = self._alpha[1]
             self._param_dict["bold"] = True
         return self._param_dict
+
+
+class ButtonManager:
+    def __init__(self, *buttons):
+        self.button_list: list[Button] = list(buttons)
+        self.button_count = len(buttons)
+        self._mouse_mode = True
+        self._keyboard_mode = False
+        self.selected_index = 0
+        self._previous_selected_index = self.selected_index
+
+    def update_status(self, _event_manager: EventManager):
+        """
+        Update all buttons' hover and click status through mouse and keyboard control.
+        :param _event_manager: in game event_manager
+        """
+
+        ''' switch between mouse mode and keyboard mode '''
+        if _event_manager.match_event_type(MOUSEMOTION):
+            self._mouse_mode = True
+            self._keyboard_mode = False
+        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list) or \
+                _event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
+            self._mouse_mode = False
+            self._keyboard_mode = True
+
+        ''' update by mouse '''
+        if self._mouse_mode:
+            for button in self.button_list:
+                button.update_status(_event_manager)
+
+        ''' update current selected index '''
+        for i in range(self.button_count):
+            if self.button_list[i].is_hovered_or_selected:
+                self.selected_index = i
+                break
+
+        ''' update by keyboard '''
+        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list):
+            self._go_previous()
+        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
+            self._go_next()
+
+        ''' finally update selected status of buttons '''
+        self.button_list[self._previous_selected_index].is_hovered_or_selected = False
+        self.button_list[self.selected_index].is_hovered_or_selected = True
+        if self.button_list[self.selected_index].is_hovered_or_selected:
+            if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.select_list):
+                self.button_list[self.selected_index].is_triggered = True
+
+    def _go_next(self):
+        self._previous_selected_index = self.selected_index
+        self.selected_index += 1
+        if self.selected_index >= self.button_count:
+            self.selected_index = 0
+
+    def _go_previous(self):
+        self._previous_selected_index = self.selected_index
+        self.selected_index -= 1
+        if self.selected_index < 0:
+            self.selected_index = self.button_count - 1
