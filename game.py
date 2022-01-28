@@ -201,13 +201,10 @@ class Game:
                 break
 
     def check_collision_with_body(self):
-        bite_body = False
         for i in range(1, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                bite_body = True
+                self.health.increase_health(-1)
                 break
-        if bite_body:
-            self.health.increase_health(-1)
 
     def check_collision_with_wall(self):
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:

@@ -27,7 +27,7 @@ class Text:
         )
 
     def render(self):
-        position = ()
+        position: tuple = ()
         for text in self.text_array:
             text_surface = pygame.font.Font(text["font_name"], text["font_size"]) \
                 .render(text["text"], True, text["color"], text["bg_color"])
