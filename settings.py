@@ -37,7 +37,9 @@ class Global:
 
     INIT_SPEED = 4
     MIN_SPEED = 1
-    MAX_SPEED = 8
+    MAX_SPEED = 20
+
+    MAX_LEVEL = 10
 
     # others
     WALL_MAX_COUNT_IN_THOUSANDTHS = 20

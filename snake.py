@@ -123,8 +123,8 @@ class Snake:
             self.y.append(self.y[-1])
 
     def increase_speed(self, speed):
-        # filter: [1, +inf)
-        self.move_speed = max(1, self.move_speed + speed)
+        # filter: [MIN_SPEED, MAX_SPEED]
+        self.move_speed = min(max(Global.MIN_SPEED, self.move_speed + speed), Global.MAX_SPEED)
 
     def reset(self):
         self.init_length = Global.INIT_LENGTH
