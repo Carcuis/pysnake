@@ -215,3 +215,7 @@ class ButtonManager:
         self.selected_index -= 1
         if self.selected_index < 0:
             self.selected_index = self.button_count - 1
+
+    def add_text_to_board(self, _text_board: Board):
+        for button in self.button_list:
+            _text_board.text.add(**button.get_param_list())

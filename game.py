@@ -56,8 +56,7 @@ class Game:
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.draw_banner()
 
-            self.current_text_board.text.add(**start_button.get_param_list())
-            self.current_text_board.text.add(**exit_button.get_param_list())
+            button_manager.add_text_to_board(self.current_text_board)
 
             self.current_text_board.draw()
 
@@ -145,8 +144,7 @@ class Game:
                 self.current_text_board.text.add(
                     "Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE
                 )
-                self.current_text_board.text.add(**resume_button.get_param_list())
-                self.current_text_board.text.add(**back_to_main_menu_button.get_param_list())
+                button_manager.add_text_to_board(self.current_text_board)
 
                 self.current_text_board.draw()
 
@@ -316,8 +314,7 @@ class Game:
                 self.current_text_board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
                                                  (0.5, 0.45), name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
 
-            self.current_text_board.text.add(**restart_button.get_param_list())
-            self.current_text_board.text.add(**back_to_main_menu_button.get_param_list())
+            button_manager.add_text_to_board(self.current_text_board)
 
             self.current_text_board.draw()
 
