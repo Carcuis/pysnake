@@ -47,10 +47,10 @@ class Global:
 
 class KeyBoard:
     pause_list = {
-        K_SPACE, K_ESCAPE, K_p
+        K_SPACE, K_ESCAPE, K_p, K_KP_0
     }
     select_list = {
-        K_RETURN,
+        K_RETURN, K_KP_ENTER
     }
 
     up_list = {
