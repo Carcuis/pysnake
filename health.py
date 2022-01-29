@@ -1,5 +1,4 @@
 import pygame
-# from game import Game
 from settings import *
 
 
@@ -33,7 +32,7 @@ class Hungry:
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.hungry_step_count = 0
 
-        self.__value = 0
+        self._value = 0
 
     def draw(self):
         for i in range(self.get_satiety()):
@@ -43,22 +42,22 @@ class Hungry:
 
     def get_satiety(self):
         # interval: [0, INIT_SATIETY]
-        return Global.INIT_SATIETY - self.__value
+        return Global.INIT_SATIETY - self._value
 
     def get_hungry_value(self):
         # interval: [0, INIT_SATIETY]
         # duplicated to get_satiety, do not use if necessary
-        return self.__value
+        return self._value
 
-    def increase_satiety(self, _value):
+    def increase_satiety(self, __value):
         # filter: [0, MAX_SATIETY]
         # decrease hungry value to increase satiety
-        self.__value = max(min(Global.MAX_SATIETY, self.__value - _value), 0)
+        self._value = max(min(Global.MAX_SATIETY, self._value - __value), 0)
 
         # reset hungry step count after satiety actually increased
-        if _value > 0:
+        if __value > 0:
             self.hungry_step_count = 0
 
     def reset(self):
         self.hungry_step_count = 0
-        self.__value = 0
+        self._value = 0
