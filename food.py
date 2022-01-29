@@ -120,7 +120,7 @@ class Iron(FoodBase):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/iron_block.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.add_satiety = 0
+        self.add_satiety = 1
         self.toxic_level = 0
         self.add_score = 2
         self.increase_speed = 0
@@ -132,7 +132,7 @@ class Gold(FoodBase):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/gold_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.add_satiety = 0
+        self.add_satiety = 2
         self.toxic_level = 0
         self.add_score = 4
         self.increase_speed = 1
@@ -156,8 +156,8 @@ class Heart(FoodBase):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.add_satiety = 0
+        self.add_satiety = 1
         self.toxic_level = -1
-        self.add_score = 0
+        self.add_score = 1
         self.increase_speed = 0
-        self.increase_length = 0
+        self.increase_length = 1
