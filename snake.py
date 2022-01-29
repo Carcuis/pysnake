@@ -19,6 +19,7 @@ class Snake:
 
         self.move_lock = False
         self.move_speed = Global.INIT_SPEED
+        self.move_speed_buffer = 0
         self.direction = "right"
         self.direction_lock = False
         self.buffer_direction = ""
@@ -49,10 +50,6 @@ class Snake:
             self.direction = "down"
 
     def walk(self):
-        # move delay
-        if self.parent_game.tick_count < Global.FPS / (3 * self.move_speed - 2):
-            self.move_lock = True
-            return
         self.parent_game.tick_count = 0
 
         # move body from tail to neck

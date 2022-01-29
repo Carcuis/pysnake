@@ -29,11 +29,13 @@ class Game:
         self.health = Health(self.surface, self)
         self.hungry = Hungry(self.surface, self)
 
-        self.level = 1
-        self.tick_count = 0
-        self.score = 0
-        self.__score_cache = 0
-        self.__blur_kernel_size = 1
+        self.event_timer_snake_move = pygame.USEREVENT
+
+        self.level: int = 1
+        self.tick_count: int = 0
+        self.score: int = 0
+        self._score_cache: int = 0
+        self._blur_kernel_size: int = 1
 
     def main_menu(self):
         maintain = True
@@ -89,7 +91,14 @@ class Game:
         self.main_menu()
 
     def play(self):
-        self.snake.walk()
+        if self.snake.move_speed != self.snake.move_speed_buffer:
+            pygame.time.set_timer(self.event_timer_snake_move, int(1000 / (1.5 * self.snake.move_speed)))
+            self.snake.move_speed_buffer = self.snake.move_speed
+        if self.event_manager.match_event_type(self.event_timer_snake_move):
+            self.snake.walk()
+            self.snake.move_lock = False
+        else:
+            self.snake.move_lock = True
 
         # execute only after actually walk
         if not self.snake.move_lock:
@@ -119,15 +128,15 @@ class Game:
             button_manager.update_status(self.event_manager)
 
             if not release:
-                if self.__blur_kernel_size < 59:
-                    blur_surface = Util.gaussian_blur(pre_surface, self.__blur_kernel_size)
-                    self.__blur_kernel_size += 6
+                if self._blur_kernel_size < 59:
+                    blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
+                    self._blur_kernel_size += 6
             else:
                 ''' gradually remove blur before leaving pause page '''
-                blur_surface = Util.gaussian_blur(pre_surface, self.__blur_kernel_size)
-                self.__blur_kernel_size -= 6
-                if self.__blur_kernel_size <= 1:
-                    self.__blur_kernel_size = 1
+                blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
+                self._blur_kernel_size -= 6
+                if self._blur_kernel_size <= 1:
+                    self._blur_kernel_size = 1
                     maintain = False
 
             self.surface.blit(blur_surface, (0, 0))
@@ -145,7 +154,7 @@ class Game:
                 release = True
 
             if back_to_main_menu_button.is_triggered:
-                self.__blur_kernel_size = 1
+                self._blur_kernel_size = 1
                 self.main_menu()
 
             Util.update_screen()
@@ -227,11 +236,14 @@ class Game:
             self.hungry.hungry_step_count = 0
 
     def check_score(self):
-        if self.__score_cache == self.get_score():
+        if self._score_cache == self.get_score():
             # upgrade only on self.score updates
             return
-        self.__score_cache = self.get_score()
-        if self.__score_cache // 20 > self.level - 1:
+        if self.level >= Global.MAX_LEVEL:
+            return
+
+        self._score_cache = self.get_score()
+        if self._score_cache // 20 > self.level - 1:
             self.upgrade()
 
     def upgrade(self):
@@ -240,7 +252,7 @@ class Game:
         """
         if self.level > 7:
             return
-        self.snake.move_speed += 1
+        self.snake.increase_speed(1)
         self.level += 1
 
     def game_over(self):
@@ -285,9 +297,9 @@ class Game:
             self.event_manager.get_event()
             button_manager.update_status(self.event_manager)
 
-            if self.__blur_kernel_size < 59:
-                blur_surface = Util.gaussian_blur(pre_surface, self.__blur_kernel_size)
-                self.__blur_kernel_size += 6
+            if self._blur_kernel_size < 59:
+                blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
+                self._blur_kernel_size += 6
 
             self.surface.blit(blur_surface, (0, 0))
 
@@ -313,13 +325,13 @@ class Game:
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
-                self.__blur_kernel_size = 1
+                self._blur_kernel_size = 1
                 self.main_menu()
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-        self.__blur_kernel_size = 1
+        self._blur_kernel_size = 1
 
         self.quit_game()
 
@@ -354,8 +366,8 @@ class Game:
         self.level = 1
         self.tick_count = 0
         self.score = 0
-        self.__score_cache = 0
-        self.__blur_kernel_size = 1
+        self._score_cache = 0
+        self._blur_kernel_size = 1
 
     @staticmethod
     def print_high_score(data):
