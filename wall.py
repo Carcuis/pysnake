@@ -4,12 +4,13 @@ from settings import *
 
 
 class Wall:
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
         self.parent_surface = parent_surface
-        self.parent_game = parent_game
+        self.parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.coords = set(tuple())
+        self.coords: set[tuple] = {()}
         self.random_gen(Global.WALL_MAX_COUNT_IN_THOUSANDTHS)
 
     def random_gen(self, value_in_thousandths):
@@ -27,5 +28,5 @@ class Wall:
             self.parent_surface.blit(self.image, (coord[0], coord[1]))
 
     def reset(self):
-        self.coords = set(tuple())
+        self.coords.clear()
         self.random_gen(Global.WALL_MAX_COUNT_IN_THOUSANDTHS)

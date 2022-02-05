@@ -4,9 +4,10 @@ from settings import *
 
 
 class FoodManager:
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
         self.parent_surface = parent_surface
-        self.parent_game = parent_game
+        self.parent_game: Game = parent_game
 
         self.apple = Apple(self.parent_surface, self.parent_game)
         self.beef = Beef(self.parent_surface, self.parent_game)
@@ -15,7 +16,7 @@ class FoodManager:
         self.slimeball = SlimeBall(self.parent_surface, self.parent_game)
         self.heart = Heart(self.parent_surface, self.parent_game)
 
-        self.food_list = [self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart]
+        self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
 
     def draw(self):
         for food in self.food_list:
@@ -23,16 +24,17 @@ class FoodManager:
 
     def reset(self):
         for food in self.food_list:
-            food.x = []
-            food.y = []
+            food.x.clear()
+            food.y.clear()
             food.count = 0
 
 
 class FoodBase:
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
         self.image = None
         self.parent_surface = parent_surface
-        self.parent_game = parent_game
+        self.parent_game: Game = parent_game
         self.count = 0
         self.x = []
         self.y = []
@@ -48,6 +50,8 @@ class FoodBase:
                 self.parent_surface.blit(self.image, (self.x[i], self.y[i]))
 
     def update(self, index=None):
+        if random.randint(1, 4) == 1:
+            self.update()
         if index is not None:
             del self.x[index]
             del self.y[index]

@@ -4,7 +4,7 @@ from event_manager import EventManager
 
 
 class Text:
-    def __init__(self, parent_surface):
+    def __init__(self, parent_surface: pygame.Surface):
         self.parent_surface = parent_surface
         self.text_array = []
 
@@ -168,7 +168,7 @@ class ButtonManager:
     def update_status(self, _event_manager: EventManager):
         """
         Update all buttons' hover and click status through mouse and keyboard control.
-        :param _event_manager: in game event_manager
+        :param _event_manager: in-game event_manager
         """
 
         ''' switch between mouse mode and keyboard mode '''

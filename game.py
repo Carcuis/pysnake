@@ -32,7 +32,6 @@ class Game:
         self.event_timer_snake_move = pygame.USEREVENT
 
         self.level: int = 1
-        self.tick_count: int = 0
         self.score: int = 0
         self._score_cache: int = 0
         self._blur_kernel_size: int = 1
@@ -85,7 +84,6 @@ class Game:
             self.check_health()
 
             self.clock.tick(Global.FPS)
-            self.tick_count += 1
 
         self.main_menu()
 
@@ -361,7 +359,6 @@ class Game:
         self.health.reset()
         self.hungry.reset()
         self.level = 1
-        self.tick_count = 0
         self.score = 0
         self._score_cache = 0
         self._blur_kernel_size = 1

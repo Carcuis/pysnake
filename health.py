@@ -3,9 +3,10 @@ from settings import *
 
 
 class Health:
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
         self.parent_surface = parent_surface
-        self.parent_game = parent_game
+        self.parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.value = Global.INIT_HEALTH
@@ -25,9 +26,10 @@ class Health:
 
 
 class Hungry:
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
         self.parent_surface = parent_surface
-        self.parent_game = parent_game
+        self.parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/hunger_bigger.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.hungry_step_count = 0

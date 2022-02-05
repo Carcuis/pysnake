@@ -3,9 +3,10 @@ from settings import *
 
 
 class Snake:
-    def __init__(self, parent_screen, parent_game):
-        self.parent_screen = parent_screen
-        self.parent_game = parent_game
+    def __init__(self, parent_surface: pygame.Surface, parent_game):
+        from game import Game
+        self.parent_surface = parent_surface
+        self.parent_game: Game = parent_game
 
         self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
         self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -26,9 +27,9 @@ class Snake:
         self.change_direction_buffer_status = False
 
     def draw(self):
-        self.parent_screen.blit(self.head_block, (self.x[0], self.y[0]))
+        self.parent_surface.blit(self.head_block, (self.x[0], self.y[0]))
         for i in range(1, self.length):
-            self.parent_screen.blit(self.body_block, (self.x[i], self.y[i]))
+            self.parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
 
     def change_direction(self, direction):
         if self.direction_lock:
@@ -50,8 +51,6 @@ class Snake:
             self.direction = "down"
 
     def walk(self):
-        self.parent_game.tick_count = 0
-
         # move body from tail to neck
         for i in range(self.length - 1, 0, -1):
             self.x[i] = self.x[i - 1]
