@@ -5,8 +5,8 @@ from settings import *
 class Snake:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
 
         self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
         self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -27,9 +27,9 @@ class Snake:
         self.change_direction_buffer_status = False
 
     def draw(self):
-        self.parent_surface.blit(self.head_block, (self.x[0], self.y[0]))
+        self._parent_surface.blit(self.head_block, (self.x[0], self.y[0]))
         for i in range(1, self.length):
-            self.parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
+            self._parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
 
     def change_direction(self, direction):
         if self.direction_lock:
@@ -80,7 +80,7 @@ class Snake:
             self.change_direction(self.buffer_direction)
             self.change_direction_buffer_status = False
 
-        self.parent_game.hungry.hungry_step_count += 1
+        self._parent_game.hungry.hungry_step_count += 1
 
     def head_over_border(self):
         """

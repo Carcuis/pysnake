@@ -5,17 +5,18 @@ from settings import *
 class Health:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.value = Global.INIT_HEALTH
 
     def draw(self):
         for i in range(self.value):
-            self.parent_surface.blit(self.image,
-                                     (i * self.image.get_width(),
-                                      self.parent_surface.get_height() - self.image.get_height()))
+            self._parent_surface.blit(
+                self.image,
+                (i * self.image.get_width(), self._parent_surface.get_height() - self.image.get_height())
+            )
 
     def increase_health(self, _value):
         # filter: [0, MAX_HEALTH]
@@ -28,8 +29,8 @@ class Health:
 class Hungry:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/hunger_bigger.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.hungry_step_count = 0
@@ -38,9 +39,9 @@ class Hungry:
 
     def draw(self):
         for i in range(self.get_satiety()):
-            self.parent_surface.blit(self.image,
-                                     (self.parent_surface.get_width() - (i + 1) * self.image.get_width(),
-                                      self.parent_surface.get_height() - self.image.get_height()))
+            self._parent_surface.blit(self.image,
+                                      (self._parent_surface.get_width() - (i + 1) * self.image.get_width(),
+                                       self._parent_surface.get_height() - self.image.get_height()))
 
     def get_satiety(self):
         # interval: [0, INIT_SATIETY]

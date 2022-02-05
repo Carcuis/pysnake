@@ -6,8 +6,8 @@ from settings import *
 class Wall:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
         self.image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.coords: set[tuple] = {()}
@@ -25,7 +25,7 @@ class Wall:
 
     def draw(self):
         for coord in self.coords:
-            self.parent_surface.blit(self.image, (coord[0], coord[1]))
+            self._parent_surface.blit(self.image, (coord[0], coord[1]))
 
     def reset(self):
         self.coords.clear()

@@ -5,7 +5,7 @@ from pygame.locals import *
 class EventManager:
     def __init__(self, parent_game):
         from game import Game
-        self.parent_game: Game = parent_game
+        self._parent_game: Game = parent_game
         self.event_list = []
         self.keys_pressed = dict()
         self.mouse_button_status = tuple()
@@ -20,7 +20,7 @@ class EventManager:
         #     print(i)
         if self.match_event_type(QUIT):
             """ always check exit """
-            self.parent_game.quit_game()
+            self._parent_game.quit_game()
         self.keys_pressed = pygame.key.get_pressed()
         self.mouse_button_status = pygame.mouse.get_pressed()
         self.mouse_pos = pygame.mouse.get_pos()

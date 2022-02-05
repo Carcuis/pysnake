@@ -5,7 +5,7 @@ from event_manager import EventManager
 
 class Text:
     def __init__(self, parent_surface: pygame.Surface):
-        self.parent_surface = parent_surface
+        self._parent_surface = parent_surface
         self.text_array = []
 
     def add(self, text: str, color, position, alpha=255, bg_color=None, name: str = None,
@@ -37,25 +37,25 @@ class Text:
                 if text["position"] == "left_top":
                     position = (0, 0)
                 elif text["position"] == "middle_top":
-                    position = ((self.parent_surface.get_width() - text_surface.get_width()) / 2, 0)
+                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2, 0)
                 elif text["position"] == "right_top":
-                    position = (self.parent_surface.get_width() - text_surface.get_width(), 0)
+                    position = (self._parent_surface.get_width() - text_surface.get_width(), 0)
                 elif text["position"] == "left_bottom":
-                    position = (0, self.parent_surface.get_height() - text_surface.get_height())
+                    position = (0, self._parent_surface.get_height() - text_surface.get_height())
                 elif text["position"] == "middle_bottom":
-                    position = ((self.parent_surface.get_width() - text_surface.get_width()) / 2,
-                                self.parent_surface.get_height() - text_surface.get_height())
+                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2,
+                                self._parent_surface.get_height() - text_surface.get_height())
                 elif text["position"] == "right_bottom":
-                    position = (self.parent_surface.get_width() - text_surface.get_width(),
-                                self.parent_surface.get_height() - text_surface.get_height())
+                    position = (self._parent_surface.get_width() - text_surface.get_width(),
+                                self._parent_surface.get_height() - text_surface.get_height())
                 elif text["position"] == "left_middle":
-                    position = (0, (self.parent_surface.get_height() - text_surface.get_height()) / 2)
+                    position = (0, (self._parent_surface.get_height() - text_surface.get_height()) / 2)
                 elif text["position"] == "right_middle":
-                    position = (self.parent_surface.get_width() - text_surface.get_width(),
-                                (self.parent_surface.get_height() - text_surface.get_height()) / 2)
+                    position = (self._parent_surface.get_width() - text_surface.get_width(),
+                                (self._parent_surface.get_height() - text_surface.get_height()) / 2)
                 elif text["position"] == "center":
-                    position = ((self.parent_surface.get_width() - text_surface.get_width()) / 2,
-                                (self.parent_surface.get_height() - text_surface.get_height()) / 2)
+                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2,
+                                (self._parent_surface.get_height() - text_surface.get_height()) / 2)
             elif isinstance(text["position"], tuple):
                 '''
                 custom position 
@@ -68,30 +68,30 @@ class Text:
                 ratio_x = text["position"][0]
                 ratio_y = text["position"][1]
                 if len(text["position"]) == 2:
-                    position = ((self.parent_surface.get_width() - text_surface.get_width()) * ratio_x,
-                                (self.parent_surface.get_height() - text_surface.get_height()) * ratio_y)
+                    position = ((self._parent_surface.get_width() - text_surface.get_width()) * ratio_x,
+                                (self._parent_surface.get_height() - text_surface.get_height()) * ratio_y)
                 elif len(text["position"]) == 3:
                     if text["position"] == "left_top":
-                        position = ((self.parent_surface.get_width() * ratio_x),
-                                    (self.parent_surface.get_height() * ratio_y))
+                        position = ((self._parent_surface.get_width() * ratio_x),
+                                    (self._parent_surface.get_height() * ratio_y))
                     elif text["position"] == "left_bottom":
-                        position = ((self.parent_surface.get_width() * ratio_x),
-                                    (self.parent_surface.get_height() * ratio_y - text_surface.get_height()))
+                        position = ((self._parent_surface.get_width() * ratio_x),
+                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height()))
                     elif text["position"] == "right_up":
-                        position = ((self.parent_surface.get_width() * ratio_x - text_surface.get_width()),
-                                    (self.parent_surface.get_height() * ratio_y))
+                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width()),
+                                    (self._parent_surface.get_height() * ratio_y))
                     elif text["position"] == "right_bottom":
-                        position = ((self.parent_surface.get_width() * ratio_x - text_surface.get_width()),
-                                    (self.parent_surface.get_height() * ratio_y - text_surface.get_height()))
+                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width()),
+                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height()))
                     elif text["position"] == "center":
-                        position = ((self.parent_surface.get_width() * ratio_x - text_surface.get_width() / 2),
-                                    (self.parent_surface.get_height() * ratio_y - text_surface.get_height() / 2))
+                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width() / 2),
+                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height() / 2))
 
             text_surface.set_alpha(text["alpha"])
             if text["button"]:
                 text["button"].rect = text_surface.get_rect()
                 text["button"].rect.topleft = (position[0], position[1])
-            self.parent_surface.blit(text_surface, position)
+            self._parent_surface.blit(text_surface, position)
 
     def clear(self):
         self.text_array.clear()

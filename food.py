@@ -6,15 +6,15 @@ from settings import *
 class FoodManager:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
 
-        self.apple = Apple(self.parent_surface, self.parent_game)
-        self.beef = Beef(self.parent_surface, self.parent_game)
-        self.iron = Iron(self.parent_surface, self.parent_game)
-        self.gold = Gold(self.parent_surface, self.parent_game)
-        self.slimeball = SlimeBall(self.parent_surface, self.parent_game)
-        self.heart = Heart(self.parent_surface, self.parent_game)
+        self.apple = Apple(self._parent_surface, self._parent_game)
+        self.beef = Beef(self._parent_surface, self._parent_game)
+        self.iron = Iron(self._parent_surface, self._parent_game)
+        self.gold = Gold(self._parent_surface, self._parent_game)
+        self.slimeball = SlimeBall(self._parent_surface, self._parent_game)
+        self.heart = Heart(self._parent_surface, self._parent_game)
 
         self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
 
@@ -33,8 +33,8 @@ class FoodBase:
     def __init__(self, parent_surface: pygame.Surface, parent_game):
         from game import Game
         self.image = None
-        self.parent_surface = parent_surface
-        self.parent_game: Game = parent_game
+        self._parent_surface = parent_surface
+        self._parent_game: Game = parent_game
         self.count = 0
         self.x = []
         self.y = []
@@ -47,7 +47,7 @@ class FoodBase:
     def draw(self):
         if self.count > 0:
             for i in range(self.count):
-                self.parent_surface.blit(self.image, (self.x[i], self.y[i]))
+                self._parent_surface.blit(self.image, (self.x[i], self.y[i]))
 
     def update(self, index=None):
         # add food recursively at random until count >= 3
@@ -69,15 +69,15 @@ class FoodBase:
             overlap = False
 
             # overlap with snake
-            for i in range(self.parent_game.snake.length):
-                if temp_x == self.parent_game.snake.x[i] and temp_y == self.parent_game.snake.y[i]:
+            for i in range(self._parent_game.snake.length):
+                if temp_x == self._parent_game.snake.x[i] and temp_y == self._parent_game.snake.y[i]:
                     overlap = True
                     break
             if overlap:
                 continue
 
             # overlap with other food
-            for food in self.parent_game.food_manager.food_list:
+            for food in self._parent_game.food_manager.food_list:
                 if food.count > 0:
                     for i in range(food.count):
                         if temp_x == food.x[i] and temp_y == food.y[i]:
@@ -89,7 +89,7 @@ class FoodBase:
                 continue
 
             # overlap with wall
-            if (temp_x, temp_y) in self.parent_game.wall.coords:
+            if (temp_x, temp_y) in self._parent_game.wall.coords:
                 continue
 
             self.x.append(temp_x)
