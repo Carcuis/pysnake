@@ -50,8 +50,11 @@ class FoodBase:
                 self.parent_surface.blit(self.image, (self.x[i], self.y[i]))
 
     def update(self, index=None):
-        if random.randint(1, 4) == 1:
+        # add food recursively at random until count >= 3
+        if self.count < 3 and random.randint(1, 4) == 1:
             self.update()
+
+        # delete specific food after is eaten
         if index is not None:
             del self.x[index]
             del self.y[index]
