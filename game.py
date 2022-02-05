@@ -112,11 +112,14 @@ class Game:
         resume_button = Button(
             title="Resume", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
         )
+        restart_button = Button(
+            title="Restart", color=(pygame.Color("white"), pygame.Color("cyan")), position=(0.5, 0.75)
+        )
         back_to_main_menu_button = Button(
-            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
+            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.85)
         )
 
-        button_manager = ButtonManager(resume_button, back_to_main_menu_button)
+        button_manager = ButtonManager(resume_button, restart_button, back_to_main_menu_button)
 
         maintain = True
         release = False
@@ -148,6 +151,9 @@ class Game:
 
             if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or resume_button.is_triggered:
                 release = True
+
+            if restart_button.is_triggered:
+                self.start_game()
 
             if back_to_main_menu_button.is_triggered:
                 self._blur_kernel_size = 1
