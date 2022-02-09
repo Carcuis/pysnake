@@ -4,6 +4,7 @@ from pygame.locals import *
 from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
+from animation import AnimationManager
 from board import Board, Button, ButtonManager
 from snake import Snake
 from food import FoodManager
@@ -29,7 +30,8 @@ class Game:
         self.health = Health(self.surface, self)
         self.hungry = Hungry(self.surface, self)
 
-        self.event_timer_snake_move = pygame.USEREVENT
+        self.user_event_count = 0
+        self.event_timer_snake_move = self.generate_user_event_id()
 
         self.level: int = 1
         self.score: int = 0
@@ -47,12 +49,15 @@ class Game:
         )
 
         button_manager = ButtonManager(start_button, exit_button)
+        animation_manager = AnimationManager(self.surface, self)
 
         while maintain:
             self.event_manager.get_event()
             button_manager.update_status(self.event_manager)
+            animation_manager.update(self.event_manager)
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
+            animation_manager.render()
             self.draw_banner()
 
             button_manager.add_text_to_board(self.current_text_board)
@@ -368,6 +373,11 @@ class Game:
         self.score = 0
         self._score_cache = 0
         self._blur_kernel_size = 1
+
+    def generate_user_event_id(self):
+        new_id = self.user_event_count
+        self.user_event_count += 1
+        return new_id
 
     @staticmethod
     def print_high_score(data):
