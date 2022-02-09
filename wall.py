@@ -1,6 +1,6 @@
 import pygame
 import random
-from settings import *
+from settings import Global
 
 
 class Wall:
@@ -19,9 +19,12 @@ class Wall:
         for _ in range(wall_block_count):
             self.coords.add((
                 random.randrange(
-                    Global.LEFT_PADDING, Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING, Global.BLOCK_SIZE),
+                    Global.LEFT_PADDING, Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING, Global.BLOCK_SIZE
+                ),
                 random.randrange(
-                    Global.TOP_PADDING, Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING, Global.BLOCK_SIZE)))
+                    Global.TOP_PADDING, Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING, Global.BLOCK_SIZE
+                )
+            ))
 
     def draw(self):
         for coord in self.coords:

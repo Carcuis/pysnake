@@ -1,5 +1,6 @@
 import pygame
-from settings import *
+from pygame.locals import *
+from settings import Global, KeyBoard
 from event_manager import EventManager
 
 
@@ -10,21 +11,19 @@ class Text:
 
     def add(self, text: str, color, position, alpha=255, bg_color=None, name: str = None,
             font_size=Global.UI_SCALE, bold=False, italic=False, button=None):
-        self.text_array.append(
-            {
-                "name": name,
-                "text": text,
-                "color": color,
-                "bg_color": bg_color,
-                "alpha": alpha,
-                "position": position,
-                "font_name": "resources/fonts/font_bold.otf" if bold else "resources/fonts/font.otf",
-                "font_size": font_size,
-                "bold": bold,
-                "italic": italic,
-                "button": button
-            }
-        )
+        self.text_array.append({
+            "name": name,
+            "text": text,
+            "color": color,
+            "bg_color": bg_color,
+            "alpha": alpha,
+            "position": position,
+            "font_name": "resources/fonts/font_bold.otf" if bold else "resources/fonts/font.otf",
+            "font_size": font_size,
+            "bold": bold,
+            "italic": italic,
+            "button": button
+        })
 
     def render(self):
         position: tuple = ()

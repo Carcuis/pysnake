@@ -1,6 +1,6 @@
 import pygame
 import random
-from settings import *
+from settings import Global
 
 
 class FoodManager:
