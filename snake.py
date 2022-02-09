@@ -50,7 +50,7 @@ class Snake:
         if direction == "down" and self.direction != "up":
             self.direction = "down"
 
-    def walk(self):
+    def walk(self, teleport=True):
         # move body from tail to neck
         for i in range(self.length - 1, 0, -1):
             self.x[i] = self.x[i - 1]
@@ -66,10 +66,12 @@ class Snake:
             self.y[0] -= step
         elif self.direction == "down":
             self.y[0] += step
-        # teleport head if is over border after movement
-        over_border, directory = self.head_over_border()
-        if over_border:
-            self.teleport(directory)
+
+        if teleport:
+            # teleport head if is over border after movement
+            over_border, directory = self.head_over_border()
+            if over_border:
+                self.teleport(directory)
 
         # unlock locks after actually walk
         self.move_lock = False
