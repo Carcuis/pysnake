@@ -27,7 +27,7 @@ class AnimationManager:
 
         pygame.time.set_timer(self.event_timer, int(1000 / (1.5 * self.move_speed)))
 
-    def add_snake(self):
+    def _add_snake(self):
         new_x = random.randint(0, (Global.GRID_COL - 1)) * Global.BLOCK_SIZE
         new_y = 0
         length = random.randint(3, 15)
@@ -38,7 +38,7 @@ class AnimationManager:
     def update(self, _event_manager: EventManager):
         if not _event_manager.match_event_type(self.event_timer):
             return
-        self.add_snake()
+        self._add_snake()
         for i in range(len(self.little_snakes) - 1, -1, -1):
             if self.little_snakes[i].y[-1] >= Global.SCREEN_SIZE[1]:
                 self.little_snakes.pop(i)
