@@ -1,13 +1,13 @@
 import pygame
 import random
+import game
 from settings import Global
 
 
 class FoodManager:
-    def __init__(self, parent_surface: pygame.Surface, parent_game):
-        from game import Game
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         self._parent_surface = parent_surface
-        self._parent_game: Game = parent_game
+        self._parent_game = parent_game
 
         self.apple = Apple(self._parent_surface, self._parent_game)
         self.beef = Beef(self._parent_surface, self._parent_game)
@@ -30,11 +30,10 @@ class FoodManager:
 
 
 class FoodBase:
-    def __init__(self, parent_surface: pygame.Surface, parent_game):
-        from game import Game
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         self.image = None
         self._parent_surface = parent_surface
-        self._parent_game: Game = parent_game
+        self._parent_game = parent_game
         self.count = 0
         self.x = []
         self.y = []
@@ -99,7 +98,7 @@ class FoodBase:
 
 
 class Apple(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/apple_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -111,7 +110,7 @@ class Apple(FoodBase):
 
 
 class Beef(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/beef_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -123,7 +122,7 @@ class Beef(FoodBase):
 
 
 class Iron(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/iron_block.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -135,7 +134,7 @@ class Iron(FoodBase):
 
 
 class Gold(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/gold_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -147,7 +146,7 @@ class Gold(FoodBase):
 
 
 class SlimeBall(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/slimeball_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -159,7 +158,7 @@ class SlimeBall(FoodBase):
 
 
 class Heart(FoodBase):
-    def __init__(self, parent_surface, parent_game):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         super().__init__(parent_surface, parent_game)
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))

@@ -97,7 +97,7 @@ class Text:
 
 
 class Board:
-    def __init__(self, parent_surface):
+    def __init__(self, parent_surface: pygame.Surface):
         self.text = Text(parent_surface)
 
     def draw(self):
@@ -156,7 +156,7 @@ class Button:
 
 
 class ButtonManager:
-    def __init__(self, *buttons):
+    def __init__(self, *buttons: Button):
         self.button_list: list[Button] = list(buttons)
         self.button_count = len(buttons)
         self._mouse_mode = True

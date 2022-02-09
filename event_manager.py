@@ -1,11 +1,11 @@
 import pygame
+import game
 from pygame.locals import *
 
 
 class EventManager:
-    def __init__(self, parent_game):
-        from game import Game
-        self._parent_game: Game = parent_game
+    def __init__(self, parent_game: 'game.Game'):
+        self._parent_game = parent_game
         self.event_list = []
         self.keys_pressed = dict()
         self.mouse_button_status = tuple()

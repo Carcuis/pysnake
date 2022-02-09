@@ -1,5 +1,6 @@
 import pygame
 import random
+import game
 from settings import Global
 from snake import Snake
 from event_manager import EventManager
@@ -7,7 +8,7 @@ from util import Util
 
 
 class LittleSnake(Snake):
-    def __init__(self, parent_surface: pygame.Surface, parent_game, x, y, length, move_speed):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game', x, y, length, move_speed):
         super().__init__(parent_surface, parent_game)
         self.direction = "down"
         self.length = length
@@ -17,10 +18,9 @@ class LittleSnake(Snake):
 
 
 class AnimationManager:
-    def __init__(self, parent_surface: pygame.Surface, parent_game):
-        from game import Game
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         self._parent_surface = parent_surface
-        self._parent_game: Game = parent_game
+        self._parent_game = parent_game
         self.little_snakes: list[Snake] = []
         self.move_speed = 20
         self.event_timer = Util.generate_user_event_id()

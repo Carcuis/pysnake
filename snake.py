@@ -1,12 +1,12 @@
 import pygame
+import game
 from settings import Global
 
 
 class Snake:
-    def __init__(self, parent_surface: pygame.Surface, parent_game):
-        from game import Game
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
         self._parent_surface = parent_surface
-        self._parent_game: Game = parent_game
+        self._parent_game = parent_game
 
         self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
         self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
@@ -98,7 +98,7 @@ class Snake:
             return True, 4
         return False, 0
 
-    def teleport(self, directory):
+    def teleport(self, directory: int):
         if directory == 0:
             return
 
