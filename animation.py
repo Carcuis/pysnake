@@ -23,7 +23,7 @@ class AnimationManager:
         self._parent_game: Game = parent_game
         self.little_snakes: list[Snake] = []
         self.move_speed = 20
-        self.event_timer = self._parent_game.generate_user_event_id()
+        self.event_timer = Util.generate_user_event_id()
 
         pygame.time.set_timer(self.event_timer, int(1000 / (1.5 * self.move_speed)))
 

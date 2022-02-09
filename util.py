@@ -5,6 +5,13 @@ import json
 
 
 class Util:
+    user_event_count: int = 0
+
+    @classmethod
+    def generate_user_event_id(cls):
+        new_id = cls.user_event_count + pygame.USEREVENT
+        cls.user_event_count += 1
+        return new_id
 
     @staticmethod
     def scale_blur(surface, value):

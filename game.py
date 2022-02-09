@@ -30,8 +30,7 @@ class Game:
         self.health = Health(self.surface, self)
         self.hungry = Hungry(self.surface, self)
 
-        self.user_event_count = 0
-        self.event_timer_snake_move = self.generate_user_event_id()
+        self.event_timer_snake_move = Util.generate_user_event_id()
 
         self.level: int = 1
         self.score: int = 0
@@ -373,11 +372,6 @@ class Game:
         self.score = 0
         self._score_cache = 0
         self._blur_kernel_size = 1
-
-    def generate_user_event_id(self):
-        new_id = self.user_event_count
-        self.user_event_count += 1
-        return new_id
 
     @staticmethod
     def print_high_score(data):
