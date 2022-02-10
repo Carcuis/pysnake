@@ -23,6 +23,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.event_manager = EventManager(self)
+        self.animation_manager = AnimationManager(self.surface, self)
         self.snake = Snake(self.surface, self)
         self.wall = Wall(self.surface, self)
         self.food_manager = FoodManager(self.surface, self)
@@ -48,15 +49,14 @@ class Game:
         )
 
         button_manager = ButtonManager(start_button, exit_button)
-        animation_manager = AnimationManager(self.surface, self)
 
         while maintain:
             self.event_manager.get_event()
             button_manager.update_status(self.event_manager)
-            animation_manager.update(self.event_manager)
+            self.animation_manager.update(self.event_manager)
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
-            animation_manager.render()
+            self.animation_manager.render()
             self.draw_banner()
 
             button_manager.add_text_to_board(self.current_text_board)
