@@ -1,4 +1,5 @@
 import pygame
+import time
 import cv2
 import os
 import json
@@ -80,3 +81,15 @@ class Util:
         """
         with open(file_name, mode="w") as fp:
             json.dump(data, fp, indent=4)
+
+    @staticmethod
+    def measure_time():
+        def wraps(func):
+            def measure(*args, **kwargs):
+                start = time.perf_counter_ns()
+                res = func(*args, **kwargs)
+                end = time.perf_counter_ns()
+                print(f"Function {func.__name__} used {(end - start) / 1e6} ms.")
+                return res
+            return measure
+        return wraps
