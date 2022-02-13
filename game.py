@@ -111,7 +111,6 @@ class Game:
 
     def pause(self):
         blur_surface = pre_surface = self.surface.copy()
-        self.current_text_board = Board(self.surface)
 
         resume_button = Button(
             title="Resume", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
@@ -160,7 +159,6 @@ class Game:
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
-                self._blur_kernel_size = 1
                 self.main_menu()
 
             Util.update_screen()
@@ -263,7 +261,6 @@ class Game:
 
     def game_over(self):
         blur_surface = pre_surface = self.surface.copy()
-        self.current_text_board = Board(self.surface)
         final_score = self.get_score()
         user_name = getpass.getuser()
         # print(f"Your score: {self.get_score()}")
@@ -292,7 +289,7 @@ class Game:
             title="Restart", color=(pygame.Color("white"), pygame.Color("cyan")), position=(0.5, 0.65)
         )
         back_to_main_menu_button = Button(
-            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.75)
+            title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.8)
         )
 
         button_manager = ButtonManager(restart_button, back_to_main_menu_button)
