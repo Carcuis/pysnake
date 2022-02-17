@@ -71,4 +71,3 @@ class AnimationManager:
         for little_snake in self._little_on_screen_snakes:
             little_snake.draw()
         self._parent_surface.blit(Util.gaussian_blur(self._parent_surface, 21), (0, 0))
-
