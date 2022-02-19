@@ -16,8 +16,7 @@ class EventManager:
         Execute at the beginning of each cycle of every loop.
         """
         self.event_list = pygame.event.get()
-        # for i in self.event_list:
-        #     print(i)
+        # self.print_event(ignore_timer=True)
         if self.match_event_type(QUIT):
             """ always check exit """
             self._parent_game.quit_game()
@@ -50,3 +49,11 @@ class EventManager:
                         return event.key in attribute
                     return event.key == attribute
         return False
+
+    def print_event(self, ignore_timer=False):
+        for event in self.event_list:
+            if ignore_timer:
+                if event.type == self._parent_game.event_timer_snake_move or \
+                        event.type == self._parent_game.animation_manager.event_timer:
+                    continue
+            print(event)
