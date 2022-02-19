@@ -23,7 +23,7 @@ class Util:
         :return: produced surface
         """
         if value < 1.0:
-            raise ValueError("Arg 'amt' must be greater than 1.0, passed in value is %s" % value)
+            raise ValueError("Arg 'value' must be greater than 1.0, passed in value is %s" % value)
         scale = 1.0 / float(value)
         surf_size = surface.get_size()
         scale_size = (int(surf_size[0] * scale), int(surf_size[1] * scale))
