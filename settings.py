@@ -18,11 +18,11 @@ class Global:
     GRID_ROW: int = 50
 
     # do not change this variable
-    SCREEN_SIZE: tuple[int] = (GRID_COL * BLOCK_SIZE + LEFT_PADDING + RIGHT_PADDING,
-                               GRID_ROW * BLOCK_SIZE + TOP_PADDING + BOTTOM_PADDING)
+    SCREEN_SIZE: tuple[int, int] = (GRID_COL * BLOCK_SIZE + LEFT_PADDING + RIGHT_PADDING,
+                                    GRID_ROW * BLOCK_SIZE + TOP_PADDING + BOTTOM_PADDING)
 
     # R, G, B
-    BACK_GROUND_COLOR: tuple[int] = (31, 59, 100)
+    BACK_GROUND_COLOR: tuple[int, int, int] = (31, 59, 100)
 
     FPS: int = 60
 
