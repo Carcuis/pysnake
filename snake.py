@@ -69,9 +69,9 @@ class Snake:
 
         if teleport:
             # teleport head if is over border after movement
-            over_border, directory = self.head_over_border()
+            over_border, border_position = self.head_over_border()
             if over_border:
-                self.teleport(directory)
+                self.teleport(border_position)
 
         # unlock locks after actually walk
         self.move_lock = False
@@ -84,36 +84,35 @@ class Snake:
 
         self._parent_game.hungry.hungry_step_count += 1
 
-    def head_over_border(self):
+    def head_over_border(self) -> tuple[bool, str]:
         """
-        :return: (bool: over_border, int: directory: 0->None 1->left 2->right 3->top 4->bottom)
+        :return: (bool: over_border, str: border_position)
         """
         if self.x[0] < Global.LEFT_PADDING:
-            return True, 1
+            return True, "left"
         if self.x[0] >= Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING:
-            return True, 2
+            return True, "right"
         if self.y[0] < Global.TOP_PADDING:
-            return True, 3
+            return True, "top"
         if self.y[0] >= Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING:
-            return True, 4
-        return False, 0
+            return True, "bottom"
+        return False, "none"
 
-    def teleport(self, directory: int):
-        if directory == 0:
-            return
-
-        if directory == 1:
+    def teleport(self, position: str) -> None:
+        if position == "left":
             # to right
             self.x[0] = Global.SCREEN_SIZE[0] - Global.BLOCK_SIZE - Global.RIGHT_PADDING
-        elif directory == 2:
+        elif position == "right":
             # to left
             self.x[0] = Global.LEFT_PADDING
-        elif directory == 3:
+        elif position == "top":
             # to bottom
             self.y[0] = Global.SCREEN_SIZE[1] - Global.BLOCK_SIZE - Global.BOTTOM_PADDING
-        elif directory == 4:
+        elif position == "bottom":
             # to top
             self.y[0] = Global.TOP_PADDING
+        else:
+            return
 
     def increase_length(self, length):
         if length < 0:
