@@ -9,7 +9,7 @@ class Text:
         self._parent_surface = parent_surface
         self.text_array = []
 
-    def add(self, text: str, color, position, alpha=255, bg_color=None, name: str = None,
+    def add(self, text:str, color, position, alpha=255, bg_color=None, name:str="",
             font_size=Global.UI_SCALE, bold=False, italic=False, button=None):
         self.text_array.append({
             "name": name,
@@ -26,38 +26,43 @@ class Text:
         })
 
     def render(self):
-        position: tuple = ()
+        coordinate: tuple[int, int]|tuple[int, int, int]
+        parent_surface_width = self._parent_surface.get_width()
+        parent_surface_height = self._parent_surface.get_height()
+
         for text in self.text_array:
             text_surface = pygame.font.Font(text["font_name"], text["font_size"]) \
                 .render(text["text"], True, text["color"], text["bg_color"])
+            text_surface_width = text_surface.get_width()
+            text_surface_height = text_surface.get_height()
 
             if isinstance(text["position"], str):
-                ''' specific positions '''
-                if text["position"] == "left_top":
-                    position = (0, 0)
-                elif text["position"] == "middle_top":
-                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2, 0)
-                elif text["position"] == "right_top":
-                    position = (self._parent_surface.get_width() - text_surface.get_width(), 0)
-                elif text["position"] == "left_bottom":
-                    position = (0, self._parent_surface.get_height() - text_surface.get_height())
-                elif text["position"] == "middle_bottom":
-                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2,
-                                self._parent_surface.get_height() - text_surface.get_height())
-                elif text["position"] == "right_bottom":
-                    position = (self._parent_surface.get_width() - text_surface.get_width(),
-                                self._parent_surface.get_height() - text_surface.get_height())
-                elif text["position"] == "left_middle":
-                    position = (0, (self._parent_surface.get_height() - text_surface.get_height()) / 2)
-                elif text["position"] == "right_middle":
-                    position = (self._parent_surface.get_width() - text_surface.get_width(),
-                                (self._parent_surface.get_height() - text_surface.get_height()) / 2)
-                elif text["position"] == "center":
-                    position = ((self._parent_surface.get_width() - text_surface.get_width()) / 2,
-                                (self._parent_surface.get_height() - text_surface.get_height()) / 2)
+                position = text["position"]
+                if position == "left_top":
+                    coordinate = (0, 0)
+                elif position == "middle_top":
+                    coordinate = (int((parent_surface_width - text_surface_width) / 2), 0)
+                elif position == "right_top":
+                    coordinate = (parent_surface_width - text_surface_width, 0)
+                elif position == "left_bottom":
+                    coordinate = (0, parent_surface_height - text_surface_height)
+                elif position == "middle_bottom":
+                    coordinate = (int((parent_surface_width - text_surface_width) / 2),
+                                parent_surface_height - text_surface_height)
+                elif position == "right_bottom":
+                    coordinate = (parent_surface_width - text_surface_width,
+                                parent_surface_height - text_surface_height)
+                elif position == "left_middle":
+                    coordinate = (0, int((parent_surface_height - text_surface_height) / 2))
+                elif position == "right_middle":
+                    coordinate = (parent_surface_width - text_surface_width,
+                                int((parent_surface_height - text_surface_height) / 2))
+                elif position == "center":
+                    coordinate = (int((parent_surface_width - text_surface_width) / 2),
+                                int((parent_surface_height - text_surface_height) / 2))
             elif isinstance(text["position"], tuple):
                 '''
-                custom position 
+                custom position
                 position = (
                     ratio_x,
                     ratio_y,
@@ -67,30 +72,31 @@ class Text:
                 ratio_x = text["position"][0]
                 ratio_y = text["position"][1]
                 if len(text["position"]) == 2:
-                    position = ((self._parent_surface.get_width() - text_surface.get_width()) * ratio_x,
-                                (self._parent_surface.get_height() - text_surface.get_height()) * ratio_y)
+                    coordinate = ((parent_surface_width - text_surface_width) * ratio_x,
+                                (parent_surface_height - text_surface_height) * ratio_y)
                 elif len(text["position"]) == 3:
-                    if text["position"] == "left_top":
-                        position = ((self._parent_surface.get_width() * ratio_x),
-                                    (self._parent_surface.get_height() * ratio_y))
-                    elif text["position"] == "left_bottom":
-                        position = ((self._parent_surface.get_width() * ratio_x),
-                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height()))
-                    elif text["position"] == "right_up":
-                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width()),
-                                    (self._parent_surface.get_height() * ratio_y))
-                    elif text["position"] == "right_bottom":
-                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width()),
-                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height()))
-                    elif text["position"] == "center":
-                        position = ((self._parent_surface.get_width() * ratio_x - text_surface.get_width() / 2),
-                                    (self._parent_surface.get_height() * ratio_y - text_surface.get_height() / 2))
+                    base_vertex = text["position"][2]
+                    if base_vertex == "left_top":
+                        coordinate = (int(parent_surface_width * ratio_x),
+                                    int(parent_surface_height * ratio_y))
+                    elif base_vertex == "left_bottom":
+                        coordinate = (int(parent_surface_width * ratio_x),
+                                    int(parent_surface_height * ratio_y - text_surface_height))
+                    elif base_vertex == "right_up":
+                        coordinate = (int(parent_surface_width * ratio_x - text_surface_width),
+                                    int(parent_surface_height * ratio_y))
+                    elif base_vertex == "right_bottom":
+                        coordinate = (int(parent_surface_width * ratio_x - text_surface_width),
+                                    int(parent_surface_height * ratio_y - text_surface_height))
+                    elif base_vertex == "center":
+                        coordinate = (int(parent_surface_width * ratio_x - text_surface_width / 2),
+                                    int(parent_surface_height * ratio_y - text_surface_height / 2))
 
             text_surface.set_alpha(text["alpha"])
             if text["button"]:
                 text["button"].rect = text_surface.get_rect()
-                text["button"].rect.topleft = (position[0], position[1])
-            self._parent_surface.blit(text_surface, position)
+                text["button"].rect.topleft = (coordinate[0], coordinate[1])
+            self._parent_surface.blit(text_surface, coordinate)
 
     def clear(self):
         self.text_array.clear()
@@ -112,7 +118,7 @@ class Button:
         self.is_triggered = False
         self.rect = pygame.Rect(-1, -1, 1, 1)
         self.title = title
-        self._param_dict = dict()
+        self._content = dict()
         self._color = color
         self._alpha = alpha
         self._position = position
@@ -131,28 +137,28 @@ class Button:
             self.is_hovered_or_selected = False
             self.is_triggered = False
 
-    def get_param_list(self):
+    def get_content(self):
         """
-        Generate button's to-text param.
+        Generate content of button for Text.add().
         :return: Dict
         """
-        self._param_dict["name"] = self.title
-        self._param_dict["position"] = self._position
-        self._param_dict["bg_color"] = self._bg_color
-        self._param_dict["font_size"] = self._font_size
-        self._param_dict["button"] = self
+        self._content["name"] = self.title
+        self._content["position"] = self._position
+        self._content["bg_color"] = self._bg_color
+        self._content["font_size"] = self._font_size
+        self._content["button"] = self
 
         if not self.is_hovered_or_selected:
-            self._param_dict["text"] = self.title
-            self._param_dict["color"] = self._color[0]
-            self._param_dict["alpha"] = self._alpha[0]
-            self._param_dict["bold"] = False
+            self._content["text"] = self.title
+            self._content["color"] = self._color[0]
+            self._content["alpha"] = self._alpha[0]
+            self._content["bold"] = False
         else:
-            self._param_dict["text"] = f"> {self.title} <"
-            self._param_dict["color"] = self._color[1]
-            self._param_dict["alpha"] = self._alpha[1]
-            self._param_dict["bold"] = True
-        return self._param_dict
+            self._content["text"] = f"> {self.title} <"
+            self._content["color"] = self._color[1]
+            self._content["alpha"] = self._alpha[1]
+            self._content["bold"] = True
+        return self._content
 
 
 class ButtonManager:
@@ -217,4 +223,4 @@ class ButtonManager:
 
     def add_text_to_board(self, _text_board: Board):
         for button in self.button_list:
-            _text_board.text.add(**button.get_param_list())
+            _text_board.text.add(**button.get_content())

@@ -119,7 +119,7 @@ class Snake:
         if length < 0:
             return
         self.length += length
-        for i in range(length):
+        for _ in range(length):
             self.x.append(self.x[-1])
             self.y.append(self.y[-1])
 

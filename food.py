@@ -31,7 +31,7 @@ class FoodManager:
 
 class FoodBase:
     def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
-        self.image = None
+        self.image: pygame.Surface
         self._parent_surface = parent_surface
         self._parent_game = parent_game
         self.count = 0
