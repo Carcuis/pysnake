@@ -1,6 +1,5 @@
 import pygame
 import game
-from pygame.locals import *
 
 
 class EventManager:
@@ -17,7 +16,7 @@ class EventManager:
         """
         self.event_list = pygame.event.get()
         # self.print_event(ignore_timer=True)
-        if self.match_event_type(QUIT):
+        if self.match_event_type(pygame.QUIT):
             """ always check exit """
             self._parent_game.quit_game()
         self.keys_pressed = pygame.key.get_pressed()
@@ -40,11 +39,11 @@ class EventManager:
         """
         for event in self.event_list:
             if event.type == event_type:
-                if event_type in (MOUSEBUTTONUP, MOUSEBUTTONDOWN):
+                if event_type in (pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN):
                     if isinstance(attribute, set):
                         return event.button in attribute
                     return event.button == attribute
-                elif event_type in (KEYUP, KEYDOWN):
+                elif event_type in (pygame.KEYUP, pygame.KEYDOWN):
                     if isinstance(attribute, set):
                         return event.key in attribute
                     return event.key == attribute

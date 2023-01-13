@@ -1,5 +1,4 @@
 import pygame
-from pygame.locals import *
 from settings import Global, KeyBoard
 from event_manager import EventManager
 
@@ -132,7 +131,7 @@ class Button:
         """
         if self.rect.collidepoint(_event_manager.mouse_pos):
             self.is_hovered_or_selected = True
-            self.is_triggered = _event_manager.check_key_or_button(MOUSEBUTTONUP, 1)
+            self.is_triggered = _event_manager.check_key_or_button(pygame.MOUSEBUTTONUP, 1)
         else:
             self.is_hovered_or_selected = False
             self.is_triggered = False
@@ -177,11 +176,11 @@ class ButtonManager:
         """
 
         ''' switch between mouse mode and keyboard mode '''
-        if _event_manager.match_event_type(MOUSEMOTION):
+        if _event_manager.match_event_type(pygame.MOUSEMOTION):
             self._mouse_mode = True
             self._keyboard_mode = False
-        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list) or \
-                _event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
+        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list) or \
+                _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self._mouse_mode = False
             self._keyboard_mode = True
 
@@ -197,16 +196,16 @@ class ButtonManager:
                 break
 
         ''' update by keyboard '''
-        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list):
+        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
             self._go_previous()
-        if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
+        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self._go_next()
 
         ''' finally update selected status of buttons '''
         self.button_list[self._previous_selected_index].is_hovered_or_selected = False
         self.button_list[self.selected_index].is_hovered_or_selected = True
         if self.button_list[self.selected_index].is_hovered_or_selected:
-            if _event_manager.check_key_or_button(KEYDOWN, KeyBoard.select_list):
+            if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.select_list):
                 self.button_list[self.selected_index].is_triggered = True
 
     def _go_next(self):

@@ -1,4 +1,4 @@
-from pygame.locals import *
+import pygame
 
 
 class Global:
@@ -47,25 +47,25 @@ class Global:
 
 class KeyBoard:
     pause_list = {
-        K_SPACE, K_ESCAPE, K_p, K_KP_0
+        pygame.K_SPACE, pygame.K_ESCAPE, pygame.K_p, pygame.K_KP_0
     }
     select_list = {
-        K_RETURN, K_KP_ENTER
+        pygame.K_RETURN, pygame.K_KP_ENTER
     }
 
     up_list = {
-        K_k, K_UP, K_KP8
+        pygame.K_k, pygame.K_UP, pygame.K_KP8
     }
     down_list = {
-        K_j, K_DOWN, K_KP5
+        pygame.K_j, pygame.K_DOWN, pygame.K_KP5
     }
     left_list = {
-        K_h, K_LEFT, K_KP4
+        pygame.K_h, pygame.K_LEFT, pygame.K_KP4
     }
     right_list = {
-        K_l, K_RIGHT, K_KP6
+        pygame.K_l, pygame.K_RIGHT, pygame.K_KP6
     }
 
     quit_game_list = {
-        K_q, K_ESCAPE
+        pygame.K_q, pygame.K_ESCAPE
     }

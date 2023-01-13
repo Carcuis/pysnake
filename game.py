@@ -1,6 +1,5 @@
 import getpass
 import pygame
-from pygame.locals import *
 from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
@@ -17,7 +16,7 @@ class Game:
         pygame.init()
         pygame.display.set_caption("PySnake")
         pygame.display.set_icon(pygame.image.load("resources/img/icon.png"))
-        self.surface = pygame.display.set_mode(Global.SCREEN_SIZE, RESIZABLE)
+        self.surface = pygame.display.set_mode(Global.SCREEN_SIZE, pygame.RESIZABLE)
         self.banner_img = pygame.image.load("resources/img/banner.png").convert_alpha()
         self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.BLOCK_SIZE * 0.08)
         self.clock = pygame.time.Clock()
@@ -152,7 +151,7 @@ class Game:
 
                 self.current_text_board.draw()
 
-            if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or resume_button.is_triggered:
+            if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or resume_button.is_triggered:
                 release = True
 
             if restart_button.is_triggered:
@@ -176,16 +175,16 @@ class Game:
         self.surface.fill(color)
 
     def parse_event(self):
-        if self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.left_list):
+        if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
-        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.right_list):
+        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
             self.snake.change_direction("right")
-        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.up_list):
+        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
             self.snake.change_direction("up")
-        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.down_list):
+        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self.snake.change_direction("down")
-        elif self.event_manager.check_key_or_button(KEYDOWN, KeyBoard.pause_list) or \
-                self.event_manager.check_key_or_button(MOUSEBUTTONDOWN, 3):
+        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
+                self.event_manager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
             self.pause()
 
     def get_score(self):
