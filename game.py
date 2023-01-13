@@ -251,9 +251,9 @@ class Game:
 
     def upgrade(self):
         """
-        Update level up to 8 and add move speed if level up.
+        Update level up to MAX_LEVEL and add move speed when level up.
         """
-        if self.level > 7:
+        if self.level >= Global.MAX_LEVEL:
             return
         self.snake.increase_speed(1)
         self.level += 1
