@@ -8,7 +8,8 @@ from util import Util
 
 
 class LittleSnake(Snake):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game', x, y, length, move_speed):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game',
+                 x: int, y: int, length: int, move_speed: int) -> None:
         super().__init__(parent_surface, parent_game)
         self.direction = "down"
         self.length = length
@@ -18,17 +19,17 @@ class LittleSnake(Snake):
 
 
 class AnimationManager:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
         self._parent_surface = parent_surface
         self._parent_game = parent_game
         self._little_fresh_snakes: list[Snake] = []
         self._little_on_screen_snakes: list[Snake] = []
-        self.move_speed = 20
+        self.move_speed: int = 20
         self.event_timer = Util.generate_user_event_id()
 
         pygame.time.set_timer(self.event_timer, int(1000 / (1.5 * self.move_speed)))
 
-    def _add_snake(self):
+    def _add_snake(self) -> None:
         new_y = 0
         while True:
             new_x = random.randint(0, (Global.GRID_COL - 1)) * Global.BLOCK_SIZE
@@ -47,7 +48,7 @@ class AnimationManager:
             )
             break
 
-    def update(self, _event_manager: EventManager):
+    def update(self, _event_manager: EventManager) -> None:
         if not _event_manager.match_event_type(self.event_timer):
             return
         if random.randint(0, 2) == 0:
@@ -65,7 +66,7 @@ class AnimationManager:
             else:
                 self._little_on_screen_snakes[i].walk(teleport=False)
 
-    def render(self):
+    def render(self) -> None:
         for little_snake in self._little_fresh_snakes:
             little_snake.draw()
         for little_snake in self._little_on_screen_snakes:

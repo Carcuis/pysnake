@@ -4,12 +4,13 @@ from event_manager import EventManager
 
 
 class Text:
-    def __init__(self, parent_surface: pygame.Surface):
+    def __init__(self, parent_surface: pygame.Surface) -> None:
         self._parent_surface = parent_surface
-        self.text_array = []
+        self.text_array: list[dict] = []
 
-    def add(self, text:str, color, position, alpha=255, bg_color=None, name:str="",
-            font_size=Global.UI_SCALE, bold=False, italic=False, button=None):
+    def add(self, text: str, color: pygame.Color, position: str|tuple[float, float]|tuple[float, float, str],
+            alpha=255, bg_color=None, name: str = "", font_size=Global.UI_SCALE,
+            bold=False, italic=False, button=None) -> None:
         self.text_array.append({
             "name": name,
             "text": text,
@@ -24,8 +25,8 @@ class Text:
             "button": button
         })
 
-    def render(self):
-        coordinate: tuple[int, int]|tuple[int, int, int]
+    def render(self) -> None:
+        coordinate: tuple[int, int] = (0, 0)
         parent_surface_width = self._parent_surface.get_width()
         parent_surface_height = self._parent_surface.get_height()
 
@@ -97,22 +98,23 @@ class Text:
                 text["button"].rect.topleft = (coordinate[0], coordinate[1])
             self._parent_surface.blit(text_surface, coordinate)
 
-    def clear(self):
+    def clear(self) -> None:
         self.text_array.clear()
 
 
 class Board:
-    def __init__(self, parent_surface: pygame.Surface):
+    def __init__(self, parent_surface: pygame.Surface) -> None:
         self.text = Text(parent_surface)
 
-    def draw(self):
+    def draw(self) -> None:
         self.text.render()
         self.text.clear()
 
 
 class Button:
-    def __init__(self, title: str, color: tuple, position: tuple, alpha: tuple = (200, 255),
-                 bg_color=None, font_size=2 * Global.UI_SCALE):
+    def __init__(self, title: str, color: tuple[pygame.Color, pygame.Color],
+                 position: str|tuple[float, float]|tuple[float, float, str],
+                 alpha: tuple[int, int] = (200, 255), bg_color=None, font_size = 2 * Global.UI_SCALE) -> None:
         self.is_hovered_or_selected = False
         self.is_triggered = False
         self.rect = pygame.Rect(-1, -1, 1, 1)
@@ -124,7 +126,7 @@ class Button:
         self._bg_color = bg_color
         self._font_size = font_size
 
-    def update_status(self, _event_manager: EventManager):
+    def update_status(self, _event_manager: EventManager) -> None:
         """
         Update button's hover and click status.
         :param _event_manager: in game event_manager
@@ -136,7 +138,7 @@ class Button:
             self.is_hovered_or_selected = False
             self.is_triggered = False
 
-    def get_content(self):
+    def get_content(self) -> dict:
         """
         Generate content of button for Text.add().
         :return: Dict
@@ -161,7 +163,7 @@ class Button:
 
 
 class ButtonManager:
-    def __init__(self, *buttons: Button):
+    def __init__(self, *buttons: Button) -> None:
         self.button_list: list[Button] = list(buttons)
         self.button_count = len(buttons)
         self._mouse_mode = True
@@ -169,7 +171,7 @@ class ButtonManager:
         self.selected_index = 0
         self._previous_selected_index = self.selected_index
 
-    def update_status(self, _event_manager: EventManager):
+    def update_status(self, _event_manager: EventManager) -> None:
         """
         Update all buttons' hover and click status through mouse and keyboard control.
         :param _event_manager: in-game event_manager
@@ -208,18 +210,18 @@ class ButtonManager:
             if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.select_list):
                 self.button_list[self.selected_index].is_triggered = True
 
-    def _go_next(self):
+    def _go_next(self) -> None:
         self._previous_selected_index = self.selected_index
         self.selected_index += 1
         if self.selected_index >= self.button_count:
             self.selected_index = 0
 
-    def _go_previous(self):
+    def _go_previous(self) -> None:
         self._previous_selected_index = self.selected_index
         self.selected_index -= 1
         if self.selected_index < 0:
             self.selected_index = self.button_count - 1
 
-    def add_text_to_board(self, _text_board: Board):
+    def add_text_to_board(self, _text_board: Board) -> None:
         for button in self.button_list:
             _text_board.text.add(**button.get_content())

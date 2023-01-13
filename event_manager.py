@@ -3,14 +3,14 @@ import game
 
 
 class EventManager:
-    def __init__(self, parent_game: 'game.Game'):
+    def __init__(self, parent_game: 'game.Game') -> None:
         self._parent_game = parent_game
         self.event_list = []
         self.keys_pressed = dict()
         self.mouse_button_status = tuple()
         self.mouse_pos = (-1, -1)
 
-    def get_event(self):
+    def get_event(self) -> None:
         """
         Execute at the beginning of each cycle of every loop.
         """
@@ -23,13 +23,13 @@ class EventManager:
         self.mouse_button_status = pygame.mouse.get_pressed()
         self.mouse_pos = pygame.mouse.get_pos()
 
-    def match_event_type(self, _type):
+    def match_event_type(self, _type) -> bool:
         for event in self.event_list:
             if event.type == _type:
                 return True
         return False
 
-    def check_key_or_button(self, event_type, attribute):
+    def check_key_or_button(self, event_type, attribute) -> bool:
         """
         check if mouse button or keyboard key up or down
         :param event_type: mouse: MOUSEBUTTONDOWN or MOUSEBUTTONUP
@@ -49,7 +49,7 @@ class EventManager:
                     return event.key == attribute
         return False
 
-    def print_event(self, ignore_timer=False):
+    def print_event(self, ignore_timer=False) -> None:
         for event in self.event_list:
             if ignore_timer:
                 if event.type == self._parent_game.event_timer_snake_move or \

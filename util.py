@@ -9,13 +9,13 @@ class Util:
     user_event_count: int = 0
 
     @classmethod
-    def generate_user_event_id(cls):
+    def generate_user_event_id(cls) -> int:
         new_id = cls.user_event_count + pygame.USEREVENT
         cls.user_event_count += 1
         return new_id
 
     @staticmethod
-    def scale_blur(surface, value):
+    def scale_blur(surface, value) -> pygame.Surface:
         """
         Blur the given surface by the given 'value'.
         :param surface: input surface
@@ -32,7 +32,7 @@ class Util:
         return surf
 
     @staticmethod
-    def gaussian_blur(surface, kernel_size, sigma_x=0):
+    def gaussian_blur(surface, kernel_size, sigma_x=0) -> pygame.Surface:
         """
         Blur surface using gaussian filter.
         :param surface: input surface
@@ -48,32 +48,30 @@ class Util:
         return surface
 
     @staticmethod
-    def update_screen():
+    def update_screen() -> None:
         """
         Actually draw surface to screen.
         """
         pygame.display.flip()
 
     @staticmethod
-    def load_data_from_json_file(file_name):
+    def load_data_from_json_file(file_name) -> dict:
         """
         Load dict data from json file.
         :param file_name: json file name
         :return: data: dict()
         """
-        # create if file not found
+        # create one if file not found
         open(file_name, 'a').close()
 
         with open(file_name, mode="r") as fp:
-            empty = False
             if os.path.getsize(file_name) == 0:
-                empty = True
-            if not empty:
-                return json.load(fp)
-            return dict()
+                # file empty
+                return dict()
+            return json.load(fp)
 
     @staticmethod
-    def write_data_to_json_file(file_name, data):
+    def write_data_to_json_file(file_name, data) -> None:
         """
         Write data to json file.
         :param file_name: json file name

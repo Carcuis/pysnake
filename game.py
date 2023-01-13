@@ -1,5 +1,8 @@
 import getpass
+from typing import NoReturn
+
 import pygame
+
 from settings import Global, KeyBoard
 from util import Util
 from event_manager import EventManager
@@ -12,7 +15,7 @@ from wall import Wall
 
 
 class Game:
-    def __init__(self):
+    def __init__(self) -> None:
         pygame.init()
         pygame.display.set_caption("PySnake")
         pygame.display.set_icon(pygame.image.load("resources/img/icon.png"))
@@ -37,7 +40,7 @@ class Game:
         self._score_cache: int = 0
         self._blur_kernel_size: int = 1
 
-    def main_menu(self):
+    def main_menu(self) -> NoReturn:
         maintain = True
 
         start_button = Button(
@@ -72,7 +75,7 @@ class Game:
             self.clock.tick(Global.FPS)
         self.quit_game()
 
-    def start_game(self):
+    def start_game(self) -> NoReturn:
         self.reset_game()
 
         running = True
@@ -90,7 +93,7 @@ class Game:
 
         self.main_menu()
 
-    def play(self):
+    def play(self) -> None:
         if self.snake.move_speed != self.snake.move_speed_buffer:
             pygame.time.set_timer(self.event_timer_snake_move, int(1000 / (1.5 * self.snake.move_speed)))
             self.snake.move_speed_buffer = self.snake.move_speed
@@ -108,7 +111,7 @@ class Game:
 
         self.update_status_board()
 
-    def pause(self):
+    def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()
 
         resume_button = Button(
@@ -163,7 +166,7 @@ class Game:
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def in_game_draw_surface(self):
+    def in_game_draw_surface(self) -> None:
         self.wall.draw()
         self.snake.draw()
         self.food_manager.draw()
@@ -171,10 +174,10 @@ class Game:
         self.hungry.draw()
         self.current_text_board.draw()
 
-    def set_base_color(self, color):
+    def set_base_color(self, color) -> None:
         self.surface.fill(color)
 
-    def parse_event(self):
+    def parse_event(self) -> None:
         if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
         elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
@@ -187,15 +190,15 @@ class Game:
                 self.event_manager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
             self.pause()
 
-    def get_score(self):
+    def get_score(self) -> int:
         return self.snake.length - self.snake.init_length + self.score
 
-    def check_collision(self):
+    def check_collision(self) -> None:
         self.check_collision_with_food()
         self.check_collision_with_body()
         self.check_collision_with_wall()
 
-    def check_collision_with_food(self):
+    def check_collision_with_food(self) -> None:
         collision = False
         for food in self.food_manager.food_list:
             if food.count > 0:
@@ -212,21 +215,21 @@ class Game:
             if collision:
                 break
 
-    def check_collision_with_body(self):
+    def check_collision_with_body(self) -> None:
         for i in range(1, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.health.increase_health(-1)
                 break
 
-    def check_collision_with_wall(self):
+    def check_collision_with_wall(self) -> None:
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
             self.health.increase_health(-2)
 
-    def check_health(self):
+    def check_health(self) -> None:
         if self.health.value <= 0:
             self.game_over()
 
-    def check_hungry_level(self):
+    def check_hungry_level(self) -> None:
         count_when_increase = max(50 - (self.level - 1) * 4, 20)
         if self.hungry.hungry_step_count >= count_when_increase:
             if self.hungry.get_satiety() > 0:
@@ -238,7 +241,7 @@ class Game:
             # reset hungry step count
             self.hungry.hungry_step_count = 0
 
-    def check_score(self):
+    def check_score(self) -> None:
         if self._score_cache == self.get_score():
             # upgrade only on self.score updates
             return
@@ -249,7 +252,7 @@ class Game:
         if self._score_cache // 20 > self.level - 1:
             self.upgrade()
 
-    def upgrade(self):
+    def upgrade(self) -> None:
         """
         Update level up to MAX_LEVEL and add move speed when level up.
         """
@@ -258,7 +261,7 @@ class Game:
         self.snake.increase_speed(1)
         self.level += 1
 
-    def game_over(self):
+    def game_over(self) -> NoReturn:
         blur_surface = pre_surface = self.surface.copy()
         final_score = self.get_score()
         user_name = getpass.getuser()
@@ -336,18 +339,18 @@ class Game:
 
         self.quit_game()
 
-    def update_food(self):
+    def update_food(self) -> None:
         # update in Game after FoodManager.__init__() to avoid
         # `AttributeError: 'Game' object has no attribute 'food_manager'`
         for food in self.food_manager.food_list:
             food.update()
 
-    def draw_banner(self):
+    def draw_banner(self) -> None:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2
         y = (0.5 * self.surface.get_height() - self.banner_img.get_height()) / 2
         self.surface.blit(self.banner_img, (x, y))
 
-    def update_status_board(self):
+    def update_status_board(self) -> None:
         self.current_text_board.text.add(f"FPS: {round(self.clock.get_fps())}",
                                          pygame.Color("white"), "left_top", alpha=255)
         self.current_text_board.text.add(f"score: {self.get_score()}",
@@ -357,7 +360,7 @@ class Game:
         self.current_text_board.text.add(f"level: {self.level}",
                                          pygame.Color("chartreuse"), "middle_bottom", alpha=255)
 
-    def reset_game(self):
+    def reset_game(self) -> None:
         self.snake.reset()
         self.wall.reset()
         self.food_manager.reset()
@@ -370,17 +373,17 @@ class Game:
         self._blur_kernel_size = 1
 
     @staticmethod
-    def print_high_score(data):
+    def print_high_score(data) -> None:
         print("---HIGH-SCORE---")
         for key, value in data.items():
             print(f"{key}:\t{value}")
         print("----------------")
 
     @staticmethod
-    def is_collision(x1, y1, x2, y2):
+    def is_collision(x1, y1, x2, y2) -> bool:
         return x1 == x2 and y1 == y2
 
     @staticmethod
-    def quit_game():
+    def quit_game() -> NoReturn:
         print("\033[1;36mBye.\033[0m")
         exit()

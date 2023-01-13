@@ -4,7 +4,7 @@ from settings import Global
 
 
 class Snake:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game'):
+    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
         self._parent_surface = parent_surface
         self._parent_game = parent_game
 
@@ -19,19 +19,19 @@ class Snake:
         self.y = [2 * Global.BLOCK_SIZE] * self.length
 
         self.move_lock = False
-        self.move_speed = Global.INIT_SPEED
-        self.move_speed_buffer = 0
-        self.direction = "right"
+        self.move_speed: int = Global.INIT_SPEED
+        self.move_speed_buffer: int = 0
+        self.direction: str = "right"
         self.direction_lock = False
-        self.buffer_direction = ""
+        self.buffer_direction: str = ""
         self.change_direction_buffer_status = False
 
-    def draw(self):
+    def draw(self) -> None:
         self._parent_surface.blit(self.head_block, (self.x[0], self.y[0]))
         for i in range(1, self.length):
             self._parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
 
-    def change_direction(self, direction):
+    def change_direction(self, direction) -> None:
         if self.direction_lock:
             self.buffer_direction = direction
             self.change_direction_buffer_status = True
@@ -50,7 +50,7 @@ class Snake:
         if direction == "down" and self.direction != "up":
             self.direction = "down"
 
-    def walk(self, teleport=True):
+    def walk(self, teleport=True) -> None:
         # move body from tail to neck
         for i in range(self.length - 1, 0, -1):
             self.x[i] = self.x[i - 1]
@@ -114,7 +114,7 @@ class Snake:
         else:
             return
 
-    def increase_length(self, length):
+    def increase_length(self, length) -> None:
         if length < 0:
             return
         self.length += length
@@ -122,11 +122,11 @@ class Snake:
             self.x.append(self.x[-1])
             self.y.append(self.y[-1])
 
-    def increase_speed(self, speed):
+    def increase_speed(self, speed) -> None:
         # filter: [MIN_SPEED, MAX_SPEED]
         self.move_speed = min(max(Global.MIN_SPEED, self.move_speed + speed), Global.MAX_SPEED)
 
-    def reset(self):
+    def reset(self) -> None:
         self.init_length = Global.INIT_LENGTH
         self.length = self.init_length
         self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
