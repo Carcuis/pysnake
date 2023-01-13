@@ -98,17 +98,17 @@ class Snake:
             return True, "bottom"
         return False, "none"
 
-    def teleport(self, position: str) -> None:
-        if position == "left":
+    def teleport(self, _from: str) -> None:
+        if _from == "left":
             # to right
             self.x[0] = Global.SCREEN_SIZE[0] - Global.BLOCK_SIZE - Global.RIGHT_PADDING
-        elif position == "right":
+        elif _from == "right":
             # to left
             self.x[0] = Global.LEFT_PADDING
-        elif position == "top":
+        elif _from == "top":
             # to bottom
             self.y[0] = Global.SCREEN_SIZE[1] - Global.BLOCK_SIZE - Global.BOTTOM_PADDING
-        elif position == "bottom":
+        elif _from == "bottom":
             # to top
             self.y[0] = Global.TOP_PADDING
         else:
