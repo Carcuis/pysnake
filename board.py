@@ -1,6 +1,7 @@
 import pygame
-from settings import Global, KeyBoard
+
 from event_manager import EventManager
+from settings import Global, KeyBoard
 
 
 class Text:
@@ -8,7 +9,7 @@ class Text:
         self._parent_surface = parent_surface
         self.text_array: list[dict] = []
 
-    def add(self, text: str, color: pygame.Color, position: str|tuple[float, float]|tuple[float, float, str],
+    def add(self, text: str, color: pygame.Color, position: str | tuple[float, float] | tuple[float, float, str],
             alpha=255, bg_color=None, name: str = "", font_size=Global.UI_SCALE,
             bold=False, italic=False, button=None) -> None:
         self.text_array.append({
@@ -48,18 +49,18 @@ class Text:
                     coordinate = (0, parent_surface_height - text_surface_height)
                 elif position == "middle_bottom":
                     coordinate = (int((parent_surface_width - text_surface_width) / 2),
-                                parent_surface_height - text_surface_height)
+                                  parent_surface_height - text_surface_height)
                 elif position == "right_bottom":
                     coordinate = (parent_surface_width - text_surface_width,
-                                parent_surface_height - text_surface_height)
+                                  parent_surface_height - text_surface_height)
                 elif position == "left_middle":
                     coordinate = (0, int((parent_surface_height - text_surface_height) / 2))
                 elif position == "right_middle":
                     coordinate = (parent_surface_width - text_surface_width,
-                                int((parent_surface_height - text_surface_height) / 2))
+                                  int((parent_surface_height - text_surface_height) / 2))
                 elif position == "center":
                     coordinate = (int((parent_surface_width - text_surface_width) / 2),
-                                int((parent_surface_height - text_surface_height) / 2))
+                                  int((parent_surface_height - text_surface_height) / 2))
             elif isinstance(text["position"], tuple):
                 '''
                 custom position
@@ -73,24 +74,24 @@ class Text:
                 ratio_y = text["position"][1]
                 if len(text["position"]) == 2:
                     coordinate = ((parent_surface_width - text_surface_width) * ratio_x,
-                                (parent_surface_height - text_surface_height) * ratio_y)
+                                  (parent_surface_height - text_surface_height) * ratio_y)
                 elif len(text["position"]) == 3:
                     base_vertex = text["position"][2]
                     if base_vertex == "left_top":
                         coordinate = (int(parent_surface_width * ratio_x),
-                                    int(parent_surface_height * ratio_y))
+                                      int(parent_surface_height * ratio_y))
                     elif base_vertex == "left_bottom":
                         coordinate = (int(parent_surface_width * ratio_x),
-                                    int(parent_surface_height * ratio_y - text_surface_height))
+                                      int(parent_surface_height * ratio_y - text_surface_height))
                     elif base_vertex == "right_up":
                         coordinate = (int(parent_surface_width * ratio_x - text_surface_width),
-                                    int(parent_surface_height * ratio_y))
+                                      int(parent_surface_height * ratio_y))
                     elif base_vertex == "right_bottom":
                         coordinate = (int(parent_surface_width * ratio_x - text_surface_width),
-                                    int(parent_surface_height * ratio_y - text_surface_height))
+                                      int(parent_surface_height * ratio_y - text_surface_height))
                     elif base_vertex == "center":
                         coordinate = (int(parent_surface_width * ratio_x - text_surface_width / 2),
-                                    int(parent_surface_height * ratio_y - text_surface_height / 2))
+                                      int(parent_surface_height * ratio_y - text_surface_height / 2))
 
             text_surface.set_alpha(text["alpha"])
             if text["button"]:
@@ -113,8 +114,8 @@ class Board:
 
 class Button:
     def __init__(self, title: str, color: tuple[pygame.Color, pygame.Color],
-                 position: str|tuple[float, float]|tuple[float, float, str],
-                 alpha: tuple[int, int] = (200, 255), bg_color=None, font_size = 2 * Global.UI_SCALE) -> None:
+                 position: str | tuple[float, float] | tuple[float, float, str],
+                 alpha: tuple[int, int] = (200, 255), bg_color=None, font_size=2 * Global.UI_SCALE) -> None:
         self.is_hovered_or_selected = False
         self.is_triggered = False
         self.rect = pygame.Rect(-1, -1, 1, 1)

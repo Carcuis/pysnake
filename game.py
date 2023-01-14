@@ -3,14 +3,14 @@ from typing import NoReturn
 
 import pygame
 
-from settings import Global, KeyBoard
-from util import Util
-from event_manager import EventManager
 from animation import AnimationManager
 from board import Board, Button, ButtonManager
-from snake import Snake
+from event_manager import EventManager
 from food import FoodManager
 from health import Health, Hungry
+from settings import Global, KeyBoard
+from snake import Snake
+from util import Util
 from wall import Wall
 
 
@@ -154,7 +154,8 @@ class Game:
 
                 self.current_text_board.draw()
 
-            if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or resume_button.is_triggered:
+            if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
+                    or resume_button.is_triggered:
                 release = True
 
             if restart_button.is_triggered:

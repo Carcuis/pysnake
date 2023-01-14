@@ -1,8 +1,9 @@
-import pygame
-import time
-import cv2
-import os
 import json
+import os
+import time
+
+import cv2
+import pygame
 
 
 class Util:

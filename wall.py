@@ -1,5 +1,7 @@
-import pygame
 import random
+
+import pygame
+
 import game
 from settings import Global
 

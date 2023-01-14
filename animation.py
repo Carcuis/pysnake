@@ -1,9 +1,11 @@
-import pygame
 import random
+
+import pygame
+
 import game
+from event_manager import EventManager
 from settings import Global
 from snake import Snake
-from event_manager import EventManager
 from util import Util
 
 
