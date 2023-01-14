@@ -10,7 +10,8 @@ class Text:
         self.text_array: list[dict] = []
 
     def add(self, text: str, color: pygame.Color, position: str | tuple[float, float] | tuple[float, float, str],
-            alpha=255, bg_color=None, name: str = "", font_size=Global.UI_SCALE,
+            alpha=255, bg_color: tuple[pygame.Color, pygame.Color] | None = None, name: str = "",
+            font_size=Global.UI_SCALE,
             bold=False, italic=False, button=None) -> None:
         self.text_array.append({
             "name": name,
@@ -115,12 +116,13 @@ class Board:
 class Button:
     def __init__(self, title: str, color: tuple[pygame.Color, pygame.Color],
                  position: str | tuple[float, float] | tuple[float, float, str],
-                 alpha: tuple[int, int] = (200, 255), bg_color=None, font_size=2 * Global.UI_SCALE) -> None:
+                 alpha: tuple[int, int] = (200, 255), bg_color: tuple[pygame.Color, pygame.Color] | None = None,
+                 font_size=2 * Global.UI_SCALE) -> None:
         self.is_hovered_or_selected = False
         self.is_triggered = False
         self.rect = pygame.Rect(-1, -1, 1, 1)
         self.title = title
-        self._content = dict()
+        self._content: dict = {}
         self._color = color
         self._alpha = alpha
         self._position = position

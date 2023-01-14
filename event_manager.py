@@ -6,9 +6,9 @@ import game
 class EventManager:
     def __init__(self, parent_game: 'game.Game') -> None:
         self._parent_game = parent_game
-        self.event_list = []
-        self.keys_pressed = dict()
-        self.mouse_button_status = tuple()
+        self.event_list: list[pygame.event.Event] = []
+        self.keys_pressed: tuple = ()
+        self.mouse_button_status: tuple = ()
         self.mouse_pos = (-1, -1)
 
     def get_event(self) -> None:

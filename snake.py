@@ -32,7 +32,7 @@ class Snake:
         for i in range(1, self.length):
             self._parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
 
-    def change_direction(self, direction) -> None:
+    def change_direction(self, direction: str) -> None:
         if self.direction_lock:
             self.buffer_direction = direction
             self.change_direction_buffer_status = True
@@ -115,7 +115,7 @@ class Snake:
         else:
             return
 
-    def increase_length(self, length) -> None:
+    def increase_length(self, length: int) -> None:
         if length < 0:
             return
         self.length += length
@@ -123,7 +123,7 @@ class Snake:
             self.x.append(self.x[-1])
             self.y.append(self.y[-1])
 
-    def increase_speed(self, speed) -> None:
+    def increase_speed(self, speed: int) -> None:
         # filter: [MIN_SPEED, MAX_SPEED]
         self.move_speed = min(max(Global.MIN_SPEED, self.move_speed + speed), Global.MAX_SPEED)
 

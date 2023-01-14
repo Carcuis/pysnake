@@ -16,7 +16,7 @@ class Util:
         return new_id
 
     @staticmethod
-    def scale_blur(surface, value) -> pygame.Surface:
+    def scale_blur(surface: pygame.Surface, value: float) -> pygame.Surface:
         """
         Blur the given surface by the given 'value'.
         :param surface: input surface
@@ -25,15 +25,15 @@ class Util:
         """
         if value < 1.0:
             raise ValueError("Arg 'value' must be greater than 1.0, passed in value is %s" % value)
-        scale = 1.0 / float(value)
+        scale = 1.0 / value
         surf_size = surface.get_size()
-        scale_size = (int(surf_size[0] * scale), int(surf_size[1] * scale))
+        scale_size = (surf_size[0] * scale, surf_size[1] * scale)
         surf = pygame.transform.smoothscale(surface, scale_size)
         surf = pygame.transform.smoothscale(surf, surf_size)
         return surf
 
     @staticmethod
-    def gaussian_blur(surface, kernel_size, sigma_x=0) -> pygame.Surface:
+    def gaussian_blur(surface: pygame.Surface, kernel_size: int, sigma_x: int = 0) -> pygame.Surface:
         """
         Blur surface using gaussian filter.
         :param surface: input surface
@@ -41,11 +41,11 @@ class Util:
         :param sigma_x: gaussian filter sigma x
         :return: produced surface
         """
-        surface = pygame.surfarray.array3d(surface)
-        surface = cv2.cvtColor(cv2.transpose(surface), cv2.COLOR_RGB2BGR)
-        surface = cv2.GaussianBlur(surface, (kernel_size, kernel_size), sigma_x)
-        surface = cv2.transpose(cv2.cvtColor(surface, cv2.COLOR_BGR2RGB))
-        surface = pygame.surfarray.make_surface(surface)
+        array = pygame.surfarray.array3d(surface)
+        array = cv2.cvtColor(cv2.transpose(array), cv2.COLOR_RGB2BGR)
+        array = cv2.GaussianBlur(array, (kernel_size, kernel_size), sigma_x)
+        array = cv2.transpose(cv2.cvtColor(array, cv2.COLOR_BGR2RGB))
+        surface = pygame.surfarray.make_surface(array)
         return surface
 
     @staticmethod
@@ -56,11 +56,11 @@ class Util:
         pygame.display.flip()
 
     @staticmethod
-    def load_data_from_json_file(file_name) -> dict:
+    def load_data_from_json_file(file_name: str) -> dict:
         """
         Load dict data from json file.
         :param file_name: json file name
-        :return: data: dict()
+        :return: data: dict
         """
         # create one if file not found
         open(file_name, 'a').close()
@@ -72,11 +72,11 @@ class Util:
             return json.load(fp)
 
     @staticmethod
-    def write_data_to_json_file(file_name, data) -> None:
+    def write_data_to_json_file(file_name: str, data: dict) -> None:
         """
         Write data to json file.
         :param file_name: json file name
-        :param data: data to write, must be dict
+        :param data: data to write
         """
         with open(file_name, mode="w") as fp:
             json.dump(data, fp, indent=4)

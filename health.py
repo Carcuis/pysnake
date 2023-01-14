@@ -19,7 +19,7 @@ class Health:
                 (i * self.image.get_width(), self._parent_surface.get_height() - self.image.get_height())
             )
 
-    def increase_health(self, _value) -> None:
+    def increase_health(self, _value: int) -> None:
         # filter: [0, MAX_HEALTH]
         self.value = max(min(Global.MAX_HEALTH, self.value + _value), 0)
 
@@ -54,7 +54,7 @@ class Hungry:
         # duplicated to get_satiety, do not use if necessary
         return self._value
 
-    def increase_satiety(self, __value) -> None:
+    def increase_satiety(self, __value: int) -> None:
         # filter: [0, MAX_SATIETY]
         # decrease hungry value to increase satiety
         self._value = max(min(Global.MAX_SATIETY, self._value - __value), 0)
