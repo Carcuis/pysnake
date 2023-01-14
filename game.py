@@ -1,4 +1,5 @@
 import getpass
+import sys
 from typing import NoReturn
 
 import pygame
@@ -387,4 +388,4 @@ class Game:
     @staticmethod
     def quit_game() -> NoReturn:
         print("\033[1;36mBye.\033[0m")
-        exit()
+        sys.exit()
