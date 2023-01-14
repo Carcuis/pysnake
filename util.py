@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from typing import Callable
 
 import cv2
 import pygame
@@ -82,13 +83,11 @@ class Util:
             json.dump(data, fp, indent=4)
 
     @staticmethod
-    def measure_time():
-        def wraps(func):
-            def measure(*args, **kwargs):
-                start = time.perf_counter_ns()
-                res = func(*args, **kwargs)
-                end = time.perf_counter_ns()
-                print(f"Function {func.__name__} used {(end - start) / 1e6} ms.")
-                return res
-            return measure
-        return wraps
+    def measure_time(func: Callable):
+        def wrapper(*args, **kwargs):
+            start = time.perf_counter_ns()
+            res = func(*args, **kwargs)
+            end = time.perf_counter_ns()
+            print(f"Function {func.__name__} used {(end - start) / 1e6} ms.")
+            return res
+        return wrapper
