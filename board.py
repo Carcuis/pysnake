@@ -27,7 +27,7 @@ class Text:
             "button": button
         })
 
-    def render(self) -> None:
+    def draw(self) -> None:
         coordinate: tuple[int, int] = (0, 0)
         parent_surface_width = self._parent_surface.get_width()
         parent_surface_height = self._parent_surface.get_height()
@@ -109,7 +109,7 @@ class Board:
         self.text = Text(parent_surface)
 
     def draw(self) -> None:
-        self.text.render()
+        self.text.draw()
         self.text.clear()
 
 
