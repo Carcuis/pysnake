@@ -24,14 +24,14 @@ class EventManager:
         cls.mouse_pos = pygame.mouse.get_pos()
 
     @classmethod
-    def match_event_type(cls, _type) -> bool:
+    def match_event_type(cls, event_type: int) -> bool:
         for event in cls.event_list:
-            if event.type == _type:
+            if event.type == event_type:
                 return True
         return False
 
     @classmethod
-    def check_key_or_button(cls, event_type, attribute) -> bool:
+    def check_key_or_button(cls, event_type: int, attribute: set[int] | int) -> bool:
         """
         check if mouse button or keyboard key up or down
         :param event_type: mouse: MOUSEBUTTONDOWN or MOUSEBUTTONUP
