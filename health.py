@@ -1,22 +1,19 @@
 import pygame
 
-import game
 from settings import Global
 
 
 class Health:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
+    def __init__(self) -> None:
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.value: int = Global.INIT_HEALTH
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         for i in range(self.value):
-            self._parent_surface.blit(
+            surface.blit(
                 self.image,
-                (i * self.image.get_width(), self._parent_surface.get_height() - self.image.get_height())
+                (i * self.image.get_width(), surface.get_height() - self.image.get_height())
             )
 
     def increase_health(self, _value: int) -> None:
@@ -28,21 +25,19 @@ class Health:
 
 
 class Hungry:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
+    def __init__(self) -> None:
         self.image = pygame.image.load("resources/img/hunger_bigger.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
         self.hungry_step_count: int = 0
 
         self._value: int = 0
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         for i in range(self.get_satiety()):
-            self._parent_surface.blit(
+            surface.blit(
                 self.image,
-                (self._parent_surface.get_width() - (i + 1) * self.image.get_width(),
-                 self._parent_surface.get_height() - self.image.get_height())
+                (surface.get_width() - (i + 1) * self.image.get_width(),
+                 surface.get_height() - self.image.get_height())
             )
 
     def get_satiety(self) -> int:

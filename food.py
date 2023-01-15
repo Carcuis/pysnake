@@ -7,22 +7,19 @@ from settings import Global
 
 
 class FoodManager:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
-
-        self.apple = Apple(self._parent_surface, self._parent_game)
-        self.beef = Beef(self._parent_surface, self._parent_game)
-        self.iron = Iron(self._parent_surface, self._parent_game)
-        self.gold = Gold(self._parent_surface, self._parent_game)
-        self.slimeball = SlimeBall(self._parent_surface, self._parent_game)
-        self.heart = Heart(self._parent_surface, self._parent_game)
+    def __init__(self) -> None:
+        self.apple = Apple()
+        self.beef = Beef()
+        self.iron = Iron()
+        self.gold = Gold()
+        self.slimeball = SlimeBall()
+        self.heart = Heart()
 
         self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         for food in self.food_list:
-            food.draw()
+            food.draw(surface)
 
     def reset(self) -> None:
         for food in self.food_list:
@@ -32,10 +29,8 @@ class FoodManager:
 
 
 class FoodBase:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self.image: pygame.Surface
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
+    def __init__(self) -> None:
+        self.image = None
         self.count: int = 0
         self.x: list[int] = []
         self.y: list[int] = []
@@ -45,12 +40,12 @@ class FoodBase:
         self.increase_speed: int = 0
         self.increase_length: int = 0
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         if self.count > 0:
             for i in range(self.count):
-                self._parent_surface.blit(self.image, (self.x[i], self.y[i]))
+                surface.blit(self.image, (self.x[i], self.y[i]))
 
-    def update(self, index=None) -> None:
+    def update(self, _parent_game: 'game.Game', index=None) -> None:
         # delete specific food after is eaten
         if index is not None:
             del self.x[index]
@@ -68,15 +63,15 @@ class FoodBase:
             overlap = False
 
             # overlap with snake
-            for i in range(self._parent_game.snake.length):
-                if temp_x == self._parent_game.snake.x[i] and temp_y == self._parent_game.snake.y[i]:
+            for i in range(_parent_game.snake.length):
+                if temp_x == _parent_game.snake.x[i] and temp_y == _parent_game.snake.y[i]:
                     overlap = True
                     break
             if overlap:
                 continue
 
             # overlap with other food
-            for food in self._parent_game.food_manager.food_list:
+            for food in _parent_game.food_manager.food_list:
                 if food.count > 0:
                     for i in range(food.count):
                         if temp_x == food.x[i] and temp_y == food.y[i]:
@@ -88,7 +83,7 @@ class FoodBase:
                 continue
 
             # overlap with wall
-            if (temp_x, temp_y) in self._parent_game.wall.coords:
+            if (temp_x, temp_y) in _parent_game.wall.coords:
                 continue
 
             self.x.append(temp_x)
@@ -103,8 +98,8 @@ class FoodBase:
 
 
 class Apple(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/apple_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -115,8 +110,8 @@ class Apple(FoodBase):
 
 
 class Beef(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/beef_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 2
@@ -127,8 +122,8 @@ class Beef(FoodBase):
 
 
 class Iron(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/iron_block.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -139,8 +134,8 @@ class Iron(FoodBase):
 
 
 class Gold(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/gold_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 2
@@ -151,8 +146,8 @@ class Gold(FoodBase):
 
 
 class SlimeBall(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/slimeball_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -163,8 +158,8 @@ class SlimeBall(FoodBase):
 
 
 class Heart(FoodBase):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self) -> None:
+        super().__init__()
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1

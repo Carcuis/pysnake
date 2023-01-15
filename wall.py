@@ -2,14 +2,11 @@ import random
 
 import pygame
 
-import game
 from settings import Global
 
 
 class Wall:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
+    def __init__(self) -> None:
         self.image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.coords: set[tuple] = {()}
@@ -28,9 +25,9 @@ class Wall:
                 )
             ))
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         for coord in self.coords:
-            self._parent_surface.blit(self.image, (coord[0], coord[1]))
+            surface.blit(self.image, (coord[0], coord[1]))
 
     def reset(self) -> None:
         self.coords.clear()

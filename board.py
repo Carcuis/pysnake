@@ -5,8 +5,7 @@ from settings import Global, KeyBoard
 
 
 class Text:
-    def __init__(self, parent_surface: pygame.Surface) -> None:
-        self._parent_surface = parent_surface
+    def __init__(self) -> None:
         self.text_array: list[dict] = []
 
     def add(self, text: str, color: pygame.Color, position: str | tuple[float, float] | tuple[float, float, str],
@@ -27,10 +26,10 @@ class Text:
             "button": button
         })
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         coordinate: tuple[int, int] = (0, 0)
-        parent_surface_width = self._parent_surface.get_width()
-        parent_surface_height = self._parent_surface.get_height()
+        parent_surface_width = surface.get_width()
+        parent_surface_height = surface.get_height()
 
         for text in self.text_array:
             text_surface = pygame.font.Font(text["font_name"], text["font_size"]) \
@@ -98,18 +97,18 @@ class Text:
             if text["button"]:
                 text["button"].rect = text_surface.get_rect()
                 text["button"].rect.topleft = (coordinate[0], coordinate[1])
-            self._parent_surface.blit(text_surface, coordinate)
+            surface.blit(text_surface, coordinate)
 
     def clear(self) -> None:
         self.text_array.clear()
 
 
 class Board:
-    def __init__(self, parent_surface: pygame.Surface) -> None:
-        self.text = Text(parent_surface)
+    def __init__(self) -> None:
+        self.text = Text()
 
-    def draw(self) -> None:
-        self.text.draw()
+    def draw(self, surface: pygame.Surface) -> None:
+        self.text.draw(surface)
         self.text.clear()
 
 

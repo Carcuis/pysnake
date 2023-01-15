@@ -7,7 +7,6 @@ from animation import AnimationManager
 from board import Board, Button, ButtonManager
 from event import EventManager
 from food import FoodManager
-from health import Health, Hungry
 from settings import Global, KeyBoard
 from snake import Snake
 from util import Util
@@ -24,13 +23,11 @@ class Game:
         self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.BLOCK_SIZE * 0.08)
         self.clock = pygame.time.Clock()
 
-        self.animation_manager = AnimationManager(self.surface, self)
-        self.snake = Snake(self.surface, self)
-        self.wall = Wall(self.surface, self)
-        self.food_manager = FoodManager(self.surface, self)
-        self.current_text_board = Board(self.surface)
-        self.health = Health(self.surface, self)
-        self.hungry = Hungry(self.surface, self)
+        self.animation_manager = AnimationManager()
+        self.snake = Snake()
+        self.wall = Wall()
+        self.food_manager = FoodManager()
+        self.current_text_board = Board()
 
         self.event_timer_snake_move = Util.generate_user_event_id(timer=True)
 
@@ -57,12 +54,12 @@ class Game:
             self.animation_manager.update()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
-            self.animation_manager.draw()
+            self.animation_manager.draw(self.surface)
             self.draw_banner()
 
             button_manager.add_text_to_board(self.current_text_board)
 
-            self.current_text_board.draw()
+            self.current_text_board.draw(self.surface)
 
             if start_button.is_triggered:
                 self.start_game()
@@ -151,7 +148,7 @@ class Game:
                 )
                 button_manager.add_text_to_board(self.current_text_board)
 
-                self.current_text_board.draw()
+                self.current_text_board.draw(self.surface)
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
                     or resume_button.is_triggered:
@@ -167,12 +164,12 @@ class Game:
             self.clock.tick(Global.FPS)
 
     def in_game_draw_surface(self) -> None:
-        self.wall.draw()
-        self.snake.draw()
-        self.food_manager.draw()
-        self.health.draw()
-        self.hungry.draw()
-        self.current_text_board.draw()
+        self.wall.draw(self.surface)
+        self.snake.draw(self.surface)
+        self.food_manager.draw(self.surface)
+        self.snake.health.draw(self.surface)
+        self.snake.hungry.draw(self.surface)
+        self.current_text_board.draw(self.surface)
 
     def set_base_color(self, color) -> None:
         self.surface.fill(color)
@@ -205,9 +202,9 @@ class Game:
                 for i in range(food.count):
                     if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
                         collision = True
-                        food.update(i)
-                        self.hungry.increase_satiety(food.add_satiety)
-                        self.health.increase_health(-food.toxic_level)
+                        food.update(self, index=i)
+                        self.snake.hungry.increase_satiety(food.add_satiety)
+                        self.snake.health.increase_health(-food.toxic_level)
                         self.snake.increase_length(food.increase_length)
                         self.snake.increase_speed(food.increase_speed)
                         self.score += food.add_score
@@ -218,28 +215,28 @@ class Game:
     def check_collision_with_body(self) -> None:
         for i in range(1, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                self.health.increase_health(-1)
+                self.snake.health.increase_health(-1)
                 break
 
     def check_collision_with_wall(self) -> None:
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
-            self.health.increase_health(-2)
+            self.snake.health.increase_health(-2)
 
     def check_health(self) -> None:
-        if self.health.value <= 0:
+        if self.snake.health.value <= 0:
             self.game_over()
 
     def check_hungry_level(self) -> None:
         count_when_increase = max(50 - (self.level - 1) * 4, 20)
-        if self.hungry.hungry_step_count >= count_when_increase:
-            if self.hungry.get_satiety() > 0:
+        if self.snake.hungry.hungry_step_count >= count_when_increase:
+            if self.snake.hungry.get_satiety() > 0:
                 # increase hungry value till satiety -> 0
-                self.hungry.increase_satiety(-1)
+                self.snake.hungry.increase_satiety(-1)
             else:
                 # start to decrease health value
-                self.health.increase_health(-1)
+                self.snake.health.increase_health(-1)
             # reset hungry step count
-            self.hungry.hungry_step_count = 0
+            self.snake.hungry.hungry_step_count = 0
 
     def check_score(self) -> None:
         if self._score_cache == self.get_score():
@@ -323,7 +320,7 @@ class Game:
 
             button_manager.add_text_to_board(self.current_text_board)
 
-            self.current_text_board.draw()
+            self.current_text_board.draw(self.surface)
 
             if restart_button.is_triggered:
                 self.start_game()
@@ -343,7 +340,7 @@ class Game:
         # update in Game after FoodManager.__init__() to avoid
         # `AttributeError: 'Game' object has no attribute 'food_manager'`
         for food in self.food_manager.food_list:
-            food.update()
+            food.update(self)
 
     def draw_banner(self) -> None:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2
@@ -365,8 +362,8 @@ class Game:
         self.wall.reset()
         self.food_manager.reset()
         self.update_food()
-        self.health.reset()
-        self.hungry.reset()
+        self.snake.health.reset()
+        self.snake.hungry.reset()
         self.level = 1
         self.score = 0
         self._score_cache = 0

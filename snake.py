@@ -1,19 +1,18 @@
 import pygame
 
-import game
+from health import Health, Hungry
 from settings import Global
 
 
 class Snake:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
-
+    def __init__(self) -> None:
         self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
         self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.body_block = pygame.image.load("resources/img/green-23d12f-10x10.png").convert()
         self.body_block = pygame.transform.scale(self.body_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
 
+        self.health = Health()
+        self.hungry = Hungry()
         self.init_length = Global.INIT_LENGTH
         self.length = self.init_length
         self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
@@ -27,10 +26,10 @@ class Snake:
         self.buffer_direction: str = ""
         self.change_direction_buffer_status = False
 
-    def draw(self) -> None:
-        self._parent_surface.blit(self.head_block, (self.x[0], self.y[0]))
+    def draw(self, surface: pygame.Surface) -> None:
+        surface.blit(self.head_block, (self.x[0], self.y[0]))
         for i in range(1, self.length):
-            self._parent_surface.blit(self.body_block, (self.x[i], self.y[i]))
+            surface.blit(self.body_block, (self.x[i], self.y[i]))
 
     def change_direction(self, direction: str) -> None:
         if self.direction_lock:
@@ -83,7 +82,7 @@ class Snake:
             self.change_direction(self.buffer_direction)
             self.change_direction_buffer_status = False
 
-        self._parent_game.hungry.hungry_step_count += 1
+        self.hungry.hungry_step_count += 1
 
     def head_over_border(self) -> tuple[bool, str]:
         """

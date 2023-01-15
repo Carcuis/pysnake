@@ -2,7 +2,6 @@ import random
 
 import pygame
 
-import game
 from event import EventManager
 from settings import Global
 from snake import Snake
@@ -10,9 +9,8 @@ from util import Util
 
 
 class LittleSnake(Snake):
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game',
-                 x: int, y: int, length: int, move_speed: int) -> None:
-        super().__init__(parent_surface, parent_game)
+    def __init__(self, x: int, y: int, length: int, move_speed: int) -> None:
+        super().__init__()
         self.direction = "down"
         self.length = length
         self.x = [x] * self.length
@@ -21,9 +19,7 @@ class LittleSnake(Snake):
 
 
 class AnimationManager:
-    def __init__(self, parent_surface: pygame.Surface, parent_game: 'game.Game') -> None:
-        self._parent_surface = parent_surface
-        self._parent_game = parent_game
+    def __init__(self) -> None:
         self._little_fresh_snakes: list[Snake] = []
         self._little_on_screen_snakes: list[Snake] = []
         self.move_speed: int = 20
@@ -46,7 +42,7 @@ class AnimationManager:
                 regenerate_times += 1
                 continue
             self._little_fresh_snakes.append(
-                LittleSnake(self._parent_surface, self._parent_game, new_x, new_y, length, self.move_speed)
+                LittleSnake(new_x, new_y, length, self.move_speed)
             )
             break
 
@@ -68,9 +64,9 @@ class AnimationManager:
             else:
                 self._little_on_screen_snakes[i].walk(teleport=False)
 
-    def draw(self) -> None:
+    def draw(self, surface: pygame.Surface) -> None:
         for little_snake in self._little_fresh_snakes:
-            little_snake.draw()
+            little_snake.draw(surface)
         for little_snake in self._little_on_screen_snakes:
-            little_snake.draw()
-        self._parent_surface.blit(Util.gaussian_blur(self._parent_surface, 21), (0, 0))
+            little_snake.draw(surface)
+        surface.blit(Util.gaussian_blur(surface, 21), (0, 0))
