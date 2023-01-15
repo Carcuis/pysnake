@@ -4,7 +4,7 @@ from typing import NoReturn
 import pygame
 
 from animation import AnimationManager
-from board import Board, Button, ButtonManager
+from board import Board, Button, Text
 from event import EventManager
 from food import FoodManager
 from settings import Global, KeyBoard
@@ -46,22 +46,21 @@ class Game:
             title="Exit game", color=(pygame.Color("white"), pygame.Color("red")), position=(0.5, 0.85)
         )
 
-        button_manager = ButtonManager(start_button, exit_button)
+        self.board.add_button(start_button, exit_button)
 
         while maintain:
             EventManager.get_event()
-            button_manager.update_status()
+            self.board.update_button_status()
             self.animation_manager.update()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.animation_manager.draw(self.surface)
             self.draw_banner()
 
-            button_manager.add_text_to_board(self.board)
-
             self.board.draw(self.surface)
 
             if start_button.is_triggered:
+                self.board.clear_button()
                 self.start_game()
 
             if exit_button.is_triggered:
@@ -80,6 +79,12 @@ class Game:
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.play()
+            self.board.add_text(
+                Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
+                Text(f"score: {self.get_score()}", pygame.Color("springgreen"), "right_top", alpha=255),
+                Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
+                Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
+            )
             self.in_game_draw_surface()
             Util.update_screen()
             self.parse_event()
@@ -105,8 +110,6 @@ class Game:
             self.check_score()
             self.check_hungry_level()
 
-        self.update_status_board()
-
     def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()
 
@@ -120,13 +123,13 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.85)
         )
 
-        button_manager = ButtonManager(resume_button, restart_button, back_to_main_menu_button)
+        self.board.add_button(resume_button, restart_button, back_to_main_menu_button)
 
         maintain = True
         release = False
         while maintain:
             EventManager.get_event()
-            button_manager.update_status()
+            self.board.update_button_status()
 
             if not release:
                 if self._blur_kernel_size < 59:
@@ -139,14 +142,14 @@ class Game:
                 if self._blur_kernel_size <= 1:
                     self._blur_kernel_size = 1
                     maintain = False
+                    self.board.clear_button()
 
             self.surface.blit(blur_surface, (0, 0))
 
             if not release:
-                self.board.text.add(
-                    "Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE
+                self.board.add_text(
+                    Text("Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
                 )
-                button_manager.add_text_to_board(self.board)
 
                 self.board.draw(self.surface)
 
@@ -155,9 +158,11 @@ class Game:
                 release = True
 
             if restart_button.is_triggered:
+                self.board.clear_button()
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
+                self.board.clear_button()
                 self.main_menu()
 
             Util.update_screen()
@@ -185,6 +190,7 @@ class Game:
             self.snake.change_direction("down")
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
                 EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
+            self.board.clear_button()
             self.pause()
 
     def get_score(self) -> int:
@@ -224,6 +230,7 @@ class Game:
 
     def check_health(self) -> None:
         if self.snake.health.value <= 0:
+            self.board.clear_button()
             self.game_over()
 
     def check_hungry_level(self) -> None:
@@ -291,13 +298,13 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.8)
         )
 
-        button_manager = ButtonManager(restart_button, back_to_main_menu_button)
+        self.board.add_button(restart_button, back_to_main_menu_button)
 
         maintain = True
 
         while maintain:
             EventManager.get_event()
-            button_manager.update_status()
+            self.board.update_button_status()
 
             if self._blur_kernel_size < 59:
                 blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
@@ -305,28 +312,31 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            self.board.text.add("Game over", pygame.Color("firebrick1"),
-                                (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
+            self.board.add_text(
+                Text("Game over", pygame.Color("firebrick1"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
+            )
             if break_record:
-                self.board.text.add(f"New Best Score: {final_score}", pygame.Color("darkorange"),
-                                    (0.5, 0.45), bold=True, name="sub_title_1",
-                                    font_size=2 * Global.UI_SCALE)
+                self.board.add_text(
+                    Text(f"New Best Score: {final_score}", pygame.Color("darkorange"), (0.5, 0.45),
+                         bold=True, name="sub_title_1", font_size=2 * Global.UI_SCALE)
+                )
             else:
-                self.board.text.add(f"Best record: {best_score}", pygame.Color("white"),
-                                    (0.5, 0.1), name="sub_title_1", alpha=200,
-                                    font_size=int(1.5 * Global.UI_SCALE))
-                self.board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
-                                    (0.5, 0.45), name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
-
-            button_manager.add_text_to_board(self.board)
+                self.board.add_text(
+                    Text(f"Best record: {best_score}", pygame.Color("white"), (0.5, 0.1), name="sub_title_1", alpha=200,
+                         font_size=int(1.5 * Global.UI_SCALE)),
+                    Text(f"Score: {final_score}", pygame.Color("goldenrod"), (0.5, 0.45), name="sub_title_2",
+                         font_size=int(2.5 * Global.UI_SCALE))
+                )
 
             self.board.draw(self.surface)
 
             if restart_button.is_triggered:
+                self.board.clear_button()
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
                 self._blur_kernel_size = 1
+                self.board.clear_button()
                 self.main_menu()
 
             Util.update_screen()
@@ -344,16 +354,6 @@ class Game:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2
         y = (0.5 * self.surface.get_height() - self.banner_img.get_height()) / 2
         self.surface.blit(self.banner_img, (x, y))
-
-    def update_status_board(self) -> None:
-        self.board.text.add(f"FPS: {round(self.clock.get_fps())}",
-                            pygame.Color("white"), "left_top", alpha=255)
-        self.board.text.add(f"score: {self.get_score()}",
-                            pygame.Color("springgreen"), "right_top", alpha=255)
-        self.board.text.add(f"speed: {self.snake.move_speed}",
-                            pygame.Color("white"), "middle_top", alpha=255)
-        self.board.text.add(f"level: {self.level}",
-                            pygame.Color("chartreuse"), "middle_bottom", alpha=255)
 
     def reset_game(self) -> None:
         self.snake.reset()
