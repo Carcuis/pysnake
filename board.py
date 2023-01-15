@@ -161,7 +161,7 @@ class ButtonManager:
         Update all buttons' hover and click status through mouse and keyboard control.
         """
 
-        ''' disable hovered status of unselected buttons '''
+        ''' disable hovered status of unselected buttons to avoid multi-selected '''
         for i in range(self.button_count):
             if i != self._selected_index:
                 self.button_list[i].is_hovered_or_selected = False
@@ -189,7 +189,7 @@ class ButtonManager:
             self.button_list[self._selected_index].is_triggered = \
                 EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.select_list)
 
-        ''' always make one highlighted '''
+        ''' always make one selected '''
         self.button_list[self._selected_index].is_hovered_or_selected = True
 
     def _go_next(self) -> None:
