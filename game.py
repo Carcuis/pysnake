@@ -34,11 +34,8 @@ class Game:
         self.level: int = 1
         self.score: int = 0
         self._score_cache: int = 0
-        self._blur_kernel_size: int = 1
 
     def main_menu(self) -> NoReturn:
-        maintain = True
-
         start_button = Button(
             title="Start", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
         )
@@ -48,7 +45,7 @@ class Game:
 
         self.board.add_button(start_button, exit_button)
 
-        while maintain:
+        while True:
             EventManager.get_event()
             self.board.update_button_status()
             self.animation_manager.update()
@@ -68,13 +65,11 @@ class Game:
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
-        Util.quit_game()
 
     def start_game(self) -> NoReturn:
         self.reset_game()
 
-        running = True
-        while running:
+        while True:
             EventManager.get_event()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
@@ -85,14 +80,12 @@ class Game:
                 Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
-            self.in_game_draw_surface()
+            self.update_surface()
             Util.update_screen()
             self.parse_event()
             self.check_health()
 
             self.clock.tick(Global.FPS)
-
-        self.main_menu()
 
     def play(self) -> None:
         if self.snake.move_speed != self.snake.move_speed_buffer:
@@ -125,37 +118,41 @@ class Game:
 
         self.board.add_button(resume_button, restart_button, back_to_main_menu_button)
 
-        maintain = True
-        release = False
-        while maintain:
+        entering = True
+        releasing = False
+        blur_kernel_size = 1
+
+        while True:
             EventManager.get_event()
             self.board.update_button_status()
 
-            if not release:
-                if self._blur_kernel_size < 59:
-                    blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
-                    self._blur_kernel_size += 6
-            else:
+            if entering:
+                blur_surface = Util.gaussian_blur(pre_surface, blur_kernel_size)
+                if blur_kernel_size > 60:
+                    entering = False
+                else:
+                    blur_kernel_size += 6
+
+            if releasing:
                 ''' gradually remove blur before leaving pause page '''
-                blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
-                self._blur_kernel_size -= 6
-                if self._blur_kernel_size <= 1:
-                    self._blur_kernel_size = 1
-                    maintain = False
+                blur_surface = Util.gaussian_blur(pre_surface, blur_kernel_size)
+                blur_kernel_size -= 6
+                if blur_kernel_size <= 1:
                     self.board.clear_button()
+                    break
 
             self.surface.blit(blur_surface, (0, 0))
 
-            if not release:
+            if not releasing:
                 self.board.add_text(
                     Text("Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
                 )
-
                 self.board.draw(self.surface)
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
                     or resume_button.is_triggered:
-                release = True
+                entering = not entering
+                releasing = not releasing
 
             if restart_button.is_triggered:
                 self.board.clear_button()
@@ -168,7 +165,7 @@ class Game:
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def in_game_draw_surface(self) -> None:
+    def update_surface(self) -> None:
         self.wall.draw(self.surface)
         self.snake.draw(self.surface)
         self.food_manager.draw(self.surface)
@@ -300,15 +297,19 @@ class Game:
 
         self.board.add_button(restart_button, back_to_main_menu_button)
 
-        maintain = True
+        entering = True
+        blur_kernel_size = 1
 
-        while maintain:
+        while True:
             EventManager.get_event()
             self.board.update_button_status()
 
-            if self._blur_kernel_size < 59:
-                blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
-                self._blur_kernel_size += 6
+            if entering:
+                blur_surface = Util.gaussian_blur(pre_surface, blur_kernel_size)
+                if blur_kernel_size > 60:
+                    entering = False
+                else:
+                    blur_kernel_size += 6
 
             self.surface.blit(blur_surface, (0, 0))
 
@@ -335,16 +336,11 @@ class Game:
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
-                self._blur_kernel_size = 1
                 self.board.clear_button()
                 self.main_menu()
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
-
-        self._blur_kernel_size = 1
-
-        Util.quit_game()
 
     def update_food(self) -> None:
         for food in self.food_manager.food_list:
@@ -365,7 +361,6 @@ class Game:
         self.level = 1
         self.score = 0
         self._score_cache = 0
-        self._blur_kernel_size = 1
 
     @staticmethod
     def print_high_score(data) -> None:

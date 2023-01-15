@@ -11,8 +11,8 @@ class Snake:
         self.body_block = pygame.image.load("resources/img/green-23d12f-10x10.png").convert()
         self.body_block = pygame.transform.scale(self.body_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
 
-        self.health = Health()
-        self.hungry = Hungry()
+        self.health: Health = Health()
+        self.hungry: Hungry = Hungry()
         self.init_length = Global.INIT_LENGTH
         self.length = self.init_length
         self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
