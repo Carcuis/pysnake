@@ -16,7 +16,7 @@ class Health:
                 (i * self.image.get_width(), surface.get_height() - self.image.get_height())
             )
 
-    def increase_health(self, _value: int) -> None:
+    def increase(self, _value: int) -> None:
         # filter: [0, MAX_HEALTH]
         self.value = max(min(Global.MAX_HEALTH, self.value + _value), 0)
 

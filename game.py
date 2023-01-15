@@ -204,7 +204,7 @@ class Game:
                         collision = True
                         food.update(self, index=i)
                         self.snake.hungry.increase_satiety(food.add_satiety)
-                        self.snake.health.increase_health(-food.toxic_level)
+                        self.snake.health.increase(-food.toxic_level)
                         self.snake.increase_length(food.increase_length)
                         self.snake.increase_speed(food.increase_speed)
                         self.score += food.add_score
@@ -215,12 +215,12 @@ class Game:
     def check_collision_with_body(self) -> None:
         for i in range(1, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                self.snake.health.increase_health(-1)
+                self.snake.health.increase(-1)
                 break
 
     def check_collision_with_wall(self) -> None:
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
-            self.snake.health.increase_health(-2)
+            self.snake.health.increase(-2)
 
     def check_health(self) -> None:
         if self.snake.health.value <= 0:
@@ -234,7 +234,7 @@ class Game:
                 self.snake.hungry.increase_satiety(-1)
             else:
                 # start to decrease health value
-                self.snake.health.increase_health(-1)
+                self.snake.health.increase(-1)
             # reset hungry step count
             self.snake.hungry.hungry_step_count = 0
 
