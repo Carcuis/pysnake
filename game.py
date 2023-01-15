@@ -337,8 +337,6 @@ class Game:
         Util.quit_game()
 
     def update_food(self) -> None:
-        # update in Game after FoodManager.__init__() to avoid
-        # `AttributeError: 'Game' object has no attribute 'food_manager'`
         for food in self.food_manager.food_list:
             food.update(self)
 
