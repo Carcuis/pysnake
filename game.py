@@ -57,7 +57,7 @@ class Game:
             self.animation_manager.update()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
-            self.animation_manager.render()
+            self.animation_manager.draw()
             self.draw_banner()
 
             button_manager.add_text_to_board(self.current_text_board)

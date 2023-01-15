@@ -68,7 +68,7 @@ class AnimationManager:
             else:
                 self._little_on_screen_snakes[i].walk(teleport=False)
 
-    def render(self) -> None:
+    def draw(self) -> None:
         for little_snake in self._little_fresh_snakes:
             little_snake.draw()
         for little_snake in self._little_on_screen_snakes:
