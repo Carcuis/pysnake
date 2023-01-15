@@ -1,7 +1,8 @@
 import json
 import os
+import sys
 import time
-from typing import Callable
+from typing import Callable, NoReturn
 
 import cv2
 import pygame
@@ -91,3 +92,8 @@ class Util:
             print(f"Function {func.__name__} used {(end - start) / 1e6} ms.")
             return res
         return wrapper
+
+    @staticmethod
+    def quit_game() -> NoReturn:
+        print("\033[1;36mBye.\033[0m")
+        sys.exit()

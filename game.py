@@ -1,5 +1,4 @@
 import getpass
-import sys
 from typing import NoReturn
 
 import pygame
@@ -70,11 +69,11 @@ class Game:
                 self.start_game()
 
             if exit_button.is_triggered:
-                self.quit_game()
+                Util.quit_game()
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
-        self.quit_game()
+        Util.quit_game()
 
     def start_game(self) -> NoReturn:
         self.reset_game()
@@ -339,7 +338,7 @@ class Game:
 
         self._blur_kernel_size = 1
 
-        self.quit_game()
+        Util.quit_game()
 
     def update_food(self) -> None:
         # update in Game after FoodManager.__init__() to avoid
@@ -384,8 +383,3 @@ class Game:
     @staticmethod
     def is_collision(x1, y1, x2, y2) -> bool:
         return x1 == x2 and y1 == y2
-
-    @staticmethod
-    def quit_game() -> NoReturn:
-        print("\033[1;36mBye.\033[0m")
-        sys.exit()
