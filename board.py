@@ -1,6 +1,6 @@
 import pygame
 
-from event_manager import EventManager
+from event import EventManager
 from settings import Global, KeyBoard
 
 

@@ -3,7 +3,7 @@ import random
 import pygame
 
 import game
-from event_manager import EventManager
+from event import EventManager
 from settings import Global
 from snake import Snake
 from util import Util

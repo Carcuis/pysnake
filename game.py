@@ -6,7 +6,7 @@ import pygame
 
 from animation import AnimationManager
 from board import Board, Button, ButtonManager
-from event_manager import EventManager
+from event import EventManager
 from food import FoodManager
 from health import Health, Hungry
 from settings import Global, KeyBoard
