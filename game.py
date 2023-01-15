@@ -27,7 +27,7 @@ class Game:
         self.snake = Snake()
         self.wall = Wall()
         self.food_manager = FoodManager()
-        self.current_text_board = Board()
+        self.board = Board()
 
         self.event_timer_snake_move = Util.generate_user_event_id(timer=True)
 
@@ -57,9 +57,9 @@ class Game:
             self.animation_manager.draw(self.surface)
             self.draw_banner()
 
-            button_manager.add_text_to_board(self.current_text_board)
+            button_manager.add_text_to_board(self.board)
 
-            self.current_text_board.draw(self.surface)
+            self.board.draw(self.surface)
 
             if start_button.is_triggered:
                 self.start_game()
@@ -143,12 +143,12 @@ class Game:
             self.surface.blit(blur_surface, (0, 0))
 
             if not release:
-                self.current_text_board.text.add(
+                self.board.text.add(
                     "Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE
                 )
-                button_manager.add_text_to_board(self.current_text_board)
+                button_manager.add_text_to_board(self.board)
 
-                self.current_text_board.draw(self.surface)
+                self.board.draw(self.surface)
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
                     or resume_button.is_triggered:
@@ -169,7 +169,7 @@ class Game:
         self.food_manager.draw(self.surface)
         self.snake.health.draw(self.surface)
         self.snake.hungry.draw(self.surface)
-        self.current_text_board.draw(self.surface)
+        self.board.draw(self.surface)
 
     def set_base_color(self, color) -> None:
         self.surface.fill(color)
@@ -305,22 +305,22 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            self.current_text_board.text.add("Game over", pygame.Color("firebrick1"),
-                                             (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
+            self.board.text.add("Game over", pygame.Color("firebrick1"),
+                                (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
             if break_record:
-                self.current_text_board.text.add(f"New Best Score: {final_score}", pygame.Color("darkorange"),
-                                                 (0.5, 0.45), bold=True, name="sub_title_1",
-                                                 font_size=2 * Global.UI_SCALE)
+                self.board.text.add(f"New Best Score: {final_score}", pygame.Color("darkorange"),
+                                    (0.5, 0.45), bold=True, name="sub_title_1",
+                                    font_size=2 * Global.UI_SCALE)
             else:
-                self.current_text_board.text.add(f"Best record: {best_score}", pygame.Color("white"),
-                                                 (0.5, 0.1), name="sub_title_1", alpha=200,
-                                                 font_size=int(1.5 * Global.UI_SCALE))
-                self.current_text_board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
-                                                 (0.5, 0.45), name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
+                self.board.text.add(f"Best record: {best_score}", pygame.Color("white"),
+                                    (0.5, 0.1), name="sub_title_1", alpha=200,
+                                    font_size=int(1.5 * Global.UI_SCALE))
+                self.board.text.add(f"Score: {final_score}", pygame.Color("goldenrod"),
+                                    (0.5, 0.45), name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
 
-            button_manager.add_text_to_board(self.current_text_board)
+            button_manager.add_text_to_board(self.board)
 
-            self.current_text_board.draw(self.surface)
+            self.board.draw(self.surface)
 
             if restart_button.is_triggered:
                 self.start_game()
@@ -346,14 +346,14 @@ class Game:
         self.surface.blit(self.banner_img, (x, y))
 
     def update_status_board(self) -> None:
-        self.current_text_board.text.add(f"FPS: {round(self.clock.get_fps())}",
-                                         pygame.Color("white"), "left_top", alpha=255)
-        self.current_text_board.text.add(f"score: {self.get_score()}",
-                                         pygame.Color("springgreen"), "right_top", alpha=255)
-        self.current_text_board.text.add(f"speed: {self.snake.move_speed}",
-                                         pygame.Color("white"), "middle_top", alpha=255)
-        self.current_text_board.text.add(f"level: {self.level}",
-                                         pygame.Color("chartreuse"), "middle_bottom", alpha=255)
+        self.board.text.add(f"FPS: {round(self.clock.get_fps())}",
+                            pygame.Color("white"), "left_top", alpha=255)
+        self.board.text.add(f"score: {self.get_score()}",
+                            pygame.Color("springgreen"), "right_top", alpha=255)
+        self.board.text.add(f"speed: {self.snake.move_speed}",
+                            pygame.Color("white"), "middle_top", alpha=255)
+        self.board.text.add(f"level: {self.level}",
+                            pygame.Color("chartreuse"), "middle_bottom", alpha=255)
 
     def reset_game(self) -> None:
         self.snake.reset()
