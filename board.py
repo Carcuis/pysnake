@@ -220,7 +220,6 @@ class Board:
     def add_button(self, *button: Button) -> None:
         for _button in button:
             self._button_manager.add(_button)
-            # self._text_manager.add(_button.get_text())
 
     def update_button_status(self) -> None:
         self._button_manager.update_status()
