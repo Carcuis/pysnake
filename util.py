@@ -10,11 +10,14 @@ import pygame
 
 class Util:
     user_event_count: int = 0
+    user_timer_list: list[int] = []
 
     @classmethod
-    def generate_user_event_id(cls) -> int:
+    def generate_user_event_id(cls, timer=False) -> int:
         new_id = cls.user_event_count + pygame.USEREVENT
         cls.user_event_count += 1
+        if timer:
+            cls.user_timer_list.append(new_id)
         return new_id
 
     @staticmethod

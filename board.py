@@ -129,14 +129,13 @@ class Button:
         self._bg_color = bg_color
         self._font_size = font_size
 
-    def update_status(self, _event_manager: EventManager) -> None:
+    def update_status(self) -> None:
         """
         Update button's hover and click status.
-        :param _event_manager: in game event_manager
         """
-        if self.rect.collidepoint(_event_manager.mouse_pos):
+        if self.rect.collidepoint(EventManager.mouse_pos):
             self.is_hovered_or_selected = True
-            self.is_triggered = _event_manager.check_key_or_button(pygame.MOUSEBUTTONUP, 1)
+            self.is_triggered = EventManager.check_key_or_button(pygame.MOUSEBUTTONUP, 1)
         else:
             self.is_hovered_or_selected = False
             self.is_triggered = False
@@ -174,25 +173,24 @@ class ButtonManager:
         self.selected_index = 0
         self._previous_selected_index = self.selected_index
 
-    def update_status(self, _event_manager: EventManager) -> None:
+    def update_status(self) -> None:
         """
         Update all buttons' hover and click status through mouse and keyboard control.
-        :param _event_manager: in-game event_manager
         """
 
         ''' switch between mouse mode and keyboard mode '''
-        if _event_manager.match_event_type(pygame.MOUSEMOTION):
+        if EventManager.match_event_type(pygame.MOUSEMOTION):
             self._mouse_mode = True
             self._keyboard_mode = False
-        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list) or \
-                _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
+        if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list) or \
+                EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self._mouse_mode = False
             self._keyboard_mode = True
 
         ''' update by mouse '''
         if self._mouse_mode:
             for button in self.button_list:
-                button.update_status(_event_manager)
+                button.update_status()
 
         ''' update current selected index '''
         for i in range(self.button_count):
@@ -201,16 +199,16 @@ class ButtonManager:
                 break
 
         ''' update by keyboard '''
-        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
+        if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
             self._go_previous()
-        if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
+        if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self._go_next()
 
         ''' finally update selected status of buttons '''
         self.button_list[self._previous_selected_index].is_hovered_or_selected = False
         self.button_list[self.selected_index].is_hovered_or_selected = True
         if self.button_list[self.selected_index].is_hovered_or_selected:
-            if _event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.select_list):
+            if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.select_list):
                 self.button_list[self.selected_index].is_triggered = True
 
     def _go_next(self) -> None:

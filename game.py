@@ -24,7 +24,6 @@ class Game:
         self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.BLOCK_SIZE * 0.08)
         self.clock = pygame.time.Clock()
 
-        self.event_manager = EventManager(self)
         self.animation_manager = AnimationManager(self.surface, self)
         self.snake = Snake(self.surface, self)
         self.wall = Wall(self.surface, self)
@@ -33,7 +32,7 @@ class Game:
         self.health = Health(self.surface, self)
         self.hungry = Hungry(self.surface, self)
 
-        self.event_timer_snake_move = Util.generate_user_event_id()
+        self.event_timer_snake_move = Util.generate_user_event_id(timer=True)
 
         self.level: int = 1
         self.score: int = 0
@@ -53,9 +52,9 @@ class Game:
         button_manager = ButtonManager(start_button, exit_button)
 
         while maintain:
-            self.event_manager.get_event()
-            button_manager.update_status(self.event_manager)
-            self.animation_manager.update(self.event_manager)
+            EventManager.get_event()
+            button_manager.update_status()
+            self.animation_manager.update()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.animation_manager.render()
@@ -80,7 +79,7 @@ class Game:
 
         running = True
         while running:
-            self.event_manager.get_event()
+            EventManager.get_event()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.play()
@@ -97,7 +96,7 @@ class Game:
         if self.snake.move_speed != self.snake.move_speed_buffer:
             pygame.time.set_timer(self.event_timer_snake_move, int(1000 / (1.5 * self.snake.move_speed)))
             self.snake.move_speed_buffer = self.snake.move_speed
-        if self.event_manager.match_event_type(self.event_timer_snake_move):
+        if EventManager.match_event_type(self.event_timer_snake_move):
             self.snake.walk()
             self.snake.move_lock = False
         else:
@@ -129,8 +128,8 @@ class Game:
         maintain = True
         release = False
         while maintain:
-            self.event_manager.get_event()
-            button_manager.update_status(self.event_manager)
+            EventManager.get_event()
+            button_manager.update_status()
 
             if not release:
                 if self._blur_kernel_size < 59:
@@ -154,7 +153,7 @@ class Game:
 
                 self.current_text_board.draw()
 
-            if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
+            if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) \
                     or resume_button.is_triggered:
                 release = True
 
@@ -179,16 +178,16 @@ class Game:
         self.surface.fill(color)
 
     def parse_event(self) -> None:
-        if self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
+        if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
-        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
+        elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
             self.snake.change_direction("right")
-        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
+        elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
             self.snake.change_direction("up")
-        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
+        elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self.snake.change_direction("down")
-        elif self.event_manager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
-                self.event_manager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
+        elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
+                EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
             self.pause()
 
     def get_score(self) -> int:
@@ -300,8 +299,8 @@ class Game:
         maintain = True
 
         while maintain:
-            self.event_manager.get_event()
-            button_manager.update_status(self.event_manager)
+            EventManager.get_event()
+            button_manager.update_status()
 
             if self._blur_kernel_size < 59:
                 blur_surface = Util.gaussian_blur(pre_surface, self._blur_kernel_size)
