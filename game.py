@@ -36,6 +36,8 @@ class Game:
         self._score_cache: int = 0
 
     def main_menu(self) -> NoReturn:
+        self.animation_manager.start()
+
         start_button = Button(
             title="Start", color=(pygame.Color("white"), pygame.Color("green")), position=(0.5, 0.65)
         )
@@ -57,6 +59,7 @@ class Game:
             self.board.draw(self.surface)
 
             if start_button.is_triggered:
+                self.animation_manager.pause()
                 self.board.clear_button()
                 self.start_game()
 

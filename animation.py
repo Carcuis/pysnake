@@ -23,9 +23,13 @@ class AnimationManager:
         self._little_fresh_snakes: list[Snake] = []
         self._little_on_screen_snakes: list[Snake] = []
         self.move_speed: int = 20
-        self.event_timer = Util.generate_user_event_id(timer=True)
+        self.move_timer = Util.generate_user_event_id(timer=True)
 
-        pygame.time.set_timer(self.event_timer, int(1000 / (1.5 * self.move_speed)))
+    def start(self) -> None:
+        pygame.time.set_timer(self.move_timer, int(666 / self.move_speed))
+
+    def pause(self) -> None:
+        pygame.time.set_timer(self.move_timer, 0)
 
     def _add_snake(self) -> None:
         new_y = 0
@@ -47,7 +51,7 @@ class AnimationManager:
             break
 
     def update(self) -> None:
-        if not EventManager.match_event_type(self.event_timer):
+        if not EventManager.match_event_type(self.move_timer):
             return
         if random.randint(0, 2) == 0:
             self._add_snake()
