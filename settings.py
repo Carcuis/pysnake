@@ -37,7 +37,7 @@ class Global:
 
     INIT_SPEED: int = 4
     MIN_SPEED: int = 1
-    MAX_SPEED: int = 20
+    MAX_SPEED: int = 1000
 
     MAX_LEVEL: int = 10
 
