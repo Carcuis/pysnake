@@ -99,4 +99,5 @@ class Util:
     @staticmethod
     def quit_game() -> NoReturn:
         print("\033[1;36mBye.\033[0m")
+        pygame.quit()
         sys.exit()
