@@ -110,8 +110,8 @@ class Button:
                  position: str | tuple[float, float] | tuple[float, float, str],
                  alpha: tuple[int, int] = (200, 255), bg_color: tuple[pygame.Color, pygame.Color] | None = None,
                  font_size=2 * Global.UI_SCALE) -> None:
-        self.is_hovered_or_selected = False  # hovered by mouse or selected by keyboard
-        self.is_triggered = False
+        self.is_hovered_or_selected: bool = False  # hovered by mouse or selected by keyboard
+        self.is_triggered: bool = False
         self.rect = pygame.Rect(-1, -1, 1, 1)
         self.title = title
         self._content: dict = {}
@@ -148,8 +148,8 @@ class ButtonManager:
     def __init__(self) -> None:
         self.button_list: list[Button] = []
         self.button_count: int = 0
-        self._mouse_mode = False
-        self._keyboard_mode = True
+        self._mouse_mode: bool = False
+        self._keyboard_mode: bool = True
         self._selected_index: int = 0
 
     def add(self, button: Button) -> None:
