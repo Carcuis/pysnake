@@ -6,10 +6,14 @@ from settings import Global
 
 class Snake:
     def __init__(self) -> None:
-        self.head_block = pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert()
-        self.head_block = pygame.transform.scale(self.head_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
-        self.body_block = pygame.image.load("resources/img/green-23d12f-10x10.png").convert()
-        self.body_block = pygame.transform.scale(self.body_block, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.head_block = pygame.transform.scale(
+            pygame.image.load("resources/img/yellow-fdd926-10x10.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
+        self.body_block = pygame.transform.scale(
+            pygame.image.load("resources/img/green-23d12f-10x10.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
 
         self.health: Health = Health()
         self.hungry: Hungry = Hungry()
@@ -18,13 +22,11 @@ class Snake:
         self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
         self.y = [2 * Global.BLOCK_SIZE] * self.length
 
-        self.move_lock = False
         self.move_speed: int = Global.INIT_SPEED
-        self.move_speed_buffer: int = 0
+        self.speed_changed: bool = True  # set speed_changed at first to make move_timer start
         self.direction: str = "right"
-        self.direction_lock = False
-        self.buffer_direction: str = ""
-        self.change_direction_buffer_status = False
+        self.direction_lock: bool = False
+        self.direction_buffer: str = ""
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.head_block, (self.x[0], self.y[0]))
@@ -33,8 +35,7 @@ class Snake:
 
     def change_direction(self, direction: str) -> None:
         if self.direction_lock:
-            self.buffer_direction = direction
-            self.change_direction_buffer_status = True
+            self.direction_buffer = direction
             return
 
         if self.direction == direction:
@@ -73,14 +74,12 @@ class Snake:
             if over_border:
                 self.teleport(border_position)
 
-        # unlock locks after actually walk
-        self.move_lock = False
         self.direction_lock = False
 
         # execute buffer mode changing direction if buffer mode is set
-        if self.change_direction_buffer_status:
-            self.change_direction(self.buffer_direction)
-            self.change_direction_buffer_status = False
+        if self.direction_buffer != "":
+            self.change_direction(self.direction_buffer)
+            self.direction_buffer = ""
 
         self.hungry.hungry_step_count += 1
 
@@ -125,6 +124,7 @@ class Snake:
     def increase_speed(self, speed: int) -> None:
         # filter: [MIN_SPEED, MAX_SPEED]
         self.move_speed = min(max(Global.MIN_SPEED, self.move_speed + speed), Global.MAX_SPEED)
+        self.speed_changed = True
 
     def reset(self) -> None:
         self.init_length = Global.INIT_LENGTH
@@ -132,9 +132,8 @@ class Snake:
         self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
         self.y = [2 * Global.BLOCK_SIZE] * self.length
 
-        self.move_lock = False
         self.move_speed = Global.INIT_SPEED
+        self.speed_changed = True
         self.direction = "right"
         self.direction_lock = False
-        self.buffer_direction = ""
-        self.change_direction_buffer_status = False
+        self.direction_buffer = ""

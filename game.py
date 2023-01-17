@@ -29,11 +29,11 @@ class Game:
         self.food_manager = FoodManager()
         self.board = Board()
 
-        self.event_timer_snake_move = Util.generate_user_event_id(timer=True)
+        self.snake_move_timer = Util.generate_user_event_id(timer=True)
+        self.snake_move_interval: int = 0
 
         self.level: int = 1
         self.score: int = 0
-        self._score_cache: int = 0
 
     def main_menu(self) -> NoReturn:
         self.animation_manager.start()
@@ -85,26 +85,39 @@ class Game:
             )
             self.update_surface()
             Util.update_screen()
-            self.parse_event()
-            self.check_health()
+
+            if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
+                    EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
+                pygame.time.set_timer(self.snake_move_timer, 0)
+                self.pause()
+                pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
+
+            if self.snake.health.value <= 0:
+                pygame.time.set_timer(self.snake_move_timer, 0)
+                self.game_over()
 
             self.clock.tick(Global.FPS)
 
     def play(self) -> None:
-        if self.snake.move_speed != self.snake.move_speed_buffer:
-            pygame.time.set_timer(self.event_timer_snake_move, int(1000 / (1.5 * self.snake.move_speed)))
-            self.snake.move_speed_buffer = self.snake.move_speed
-        if EventManager.match_event_type(self.event_timer_snake_move):
-            self.snake.walk()
-            self.snake.move_lock = False
-        else:
-            self.snake.move_lock = True
+        self.check_direction_change()
 
-        # execute only after actually walk
-        if not self.snake.move_lock:
-            self.check_collision()
-            self.check_score()
+        if self.snake.speed_changed:
+            self.snake_move_interval = max(int(1000 / (1.5 * self.snake.move_speed)), 1)
+            pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
+            # print(f"set timer: {self.snake_move_timer}, interval: {self.snake_move_interval} ms")
+            self.snake.speed_changed = False
+        if EventManager.match_event_type(self.snake_move_timer):
+            self.snake.walk()
+            collision = self.check_collision()
+            if collision[0]:
+                # check upgrade after eating food
+                self.check_upgrade()
             self.check_hungry_level()
+
+        # FIXME: when snake move_speed over than ~100 (FPS 60), move timer maybe lost which seems due
+        #  to pygame.event.get() error, uncomment the code below to fix this problem only if the interval
+        #  of timer less than 1000/FPS (time of 1 cycle)
+        # pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
 
     def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()
@@ -179,7 +192,7 @@ class Game:
     def set_base_color(self, color) -> None:
         self.surface.fill(color)
 
-    def parse_event(self) -> None:
+    def check_direction_change(self) -> None:
         if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
@@ -188,50 +201,44 @@ class Game:
             self.snake.change_direction("up")
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
             self.snake.change_direction("down")
-        elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
-                EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
-            self.board.clear_button()
-            self.pause()
 
     def get_score(self) -> int:
         return self.snake.length - self.snake.init_length + self.score
 
-    def check_collision(self) -> None:
-        self.check_collision_with_food()
-        self.check_collision_with_body()
-        self.check_collision_with_wall()
+    def check_collision(self) -> tuple[bool, bool, bool]:
+        return (
+            self.collide_with_food(),
+            self.collide_with_body(),
+            self.collide_with_wall()
+        )
 
-    def check_collision_with_food(self) -> None:
-        collision = False
+    def collide_with_food(self) -> bool:
         for food in self.food_manager.food_list:
             if food.count > 0:
                 for i in range(food.count):
                     if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
-                        collision = True
                         food.update(self, index=i)
                         self.snake.hungry.increase_satiety(food.add_satiety)
                         self.snake.health.increase(-food.toxic_level)
                         self.snake.increase_length(food.increase_length)
                         self.snake.increase_speed(food.increase_speed)
                         self.score += food.add_score
-                        break
-            if collision:
-                break
+                        return True
+        return False
 
-    def check_collision_with_body(self) -> None:
+    def collide_with_body(self) -> bool:
         for i in range(1, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.snake.health.increase(-1)
-                break
+                return True
+        return False
 
-    def check_collision_with_wall(self) -> None:
+    def collide_with_wall(self) -> bool:
         if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
             self.snake.health.increase(-2)
-
-    def check_health(self) -> None:
-        if self.snake.health.value <= 0:
-            self.board.clear_button()
-            self.game_over()
+            return True
+        else:
+            return False
 
     def check_hungry_level(self) -> None:
         count_when_increase = max(50 - (self.level - 1) * 4, 20)
@@ -245,15 +252,11 @@ class Game:
             # reset hungry step count
             self.snake.hungry.hungry_step_count = 0
 
-    def check_score(self) -> None:
-        if self._score_cache == self.get_score():
-            # upgrade only on self.score updates
-            return
+    def check_upgrade(self) -> None:
         if self.level >= Global.MAX_LEVEL:
             return
 
-        self._score_cache = self.get_score()
-        if self._score_cache // 20 > self.level - 1:
+        if self.get_score() // 20 > self.level - 1:
             self.upgrade()
 
     def upgrade(self) -> None:
@@ -363,7 +366,6 @@ class Game:
         self.snake.hungry.reset()
         self.level = 1
         self.score = 0
-        self._score_cache = 0
 
     @staticmethod
     def print_high_score(data) -> None:
