@@ -45,7 +45,7 @@ class Game:
             title="Exit game", color=(pygame.Color("white"), pygame.Color("red")), position=(0.5, 0.85)
         )
 
-        self.board.add_button(start_button, exit_button)
+        self.board.add(start_button, exit_button)
 
         while True:
             EventManager.get_event()
@@ -77,7 +77,7 @@ class Game:
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             self.play()
-            self.board.add_text(
+            self.board.add(
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
                 Text(f"score: {self.get_score()}", pygame.Color("springgreen"), "right_top", alpha=255),
                 Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
@@ -132,7 +132,7 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.85)
         )
 
-        self.board.add_button(resume_button, restart_button, back_to_main_menu_button)
+        self.board.add(resume_button, restart_button, back_to_main_menu_button)
 
         entering = True
         releasing = False
@@ -160,7 +160,7 @@ class Game:
             self.surface.blit(blur_surface, (0, 0))
 
             if not releasing:
-                self.board.add_text(
+                self.board.add(
                     Text("Paused", pygame.Color("cyan"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
                 )
                 self.board.draw(self.surface)
@@ -301,7 +301,7 @@ class Game:
             title="Back to main menu", color=(pygame.Color("white"), pygame.Color("yellow")), position=(0.5, 0.8)
         )
 
-        self.board.add_button(restart_button, back_to_main_menu_button)
+        self.board.add(restart_button, back_to_main_menu_button)
 
         entering = True
         blur_kernel_size = 1
@@ -319,16 +319,16 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            self.board.add_text(
+            self.board.add(
                 Text("Game over", pygame.Color("firebrick1"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
             )
             if break_record:
-                self.board.add_text(
+                self.board.add(
                     Text(f"New Best Score: {final_score}", pygame.Color("darkorange"), (0.5, 0.45),
                          bold=True, name="sub_title_1", font_size=2 * Global.UI_SCALE)
                 )
             else:
-                self.board.add_text(
+                self.board.add(
                     Text(f"Best record: {best_score}", pygame.Color("white"), (0.5, 0.1), name="sub_title_1", alpha=200,
                          font_size=int(1.5 * Global.UI_SCALE)),
                     Text(f"Score: {final_score}", pygame.Color("goldenrod"), (0.5, 0.45), name="sub_title_2",

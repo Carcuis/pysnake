@@ -213,13 +213,12 @@ class Board:
         self._text_manager = TextManager()
         self._button_manager = ButtonManager()
 
-    def add_text(self, *text: Text) -> None:
-        for _text in text:
-            self._text_manager.add(_text)
-
-    def add_button(self, *button: Button) -> None:
-        for _button in button:
-            self._button_manager.add(_button)
+    def add(self, *items: Text | Button) -> None:
+        for _item in items:
+            if isinstance(_item, Text):
+                self._text_manager.add(_item)
+            elif isinstance(_item, Button):
+                self._button_manager.add(_item)
 
     def update_button_status(self) -> None:
         self._button_manager.update_status()
