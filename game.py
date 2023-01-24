@@ -29,8 +29,7 @@ class Game:
         self.food_manager = FoodManager()
         self.board = Board()
 
-        self.snake_move_timer = Util.generate_user_event_id(timer=True)
-        self.snake_move_interval: int = 0
+        self.snake_move_timer = Util.timer()
 
         self.level: int = 1
         self.score: int = 0
@@ -88,12 +87,12 @@ class Game:
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
                     EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
-                pygame.time.set_timer(self.snake_move_timer, 0)
+                self.snake_move_timer.stop()
                 self.pause()
-                pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
+                self.snake_move_timer.start()
 
             if self.snake.health.value <= 0:
-                pygame.time.set_timer(self.snake_move_timer, 0)
+                self.snake_move_timer.stop()
                 self.game_over()
 
             self.clock.tick(Global.FPS)
@@ -102,22 +101,15 @@ class Game:
         self.check_direction_change()
 
         if self.snake.speed_changed:
-            self.snake_move_interval = max(int(1000 / (1.5 * self.snake.move_speed)), 1)
-            pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
-            # print(f"set timer: {self.snake_move_timer}, interval: {self.snake_move_interval} ms")
+            self.snake_move_timer.set_interval(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
-        if EventManager.match_event_type(self.snake_move_timer):
+        if self.snake_move_timer.arrived():
             self.snake.walk()
             collision = self.check_collision()
             if collision[0]:
                 # check upgrade after eating food
                 self.check_upgrade()
             self.check_hungry_level()
-
-        # FIXME: when snake move_speed over than ~100 (FPS 60), move timer maybe lost which seems due
-        #  to pygame.event.get() error, uncomment the code below to fix this problem only if the interval
-        #  of timer less than 1000/FPS (time of 1 cycle)
-        # pygame.time.set_timer(self.snake_move_timer, self.snake_move_interval)
 
     def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()

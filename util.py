@@ -2,18 +2,77 @@ import json
 import os
 import sys
 import time
+from threading import Timer
 from typing import Callable, NoReturn
 
 import cv2
 import pygame
 
 
+class RepeatedTimer(object):
+    def __init__(self, interval: float = 0) -> None:
+        self._timer = None
+        self.interval = interval
+        self._started = False
+        self._running = False
+        self._arrived = False
+
+    def set_interval(self, interval: float) -> None:
+        self.stop()
+        self.interval = interval
+        self.start()
+
+    def _restart_timer(self) -> None:
+        self._running = False
+        self._start_timer()
+        self._arrived = True
+        # print("Timer arrived")
+
+    def _start_timer(self) -> None:
+        if not self._running:
+            self._timer = Timer(self.interval, self._restart_timer)
+            self._timer.start()
+            self._running = True
+
+    def start(self, _interval: float = 0) -> None:
+        if _interval > 0:
+            self.interval = _interval
+        self._started = True
+        self._running = False
+        self._start_timer()
+
+    def stop(self) -> None:
+        if self._started:
+            self._timer.cancel()
+            self._started = False
+        self._running = False
+        self._arrived = False
+
+    def arrived(self) -> bool:
+        if self._arrived:
+            self._arrived = False
+            return True
+        return False
+
+
 class Util:
+    # timers made by pygame event
     user_event_count: int = 0
     user_timer_list: list[int] = []
 
+    # timers using builtin threading.Timer
+    timer_list: list[RepeatedTimer] = []
+
+    @classmethod
+    def timer(cls, interval: float = 0) -> RepeatedTimer:
+        """ generate timer using builtin threading.Timer """
+        _timer = RepeatedTimer(interval)
+        cls.timer_list.append(_timer)
+        return _timer
+
     @classmethod
     def generate_user_event_id(cls, timer=False) -> int:
+        """ generate pygame `USEREVENT` id """
         new_id = cls.user_event_count + pygame.USEREVENT
         cls.user_event_count += 1
         if timer:
@@ -96,8 +155,10 @@ class Util:
             return res
         return wrapper
 
-    @staticmethod
-    def quit_game() -> NoReturn:
+    @classmethod
+    def quit_game(cls) -> NoReturn:
+        for timer in cls.timer_list:
+            timer.stop()
         print("\033[1;36mBye.\033[0m")
         pygame.quit()
         sys.exit()
