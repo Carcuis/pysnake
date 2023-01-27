@@ -103,7 +103,7 @@ class Game:
         if self.snake.speed_changed:
             self.snake_move_timer.set_interval(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
-        if self.snake_move_timer.arrived():
+        if self.snake_move_timer.is_arrived():
             self.snake.walk()
             collision = self.check_collision()
             if collision[0]:

@@ -50,7 +50,7 @@ class AnimationManager:
             break
 
     def update(self) -> None:
-        if not self.move_timer.arrived():
+        if not self.move_timer.is_arrived():
             return
         if random.randint(0, 2) == 0:
             self._add_snake()

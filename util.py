@@ -48,7 +48,7 @@ class RepeatedTimer(object):
         self._running = False
         self._arrived = False
 
-    def arrived(self) -> bool:
+    def is_arrived(self) -> bool:
         if self._arrived:
             self._arrived = False
             return True
