@@ -70,6 +70,8 @@ class Game:
 
     def start_game(self) -> NoReturn:
         self.reset_game()
+        self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
+        self.snake_move_timer.start()
 
         while True:
             EventManager.get_event()
@@ -99,9 +101,8 @@ class Game:
 
     def play(self) -> None:
         self.check_direction_change()
-
         if self.snake.speed_changed:
-            self.snake_move_timer.set_interval(1 / (1.5 * self.snake.move_speed))
+            self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
         if self.snake_move_timer.is_arrived():
             self.snake.walk()

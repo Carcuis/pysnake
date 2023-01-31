@@ -17,10 +17,8 @@ class RepeatedTimer(object):
         self._running = False
         self._arrived = False
 
-    def set_interval(self, interval: float) -> None:
-        self.stop()
+    def set_interval_sec(self, interval: float) -> None:
         self.interval = interval
-        self.start()
 
     def _restart_timer(self) -> None:
         self._running = False
@@ -34,9 +32,9 @@ class RepeatedTimer(object):
             self._timer.start()
             self._running = True
 
-    def start(self, _interval: float = 0) -> None:
-        if _interval > 0:
-            self.interval = _interval
+    def start(self) -> None:
+        if self.interval <= 0:
+            raise ValueError(f"the interval of RepeatedTimer must be > 0, current: {self.interval}")
         self._started = True
         self._running = False
         self._start_timer()

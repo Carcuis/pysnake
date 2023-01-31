@@ -23,7 +23,7 @@ class Snake:
         self.y = [2 * Global.BLOCK_SIZE] * self.length
 
         self.move_speed: int = Global.INIT_SPEED
-        self.speed_changed: bool = True  # set speed_changed at first to make move_timer start
+        self.speed_changed: bool = False
         self.direction: str = "right"
         self.direction_lock: bool = False
         self.direction_buffer: str = ""
