@@ -75,8 +75,8 @@ class TextManager:
                 ratio_x = text.position[0]
                 ratio_y = text.position[1]
                 if len(text.position) == 2:
-                    coordinate = ((parent_surface_width - text_surface_width) * ratio_x,
-                                  (parent_surface_height - text_surface_height) * ratio_y)
+                    coordinate = (int((parent_surface_width - text_surface_width) * ratio_x),
+                                  int((parent_surface_height - text_surface_height) * ratio_y))
                 elif len(text.position) == 3:
                     base_vertex = text.position[2]
                     if base_vertex == "left_top":
