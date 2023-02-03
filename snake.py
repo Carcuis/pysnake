@@ -25,8 +25,19 @@ class Snake:
         self.move_speed: int = Global.INIT_SPEED
         self.speed_changed: bool = False
         self.direction: str = "right"
-        self.direction_lock: bool = False
+        self.changing_direction: bool = False
         self.direction_buffer: str = ""
+
+    def reset(self) -> None:
+        self.length = self.init_length
+        self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
+        self.y = [2 * Global.BLOCK_SIZE] * self.length
+
+        self.move_speed = Global.INIT_SPEED
+        self.speed_changed = False
+        self.direction = "right"
+        self.changing_direction = False
+        self.direction_buffer = ""
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(self.head_block, (self.x[0], self.y[0]))
@@ -34,14 +45,14 @@ class Snake:
             surface.blit(self.body_block, (self.x[i], self.y[i]))
 
     def change_direction(self, direction: str) -> None:
-        if self.direction_lock:
+        if self.changing_direction:
             self.direction_buffer = direction
             return
 
         if self.direction == direction:
             return
 
-        self.direction_lock = True
+        self.changing_direction = True
         if direction == "left" and self.direction != "right":
             self.direction = "left"
         if direction == "right" and self.direction != "left":
@@ -74,7 +85,7 @@ class Snake:
             if over_border:
                 self.teleport(border_position)
 
-        self.direction_lock = False
+        self.changing_direction = False
 
         # execute buffer mode changing direction if buffer mode is set
         if self.direction_buffer != "":
@@ -125,15 +136,3 @@ class Snake:
         # filter: [MIN_SPEED, MAX_SPEED]
         self.move_speed = min(max(Global.MIN_SPEED, self.move_speed + speed), Global.MAX_SPEED)
         self.speed_changed = True
-
-    def reset(self) -> None:
-        self.init_length = Global.INIT_LENGTH
-        self.length = self.init_length
-        self.x = [10 * Global.BLOCK_SIZE + Global.BLOCK_SIZE * (self.length - i - 1) for i in range(self.length)]
-        self.y = [2 * Global.BLOCK_SIZE] * self.length
-
-        self.move_speed = Global.INIT_SPEED
-        self.speed_changed = True
-        self.direction = "right"
-        self.direction_lock = False
-        self.direction_buffer = ""

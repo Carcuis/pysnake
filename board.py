@@ -96,7 +96,7 @@ class TextManager:
                                       int(parent_surface_height * ratio_y - text_surface_height / 2))
 
             text_surface.set_alpha(text.alpha)
-            if text.button:
+            if text.button is not None:
                 text.button.rect = text_surface.get_rect()
                 text.button.rect.topleft = coordinate
             surface.blit(text_surface, coordinate)

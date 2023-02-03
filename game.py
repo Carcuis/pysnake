@@ -28,11 +28,19 @@ class Game:
         self.wall = Wall()
         self.food_manager = FoodManager()
         self.board = Board()
-
         self.snake_move_timer = Util.timer()
 
         self.level: int = 1
         self.score: int = 0
+
+    def reset_game(self) -> None:
+        self.snake.reset()
+        self.wall.reset()
+        self.food_manager.reset()
+        self.snake.health.reset()
+        self.snake.hungry.reset()
+        self.level = 1
+        self.score = 0
 
     def main_menu(self) -> NoReturn:
         self.animation_manager.start()
@@ -69,7 +77,7 @@ class Game:
             self.clock.tick(Global.FPS)
 
     def start_game(self) -> NoReturn:
-        self.reset_game()
+        self.update_food()
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
 
@@ -84,7 +92,7 @@ class Game:
                 Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
-            self.update_surface()
+            self.draw_surface()
             Util.update_screen()
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
@@ -100,7 +108,7 @@ class Game:
             self.clock.tick(Global.FPS)
 
     def play(self) -> None:
-        self.check_direction_change()
+        self.control()
         if self.snake.speed_changed:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
@@ -110,7 +118,7 @@ class Game:
             if collision[0]:
                 # check upgrade after eating food
                 self.check_upgrade()
-            self.check_hungry_level()
+            self.update_hungry_level()
 
     def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()
@@ -165,16 +173,18 @@ class Game:
 
             if restart_button.is_triggered:
                 self.board.clear_button()
+                self.reset_game()
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
+                self.reset_game()
                 self.main_menu()
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def update_surface(self) -> None:
+    def draw_surface(self) -> None:
         self.wall.draw(self.surface)
         self.snake.draw(self.surface)
         self.food_manager.draw(self.surface)
@@ -185,7 +195,7 @@ class Game:
     def set_base_color(self, color) -> None:
         self.surface.fill(color)
 
-    def check_direction_change(self) -> None:
+    def control(self) -> None:
         if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
             self.snake.change_direction("left")
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
@@ -233,9 +243,8 @@ class Game:
         else:
             return False
 
-    def check_hungry_level(self) -> None:
-        count_when_increase = max(50 - (self.level - 1) * 4, 20)
-        if self.snake.hungry.hungry_step_count >= count_when_increase:
+    def update_hungry_level(self) -> None:
+        if self.snake.hungry.hungry_step_count >= max(50 - (self.level - 1) * 4, 20):
             if self.snake.hungry.get_satiety() > 0:
                 # increase hungry value till satiety -> 0
                 self.snake.hungry.increase_satiety(-1)
@@ -246,20 +255,14 @@ class Game:
             self.snake.hungry.hungry_step_count = 0
 
     def check_upgrade(self) -> None:
+        """
+        Update the level up to MAX_LEVEL and increase movement speed when level-up.
+        """
         if self.level >= Global.MAX_LEVEL:
             return
-
         if self.get_score() // 20 > self.level - 1:
-            self.upgrade()
-
-    def upgrade(self) -> None:
-        """
-        Update level up to MAX_LEVEL and add move speed when level up.
-        """
-        if self.level >= Global.MAX_LEVEL:
-            return
-        self.snake.increase_speed(1)
-        self.level += 1
+            self.snake.increase_speed(1)
+            self.level += 1
 
     def game_over(self) -> NoReturn:
         blur_surface = pre_surface = self.surface.copy()
@@ -332,10 +335,12 @@ class Game:
 
             if restart_button.is_triggered:
                 self.board.clear_button()
+                self.reset_game()
                 self.start_game()
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
+                self.reset_game()
                 self.main_menu()
 
             Util.update_screen()
@@ -349,16 +354,6 @@ class Game:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2
         y = (0.5 * self.surface.get_height() - self.banner_img.get_height()) / 2
         self.surface.blit(self.banner_img, (x, y))
-
-    def reset_game(self) -> None:
-        self.snake.reset()
-        self.wall.reset()
-        self.food_manager.reset()
-        self.update_food()
-        self.snake.health.reset()
-        self.snake.hungry.reset()
-        self.level = 1
-        self.score = 0
 
     @staticmethod
     def print_high_score(data) -> None:

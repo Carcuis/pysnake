@@ -17,20 +17,20 @@ class FoodManager:
 
         self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
 
-    def draw(self, surface: pygame.Surface) -> None:
-        for food in self.food_list:
-            food.draw(surface)
-
     def reset(self) -> None:
         for food in self.food_list:
             food.x.clear()
             food.y.clear()
             food.count = 0
 
+    def draw(self, surface: pygame.Surface) -> None:
+        for food in self.food_list:
+            food.draw(surface)
+
 
 class FoodBase:
     def __init__(self) -> None:
-        self.image = None
+        self.image: pygame.Surface | None = None
         self.count: int = 0
         self.x: list[int] = []
         self.y: list[int] = []
@@ -41,6 +41,8 @@ class FoodBase:
         self.increase_length: int = 0
 
     def draw(self, surface: pygame.Surface) -> None:
+        if self.image is None:
+            raise TypeError("Food image is None.")
         if self.count > 0:
             for i in range(self.count):
                 surface.blit(self.image, (self.x[i], self.y[i]))
