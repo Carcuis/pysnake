@@ -97,12 +97,12 @@ class Game:
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
                     EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
-                self.snake_move_timer.stop()
+                self.snake_move_timer.pause()
                 self.pause()
                 self.snake_move_timer.start()
 
             if self.snake.health.value <= 0:
-                self.snake_move_timer.stop()
+                self.snake_move_timer.pause()
                 self.game_over()
 
             self.clock.tick(Global.FPS)
@@ -112,7 +112,7 @@ class Game:
         if self.snake.speed_changed:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
-        if self.snake_move_timer.is_arrived():
+        if self.snake_move_timer.arrived:
             self.snake.walk()
             collision = self.check_collision()
             if collision[0]:

@@ -2,51 +2,91 @@ import json
 import os
 import sys
 import time
-from threading import Timer
+from threading import Thread, Event
 from typing import Callable, NoReturn
 
 import cv2
 import pygame
 
 
-class RepeatedTimer(object):
-    def __init__(self, interval: float = 0) -> None:
-        self._timer = None
+class RepeatedTimer(Thread):
+    """ (Modified from threading.Timer.)
+    Call a function repeatedly after a specified number of seconds:
+            t = RepeatedTimer(30.0, f, args=None, kwargs=None)
+            t.start()  t.stop()  # start and stop
+            t.pause()  t.resume()  # pause and resume
+    """
+
+    def __init__(self, interval: float, function: Callable, args=None, kwargs=None) -> None:
+        Thread.__init__(self)
         self.interval = interval
-        self._started = False
-        self._running = False
-        self._arrived = False
+        self.function = function
+        self.args: list = args if args is not None else []
+        self.kwargs: dict = kwargs if kwargs is not None else {}
+        self.finished = Event()
+        self.running = Event()
+        self.running.set()
+
+    def stop(self) -> None:
+        """ terminate timer's thread and stop the timer """
+        self.resume()
+        self.finished.set()
+
+    def pause(self) -> None:
+        self.running.clear()
+
+    def resume(self) -> None:
+        self.running.set()
+
+    def run(self) -> None:
+        while not self.finished.wait(self.interval):
+            self.function(*self.args, **self.kwargs)
+            self.running.wait()
+
+
+class Timer:
+    def __init__(self, interval: float = -1) -> None:
+        self._timer: RepeatedTimer | None = None
+        self.started: bool = False
+        self.paused: bool = False
+        self._interval: float = interval
+        self._arrived: bool = False
 
     def set_interval_sec(self, interval: float) -> None:
-        self.interval = interval
+        if interval <= 0:
+            raise ValueError(f"the interval of Timer must be > 0, current: {interval}")
+        self._interval = interval
+        if self.started:
+            self._timer.interval = interval
 
-    def _restart_timer(self) -> None:
-        self._running = False
-        self._start_timer()
+    def _set_status(self) -> None:
         self._arrived = True
         # print("Timer arrived")
 
-    def _start_timer(self) -> None:
-        if not self._running:
-            self._timer = Timer(self.interval, self._restart_timer)
-            self._timer.start()
-            self._running = True
-
     def start(self) -> None:
-        if self.interval <= 0:
-            raise ValueError(f"the interval of RepeatedTimer must be > 0, current: {self.interval}")
-        self._started = True
-        self._running = False
-        self._start_timer()
+        if self.paused:
+            self._timer.resume()
+            self.paused = False
+            return
+        if self._interval <= 0:
+            raise ValueError(f"the interval of Timer must be > 0, current: {self._interval}")
+        self.started = True
+        self._timer = RepeatedTimer(self._interval, self._set_status)
+        self._timer.start()
+
+    def pause(self) -> None:
+        if self.started:
+            self._timer.pause()
+            self.paused = True
 
     def stop(self) -> None:
-        if self._started:
-            self._timer.cancel()
-            self._started = False
-        self._running = False
+        if self.started:
+            self._timer.stop()
+            self.started = False
         self._arrived = False
 
-    def is_arrived(self) -> bool:
+    @property
+    def arrived(self) -> bool:
         if self._arrived:
             self._arrived = False
             return True
@@ -59,12 +99,12 @@ class Util:
     user_timer_list: list[int] = []
 
     # timers using builtin threading.Timer
-    timer_list: list[RepeatedTimer] = []
+    timer_list: list[Timer] = []
 
     @classmethod
-    def timer(cls, interval: float = 0) -> RepeatedTimer:
-        """ generate timer using builtin threading.Timer """
-        _timer = RepeatedTimer(interval)
+    def timer(cls, interval: float = 0) -> Timer:
+        """ generate timer using builtin threading """
+        _timer = Timer(interval)
         cls.timer_list.append(_timer)
         return _timer
 

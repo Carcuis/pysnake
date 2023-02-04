@@ -28,7 +28,7 @@ class AnimationManager:
         self.move_timer.start()
 
     def pause(self) -> None:
-        self.move_timer.stop()
+        self.move_timer.pause()
 
     def _add_snake(self) -> None:
         new_y = 0
@@ -50,7 +50,7 @@ class AnimationManager:
             break
 
     def update(self) -> None:
-        if not self.move_timer.is_arrived():
+        if not self.move_timer.arrived:
             return
         if random.randint(0, 2) == 0:
             self._add_snake()
