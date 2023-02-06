@@ -19,6 +19,7 @@ class RepeatedTimer(Thread):
 
     def __init__(self, interval: float, function: Callable, args=None, kwargs=None) -> None:
         Thread.__init__(self)
+        self.daemon = True
         self.interval = interval
         self.function = function
         self.args: list = args if args is not None else []
