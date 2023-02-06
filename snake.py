@@ -44,23 +44,23 @@ class Snake:
         for i in range(1, self.length):
             surface.blit(self.body_block, (self.x[i], self.y[i]))
 
-    def change_direction(self, direction: str) -> None:
+    def change_direction(self, target_direction: str) -> bool:
+        if target_direction not in ("left", "right", "up", "down"):
+            raise ValueError(f"Invalid direction: {target_direction}")
+        if self.direction == target_direction:
+            return False
+        if {target_direction, self.direction} == {"left", "right"} or \
+                {target_direction, self.direction} == {"up", "down"}:
+            # prevent 180-degree turns
+            return False
         if self.changing_direction:
-            self.direction_buffer = direction
-            return
+            # push into buffer when direction is locked
+            self.direction_buffer = target_direction
+            return False
 
-        if self.direction == direction:
-            return
-
-        self.changing_direction = True
-        if direction == "left" and self.direction != "right":
-            self.direction = "left"
-        if direction == "right" and self.direction != "left":
-            self.direction = "right"
-        if direction == "up" and self.direction != "down":
-            self.direction = "up"
-        if direction == "down" and self.direction != "up":
-            self.direction = "down"
+        self.changing_direction = True  # lock direction
+        self.direction = target_direction  # finally change direction
+        return True
 
     def walk(self, teleport=True) -> None:
         # move body from tail to neck
@@ -85,14 +85,13 @@ class Snake:
             if over_border:
                 self.teleport(border_position)
 
-        self.changing_direction = False
+        self.changing_direction = False  # unlock direction
+        self.hungry.hungry_step_count += 1
 
-        # execute buffer mode changing direction if buffer mode is set
         if self.direction_buffer != "":
+            # pop buffer
             self.change_direction(self.direction_buffer)
             self.direction_buffer = ""
-
-        self.hungry.hungry_step_count += 1
 
     def head_over_border(self) -> tuple[bool, str]:
         """
