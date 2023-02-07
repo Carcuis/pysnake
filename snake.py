@@ -121,7 +121,7 @@ class Snake:
             # to top
             self.y[0] = Global.TOP_PADDING
         else:
-            return
+            raise ValueError(f"Invalid direction: {_from}")
 
     def increase_length(self, length: int) -> None:
         if length < 0:

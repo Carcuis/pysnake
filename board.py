@@ -63,6 +63,8 @@ class TextManager:
                 elif position == "center":
                     coordinate = (int((parent_surface_width - text_surface_width) / 2),
                                   int((parent_surface_height - text_surface_height) / 2))
+                else:
+                    raise ValueError(f"Invalid position value: {position}")
             elif isinstance(text.position, tuple):
                 '''
                 custom position
@@ -94,6 +96,8 @@ class TextManager:
                     elif base_vertex == "center":
                         coordinate = (int(parent_surface_width * ratio_x - text_surface_width / 2),
                                       int(parent_surface_height * ratio_y - text_surface_height / 2))
+                    else:
+                        raise ValueError(f"Invalid base_vertex value: {base_vertex}")
 
             text_surface.set_alpha(text.alpha)
             if text.button is not None:
@@ -219,6 +223,8 @@ class Board:
                 self._text_manager.add(_item)
             elif isinstance(_item, Button):
                 self._button_manager.add(_item)
+            else:
+                raise TypeError(f"Invalid type: {type(_item)} in Board.add()")
 
     def update_button_status(self) -> None:
         self._button_manager.update_status()
