@@ -43,11 +43,10 @@ class FoodBase:
     def draw(self, surface: pygame.Surface) -> None:
         if self.image is None:
             raise TypeError("Food image is None.")
-        if self.count > 0:
-            for i in range(self.count):
-                surface.blit(self.image, (self.x[i], self.y[i]))
+        for i in range(self.count):
+            surface.blit(self.image, (self.x[i], self.y[i]))
 
-    def update(self, _parent_game: 'game.Game', index=None) -> None:
+    def update(self, _game: 'game.Game', index=None) -> None:
         # delete specific food after is eaten
         if index is not None:
             del self.x[index]
@@ -55,41 +54,40 @@ class FoodBase:
             self.count -= 1
 
         while True:
-            temp_x = random.randrange(
+            new_x = random.randrange(
                 Global.LEFT_PADDING, Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING, Global.BLOCK_SIZE
             )
-            temp_y = random.randrange(
+            new_y = random.randrange(
                 Global.TOP_PADDING, Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING, Global.BLOCK_SIZE
             )
 
             overlap = False
 
             # overlap with snake
-            for i in range(_parent_game.snake.length):
-                if temp_x == _parent_game.snake.x[i] and temp_y == _parent_game.snake.y[i]:
+            for i in range(_game.snake.length):
+                if new_x == _game.snake.x[i] and new_y == _game.snake.y[i]:
                     overlap = True
                     break
             if overlap:
                 continue
 
             # overlap with other food
-            for food in _parent_game.food_manager.food_list:
-                if food.count > 0:
-                    for i in range(food.count):
-                        if temp_x == food.x[i] and temp_y == food.y[i]:
-                            overlap = True
-                            break
+            for food in _game.food_manager.food_list:
+                for i in range(food.count):
+                    if new_x == food.x[i] and new_y == food.y[i]:
+                        overlap = True
+                        break
                 if overlap:
                     break
             if overlap:
                 continue
 
             # overlap with wall
-            if (temp_x, temp_y) in _parent_game.wall.coords:
+            if (new_x, new_y) in _game.wall.coords:
                 continue
 
-            self.x.append(temp_x)
-            self.y.append(temp_y)
+            self.x.append(new_x)
+            self.y.append(new_y)
             self.count += 1
 
             # add food at random until count >= 3

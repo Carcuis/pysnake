@@ -230,9 +230,8 @@ class Board:
         self._button_manager.update_status()
 
     def draw(self, surface: pygame.Surface) -> None:
-        if self._button_manager.button_count > 0:
-            for button in self._button_manager.button_list:
-                self._text_manager.add(button.get_text())
+        for button in self._button_manager.button_list:
+            self._text_manager.add(button.get_text())
         self._text_manager.draw(surface)
         self._text_manager.clear()
 

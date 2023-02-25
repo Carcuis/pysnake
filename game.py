@@ -217,16 +217,15 @@ class Game:
 
     def collide_with_food(self) -> bool:
         for food in self.food_manager.food_list:
-            if food.count > 0:
-                for i in range(food.count):
-                    if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
-                        food.update(self, index=i)
-                        self.snake.hungry.increase_satiety(food.add_satiety)
-                        self.snake.health.increase(-food.toxic_level)
-                        self.snake.increase_length(food.increase_length)
-                        self.snake.increase_speed(food.increase_speed)
-                        self.score += food.add_score
-                        return True
+            for i in range(food.count):
+                if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
+                    food.update(self, index=i)
+                    self.snake.hungry.increase_satiety(food.add_satiety)
+                    self.snake.health.increase(-food.toxic_level)
+                    self.snake.increase_length(food.increase_length)
+                    self.snake.increase_speed(food.increase_speed)
+                    self.score += food.add_score
+                    return True
         return False
 
     def collide_with_body(self) -> bool:
