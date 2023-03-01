@@ -2,10 +2,10 @@ import pygame
 
 
 class Global:
-    # UI
+    # === UI ===
     # block size must be an integer
     BLOCK_SIZE: int = 12
-    UI_SCALE: int = 2 * BLOCK_SIZE
+    UI_SCALE: int = 25
 
     # paddings must be an integer multiple of block size
     TOP_PADDING: int = UI_SCALE
@@ -26,8 +26,9 @@ class Global:
 
     FPS: int = 60
 
-    # snake
+    # === snake ===
     INIT_LENGTH: int = 3
+    INIT_POS: tuple[int, int] = (10, 2)  # initial position (x, y) of tail
 
     INIT_HEALTH: int = 8
     MAX_HEALTH: int = 8
@@ -41,8 +42,8 @@ class Global:
 
     MAX_LEVEL: int = 10
 
-    # others
-    WALL_MAX_COUNT_IN_THOUSANDTHS: int = 20
+    # === others ===
+    WALL_COUNT_IN_THOUSANDTHS: int = 20
 
 
 class KeyBoard:

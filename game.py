@@ -7,6 +7,7 @@ from animation import AnimationManager
 from board import Board, Button, Text
 from event import EventManager
 from food import FoodManager
+from grid import Grid
 from settings import Global, KeyBoard
 from snake import Snake
 from util import Util
@@ -20,12 +21,13 @@ class Game:
         pygame.display.set_icon(pygame.image.load("resources/img/icon.png"))
         self.surface = pygame.display.set_mode(Global.SCREEN_SIZE, pygame.RESIZABLE)
         self.banner_img = pygame.image.load("resources/img/banner.png").convert_alpha()
-        self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.BLOCK_SIZE * 0.08)
+        self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.SCREEN_SIZE[0] * 0.001)
         self.clock = pygame.time.Clock()
 
-        self.animation_manager = AnimationManager()
-        self.snake = Snake()
-        self.wall = Wall()
+        self.grid = Grid(Global.GRID_COL, Global.GRID_ROW)
+        self.animation_manager = AnimationManager(self.grid)
+        self.snake = Snake(self.grid)
+        self.wall = Wall(self.grid)
         self.food_manager = FoodManager()
         self.board = Board()
         self.snake_move_timer = Util.timer()
@@ -34,6 +36,7 @@ class Game:
         self.score: int = 0
 
     def reset_game(self) -> None:
+        self.grid.clear_all()
         self.snake.reset()
         self.wall.reset()
         self.food_manager.reset()
@@ -77,7 +80,7 @@ class Game:
             self.clock.tick(Global.FPS)
 
     def start_game(self) -> NoReturn:
-        self.update_food()
+        self.update_all_food()
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
 
@@ -85,10 +88,11 @@ class Game:
             EventManager.get_event()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
-            self.play()
+            alive, result = self.play()
             self.board.add(
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
-                Text(f"score: {self.get_score()}", pygame.Color("springgreen"), "right_top", alpha=255),
+                Text(f"len: {self.snake.length}  score: {self.get_score()}",
+                     pygame.Color("springgreen"), "right_top", alpha=255),
                 Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
@@ -101,17 +105,18 @@ class Game:
                 self.pause()
                 self.snake_move_timer.start()
 
-            if self.snake.health.value <= 0:
+            if not alive:
                 self.snake_move_timer.pause()
-                self.game_over()
+                self.game_over(result)
 
             self.clock.tick(Global.FPS)
 
-    def play(self) -> None:
+    def play(self) -> tuple[bool, int]:
         self.control()
         if self.snake.speed_changed:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
+        status = (True, 0)
         if self.snake_move_timer.arrived:
             self.snake.walk()
             collision = self.check_collision()
@@ -119,6 +124,8 @@ class Game:
                 # check upgrade after eating food
                 self.check_upgrade()
             self.update_hungry_level()
+            status = self.check_alive()
+        return status
 
     def pause(self) -> None:
         blur_surface = pre_surface = self.surface.copy()
@@ -219,7 +226,7 @@ class Game:
         for food in self.food_manager.food_list:
             for i in range(food.count):
                 if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
-                    food.update(self, index=i)
+                    food.update(self.grid, index=i)
                     self.snake.hungry.increase_satiety(food.add_satiety)
                     self.snake.health.increase(-food.toxic_level)
                     self.snake.increase_length(food.increase_length)
@@ -229,18 +236,16 @@ class Game:
         return False
 
     def collide_with_body(self) -> bool:
-        for i in range(1, self.snake.length):
-            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                self.snake.health.increase(-1)
-                return True
+        if (self.snake.x[0], self.snake.y[0]) in zip(self.snake.x[4:], self.snake.y[4:]):
+            self.snake.health.increase(-1)
+            return True
         return False
 
     def collide_with_wall(self) -> bool:
-        if (self.snake.x[0], self.snake.y[0]) in self.wall.coords:
+        if self.grid.has_wall(self.snake.x[0], self.snake.y[0]):
             self.snake.health.increase(-2)
             return True
-        else:
-            return False
+        return False
 
     def update_hungry_level(self) -> None:
         if self.snake.hungry.hungry_step_count >= max(50 - (self.level - 1) * 4, 20):
@@ -263,7 +268,29 @@ class Game:
             self.snake.increase_speed(1)
             self.level += 1
 
-    def game_over(self) -> NoReturn:
+    def check_alive(self) -> tuple[bool, int]:
+        """
+        check if the snake is alive
+        (snake will also die if there is no space)
+        result: int: 0 -> snake alive; 1 -> snake died; 2 -> no space(won the game)
+        :return: tuple(snake_alive: bool, result: int)
+        """
+        won = self.grid.get_empty_count() <= 0
+        failed = self.snake.health.value <= 0
+        alive = not (won or failed)
+        result = 0
+        if failed:
+            result = 1
+        elif won:
+            result = 2
+        return alive, result
+
+    def game_over(self, result: int = 1) -> NoReturn:
+        """
+        the game-over menu
+        :param result: int: 1 -> game over(failed, default); 2 -> won
+        :return:
+        """
         blur_surface = pre_surface = self.surface.copy()
         final_score = self.get_score()
         user_name = getpass.getuser()
@@ -314,20 +341,32 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            self.board.add(
-                Text("Game over", pygame.Color("firebrick1"), (0.5, 0.25), name="title", font_size=5 * Global.UI_SCALE)
-            )
+            if result == 1:
+                self.board.add(
+                    Text("Game over", pygame.Color("firebrick1"), (0.5, 0.25), name="title",
+                         font_size=5 * Global.UI_SCALE)
+                )
+            elif result == 2:
+                self.board.add(
+                    Text("You win !!!", pygame.Color("springgreen3"), (0.5, 0.25), name="title",
+                         font_size=5 * Global.UI_SCALE)
+                )
+            else:
+                raise ValueError(f"Invalid {result = }")
+
             if break_record:
                 self.board.add(
                     Text(f"New Best Score: {final_score}", pygame.Color("darkorange"), (0.5, 0.45),
-                         bold=True, name="sub_title_1", font_size=2 * Global.UI_SCALE)
+                         bold=True, name="sub_title_1", font_size=2 * Global.UI_SCALE),
+                    Text(f"Length: {self.snake.length}", pygame.Color("goldenrod"), (0.5, 0.55), name="sub_title_2",
+                         font_size=int(1.5 * Global.UI_SCALE))
                 )
             else:
                 self.board.add(
                     Text(f"Best record: {best_score}", pygame.Color("white"), (0.5, 0.1), name="sub_title_1", alpha=200,
                          font_size=int(1.5 * Global.UI_SCALE)),
-                    Text(f"Score: {final_score}", pygame.Color("goldenrod"), (0.5, 0.45), name="sub_title_2",
-                         font_size=int(2.5 * Global.UI_SCALE))
+                    Text(f"Score: {final_score}  Length: {self.snake.length}", pygame.Color("goldenrod"), (0.5, 0.45),
+                         name="sub_title_2", font_size=int(2.5 * Global.UI_SCALE))
                 )
 
             self.board.draw(self.surface)
@@ -345,9 +384,9 @@ class Game:
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def update_food(self) -> None:
+    def update_all_food(self) -> None:
         for food in self.food_manager.food_list:
-            food.update(self)
+            food.update(self.grid)
 
     def draw_banner(self) -> None:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2

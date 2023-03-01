@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-import game
+from grid import Grid
 from settings import Global
 
 
@@ -30,6 +30,7 @@ class FoodManager:
 
 class FoodBase:
     def __init__(self) -> None:
+        self.name: str = ""
         self.image: pygame.Surface | None = None
         self.count: int = 0
         self.x: list[int] = []
@@ -44,48 +45,31 @@ class FoodBase:
         if self.image is None:
             raise TypeError("Food image is None.")
         for i in range(self.count):
-            surface.blit(self.image, (self.x[i], self.y[i]))
+            surface.blit(
+                self.image,
+                (self.x[i] * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                 self.y[i] * Global.BLOCK_SIZE + Global.TOP_PADDING)
+            )
 
-    def update(self, _game: 'game.Game', index=None) -> None:
+    def update(self, grid: Grid, index=None) -> None:
         # delete specific food after is eaten
         if index is not None:
+            grid.clear_type(self.x[index], self.y[index], self.name)
             del self.x[index]
             del self.y[index]
             self.count -= 1
 
         while True:
-            new_x = random.randrange(
-                Global.LEFT_PADDING, Global.SCREEN_SIZE[0] - Global.RIGHT_PADDING, Global.BLOCK_SIZE
-            )
-            new_y = random.randrange(
-                Global.TOP_PADDING, Global.SCREEN_SIZE[1] - Global.BOTTOM_PADDING, Global.BLOCK_SIZE
-            )
+            if grid.get_empty_count() <= 0:
+                break
 
-            overlap = False
+            new_x = random.randint(0, Global.GRID_COL - 1)
+            new_y = random.randint(0, Global.GRID_ROW - 1)
 
-            # overlap with snake
-            for i in range(_game.snake.length):
-                if new_x == _game.snake.x[i] and new_y == _game.snake.y[i]:
-                    overlap = True
-                    break
-            if overlap:
+            if not grid.is_empty(new_x, new_y):
                 continue
 
-            # overlap with other food
-            for food in _game.food_manager.food_list:
-                for i in range(food.count):
-                    if new_x == food.x[i] and new_y == food.y[i]:
-                        overlap = True
-                        break
-                if overlap:
-                    break
-            if overlap:
-                continue
-
-            # overlap with wall
-            if (new_x, new_y) in _game.wall.coords:
-                continue
-
+            grid.set_type(new_x, new_y, self.name)
             self.x.append(new_x)
             self.y.append(new_y)
             self.count += 1
@@ -100,6 +84,7 @@ class FoodBase:
 class Apple(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "apple"
         self.image = pygame.image.load("resources/img/apple_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -112,6 +97,7 @@ class Apple(FoodBase):
 class Beef(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "beef"
         self.image = pygame.image.load("resources/img/beef_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 2
@@ -124,6 +110,7 @@ class Beef(FoodBase):
 class Iron(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "iron"
         self.image = pygame.image.load("resources/img/iron_block.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -136,6 +123,7 @@ class Iron(FoodBase):
 class Gold(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "gold"
         self.image = pygame.image.load("resources/img/gold_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 2
@@ -148,6 +136,7 @@ class Gold(FoodBase):
 class SlimeBall(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "slimeball"
         self.image = pygame.image.load("resources/img/slimeball_bigger.png").convert()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
@@ -160,6 +149,7 @@ class SlimeBall(FoodBase):
 class Heart(FoodBase):
     def __init__(self) -> None:
         super().__init__()
+        self.name = "heart"
         self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
         self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
         self.add_satiety = 1
