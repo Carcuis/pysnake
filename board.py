@@ -98,6 +98,8 @@ class TextManager:
                                       int(parent_surface_height * ratio_y - text_surface_height / 2))
                     else:
                         raise ValueError(f"Invalid base_vertex value: {base_vertex}")
+            else:
+                raise TypeError(f"Invalid position type: {text.position = }")
 
             text_surface.set_alpha(text.alpha)
             if text.button is not None:
