@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from game import Game
+from state import StateManager
 from util import Util
 
 
 def main():
-    game = Game()
-    game.main_menu()
+    state_manager = StateManager()
+    state_manager.run()
 
 
 if __name__ == '__main__':

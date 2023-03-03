@@ -1,3 +1,4 @@
+import enum
 import json
 import os
 import sys
@@ -7,6 +8,29 @@ from typing import Callable, NoReturn
 
 import cv2
 import pygame
+
+
+@enum.unique
+class GameState(enum.Enum):
+    """
+    Enum representing the possible states of the game.
+    """
+    PLAYING = 0
+    FAILED = 1
+    WINNING = 2
+
+
+@enum.unique
+class Motion(enum.Enum):
+    """
+    Enum representing the motions of each menu.
+    """
+    START_GAME = 0
+    MAIN_MENU = 1
+    PAUSE = 2
+    CONTINUE = 3
+    GAME_OVER = 4
+    QUIT_GAME = 5
 
 
 class RepeatedTimer(Thread):

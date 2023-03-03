@@ -1,8 +1,18 @@
+import enum
+
 import pygame
 
 from grid import Grid
 from health import Health, Hungry
 from settings import Global
+
+
+@enum.unique
+class Direction(enum.Enum):
+    UP = 0
+    DOWN = 1
+    LEFT = 2
+    RIGHT = 3
 
 
 class Snake:

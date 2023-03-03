@@ -1,5 +1,4 @@
 import getpass
-from typing import NoReturn
 
 import pygame
 
@@ -10,7 +9,7 @@ from food import FoodManager
 from grid import Grid
 from settings import Global, KeyBoard
 from snake import Snake
-from util import Util
+from util import GameState, Motion, Util
 from wall import Wall
 
 
@@ -45,7 +44,7 @@ class Game:
         self.level = 1
         self.score = 0
 
-    def main_menu(self) -> NoReturn:
+    def main_menu(self) -> Motion:
         self.animation_manager.start()
 
         start_button = Button(
@@ -71,15 +70,15 @@ class Game:
             if start_button.is_triggered:
                 self.animation_manager.pause()
                 self.board.clear_button()
-                self.start_game()
+                return Motion.START_GAME
 
             if exit_button.is_triggered:
-                Util.quit_game()
+                return Motion.QUIT_GAME
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def start_game(self) -> NoReturn:
+    def start_game(self) -> tuple[Motion, GameState]:
         self.update_all_food()
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
@@ -102,21 +101,26 @@ class Game:
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
                     EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
                 self.snake_move_timer.pause()
-                self.pause()
-                self.snake_move_timer.start()
+                motion = self.pause()
+                if motion in {Motion.START_GAME, Motion.MAIN_MENU}:
+                    return motion, result
+                if motion == Motion.CONTINUE:
+                    self.snake_move_timer.start()
+                else:
+                    raise ValueError(f"Invalid motion: {motion}")
 
             if not alive:
                 self.snake_move_timer.pause()
-                self.game_over(result)
+                return Motion.GAME_OVER, result
 
             self.clock.tick(Global.FPS)
 
-    def play(self) -> tuple[bool, int]:
+    def play(self) -> tuple[bool, GameState]:
         self.control()
         if self.snake.speed_changed:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
-        status = (True, 0)
+        status = (True, GameState.PLAYING)
         if self.snake_move_timer.arrived:
             self.snake.walk()
             collision = self.check_collision()
@@ -127,7 +131,7 @@ class Game:
             status = self.check_alive()
         return status
 
-    def pause(self) -> None:
+    def pause(self) -> Motion:
         blur_surface = pre_surface = self.surface.copy()
 
         resume_button = Button(
@@ -163,7 +167,7 @@ class Game:
                 blur_kernel_size -= 6
                 if blur_kernel_size <= 1:
                     self.board.clear_button()
-                    break
+                    return Motion.CONTINUE
 
             self.surface.blit(blur_surface, (0, 0))
 
@@ -181,12 +185,12 @@ class Game:
             if restart_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                self.start_game()
+                return Motion.START_GAME
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                self.main_menu()
+                return Motion.MAIN_MENU
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
@@ -268,24 +272,24 @@ class Game:
             self.snake.increase_speed(1)
             self.level += 1
 
-    def check_alive(self) -> tuple[bool, int]:
+    def check_alive(self) -> tuple[bool, GameState]:
         """
         check if the snake is alive
         (snake will also die if there is no space)
-        result: int: 0 -> snake alive; 1 -> snake died; 2 -> no space(win the game)
+        result: int: PLAYING -> snake alive; FAILED -> snake died; WINNING -> no space(win the game)
         :return: tuple(snake_alive: bool, result: int)
         """
         winning = self.grid.get_empty_count() <= 0
         failed = self.snake.health.value <= 0
         alive = not (winning or failed)
-        result = 0
+        result = GameState.PLAYING
         if failed:
-            result = 1
+            result = GameState.FAILED
         elif winning:
-            result = 2
+            result = GameState.WINNING
         return alive, result
 
-    def game_over(self, result: int = 1) -> NoReturn:
+    def game_over(self, result: GameState = GameState.FAILED) -> Motion:
         """
         the game-over menu
         :param result: int: 1 -> game over(failed, default); 2 -> winning
@@ -341,12 +345,12 @@ class Game:
 
             self.surface.blit(blur_surface, (0, 0))
 
-            if result == 1:
+            if result == GameState.FAILED:
                 self.board.add(
                     Text("Game over", pygame.Color("firebrick1"), (0.5, 0.25), name="title",
                          font_size=5 * Global.UI_SCALE)
                 )
-            elif result == 2:
+            elif result == GameState.WINNING:
                 self.board.add(
                     Text("You win !!!", pygame.Color("springgreen3"), (0.5, 0.25), name="title",
                          font_size=5 * Global.UI_SCALE)
@@ -374,12 +378,12 @@ class Game:
             if restart_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                self.start_game()
+                return Motion.START_GAME
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                self.main_menu()
+                return Motion.MAIN_MENU
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
