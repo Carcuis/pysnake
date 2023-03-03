@@ -272,23 +272,23 @@ class Game:
         """
         check if the snake is alive
         (snake will also die if there is no space)
-        result: int: 0 -> snake alive; 1 -> snake died; 2 -> no space(won the game)
+        result: int: 0 -> snake alive; 1 -> snake died; 2 -> no space(win the game)
         :return: tuple(snake_alive: bool, result: int)
         """
-        won = self.grid.get_empty_count() <= 0
+        winning = self.grid.get_empty_count() <= 0
         failed = self.snake.health.value <= 0
-        alive = not (won or failed)
+        alive = not (winning or failed)
         result = 0
         if failed:
             result = 1
-        elif won:
+        elif winning:
             result = 2
         return alive, result
 
     def game_over(self, result: int = 1) -> NoReturn:
         """
         the game-over menu
-        :param result: int: 1 -> game over(failed, default); 2 -> won
+        :param result: int: 1 -> game over(failed, default); 2 -> winning
         :return:
         """
         blur_surface = pre_surface = self.surface.copy()
