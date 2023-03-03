@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pygame
 
 from event import EventManager
@@ -6,8 +8,9 @@ from settings import Global, KeyBoard
 
 class Text:
     def __init__(self, text: str, color: pygame.Color, position: str | tuple[float, float] | tuple[float, float, str],
-                 alpha=255, bg_color: tuple[pygame.Color, pygame.Color] | None = None, name: str = "",
-                 font_size=Global.UI_SCALE, bold=False, italic=False, button: 'Button' = None) -> None:
+                 alpha=255, bg_color: pygame.Color | None = None, name: str = "",
+                 font_size: int = Global.UI_SCALE, bold=False, italic=False,
+                 button: Optional['Button'] = None) -> None:
         self.text: str = text
         self.color: pygame.Color = color
         self.bg_color: pygame.Color | None = bg_color
@@ -18,7 +21,7 @@ class Text:
         self.font_size: int = font_size
         self.bold: bool = bold
         self.italic: bool = italic
-        self.button: 'Button' = button
+        self.button: Optional['Button'] = button
 
 
 class TextManager:
@@ -115,17 +118,17 @@ class Button:
     def __init__(self, title: str, color: tuple[pygame.Color, pygame.Color],
                  position: str | tuple[float, float] | tuple[float, float, str],
                  alpha: tuple[int, int] = (200, 255), bg_color: tuple[pygame.Color, pygame.Color] | None = None,
-                 font_size=2 * Global.UI_SCALE) -> None:
+                 font_size: int = 2 * Global.UI_SCALE) -> None:
         self.is_hovered_or_selected: bool = False  # hovered by mouse or selected by keyboard
         self.is_triggered: bool = False
         self.rect = pygame.Rect(-1, -1, 1, 1)
-        self.title = title
+        self.title: str = title
         self._content: dict = {}
-        self._color = color
-        self._alpha = alpha
-        self._position = position
-        self._bg_color = bg_color
-        self._font_size = font_size
+        self._color: tuple[pygame.Color, pygame.Color] = color
+        self._alpha: tuple[int, int] = alpha
+        self._position: str | tuple[float, float] | tuple[float, float, str] = position
+        self._bg_color: tuple[pygame.Color, pygame.Color] | None = bg_color
+        self._font_size: int = font_size
 
     def get_text(self) -> Text:
         """
@@ -134,17 +137,18 @@ class Button:
         """
         name = self.title
         position = self._position
-        bg_color = self._bg_color
         font_size = self._font_size
 
         if not self.is_hovered_or_selected:
             text = self.title
             color = self._color[0]
+            bg_color = self._bg_color[0] if self._bg_color else None
             alpha = self._alpha[0]
             bold = False
         else:
             text = f"> {self.title} <"
             color = self._color[1]
+            bg_color = self._bg_color[1] if self._bg_color else None
             alpha = self._alpha[1]
             bold = True
         return Text(text, color, position, alpha, bg_color, name, font_size, bold, False, self)

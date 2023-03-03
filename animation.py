@@ -12,7 +12,7 @@ from util import Util
 class LittleSnake(Snake):
     def __init__(self, x: int, y: int, length: int, move_speed: int, grid: Grid) -> None:
         super().__init__(grid)
-        self._grid = Grid
+        self._grid = grid
         self.direction = "down"
         self.length = length
         self.x = [x] * self.length

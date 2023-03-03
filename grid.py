@@ -1,11 +1,12 @@
 import numpy as np
+import numpy.typing as npt
 
 
 class Grid:
     def __init__(self, width: int, height: int):
         self.width: int = width
         self.height: int = height
-        self.contents: np.ndarray[(int, int), np.uint8] = np.zeros((height, width), dtype=np.uint8)
+        self.contents: npt.NDArray[np.uint8] = np.zeros((height, width), dtype=np.uint8)
         self.type_dict: dict[str, int] = {
             'nothing': 0, 'wall': 1, 'body': 100,
             # food: [10, 100)
