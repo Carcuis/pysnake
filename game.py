@@ -27,7 +27,7 @@ class Game:
         self.animation_manager = AnimationManager(self.grid)
         self.snake = Snake(self.grid)
         self.wall = Wall(self.grid)
-        self.food_manager = FoodManager()
+        self.food_manager = FoodManager(self.grid)
         self.board = Board()
         self.snake_move_timer = Util.timer()
 
@@ -79,7 +79,6 @@ class Game:
             self.clock.tick(Global.FPS)
 
     def start_game(self) -> tuple[Motion, GameState]:
-        self.update_all_food()
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
 
@@ -387,10 +386,6 @@ class Game:
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
-
-    def update_all_food(self) -> None:
-        for food in self.food_manager.food_list:
-            food.update(self.grid)
 
     def draw_banner(self) -> None:
         x = (self.surface.get_width() - self.banner_img.get_width()) / 2

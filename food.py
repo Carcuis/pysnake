@@ -7,25 +7,31 @@ from settings import Global
 
 
 class FoodManager:
-    def __init__(self) -> None:
+    def __init__(self, grid: Grid) -> None:
+        self._grid: Grid = grid
         self.apple = Apple()
         self.beef = Beef()
         self.iron = Iron()
         self.gold = Gold()
         self.slimeball = SlimeBall()
         self.heart = Heart()
-
         self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
+        self.update_all()
 
     def reset(self) -> None:
         for food in self.food_list:
             food.x.clear()
             food.y.clear()
             food.count = 0
+            food.update(self._grid)
 
     def draw(self, surface: pygame.Surface) -> None:
         for food in self.food_list:
             food.draw(surface)
+
+    def update_all(self) -> None:
+        for food in self.food_list:
+            food.update(self._grid)
 
 
 class FoodBase:
