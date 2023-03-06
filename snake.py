@@ -108,9 +108,14 @@ class Snake:
 
         if teleport:
             # teleport head if is over border after movement
-            over_border, border_position = self.head_over_border()
-            if over_border:
-                self.teleport(border_position)
+            if self.x[0] < 0:
+                self.x[0] = Global.GRID_COL - 1
+            elif self.x[0] >= Global.GRID_COL:
+                self.x[0] = 0
+            if self.y[0] < 0:
+                self.y[0] = Global.GRID_ROW - 1
+            elif self.y[0] >= Global.GRID_ROW:
+                self.y[0] = 0
 
         if reg_grid:
             # register body type of new head to grid cell
@@ -126,36 +131,6 @@ class Snake:
             # pop buffer
             self.change_direction(self.direction_buffer)
             self.direction_buffer = Direction.NONE
-
-    def head_over_border(self) -> tuple[bool, str]:
-        """
-        :return: (bool: over_border, str: border_position)
-        """
-        if self.x[0] < 0:
-            return True, "left"
-        if self.x[0] >= Global.GRID_COL:
-            return True, "right"
-        if self.y[0] < 0:
-            return True, "top"
-        if self.y[0] >= Global.GRID_ROW:
-            return True, "bottom"
-        return False, "none"
-
-    def teleport(self, _from: str) -> None:
-        if _from == "left":
-            # to right
-            self.x[0] = Global.GRID_COL - 1
-        elif _from == "right":
-            # to left
-            self.x[0] = 0
-        elif _from == "top":
-            # to bottom
-            self.y[0] = Global.GRID_ROW - 1
-        elif _from == "bottom":
-            # to top
-            self.y[0] = 0
-        else:
-            raise ValueError(f"Invalid direction: {_from}")
 
     def increase_length(self, length: int) -> bool:
         if length < 0:
