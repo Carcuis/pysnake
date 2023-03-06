@@ -9,11 +9,11 @@ from settings import Global
 
 @enum.unique
 class Direction(enum.Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
-    NONE = 4
+    NONE = 0
+    UP = 1
+    DOWN = 2
+    LEFT = 3
+    RIGHT = 4
 
 
 class Snake:
