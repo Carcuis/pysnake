@@ -1,4 +1,7 @@
 import getpass
+import time
+from collections import deque
+from threading import Event, Thread
 
 import pygame
 
@@ -34,6 +37,13 @@ class Game:
         self.level: int = 1
         self.score: int = 0
 
+        if Global.SHOW_REAL_SPEED:
+            self.head_deque: deque = deque(maxlen=5)  # store head positions of snake, used to calculate real_speed
+            self.real_speed: int = 0
+            self.thread_calc_speed = Thread(target=self.calc_real_speed, daemon=True)
+            self.thread_calc_speed.start()
+            self.calc_speed_running = Event()
+
     def reset_game(self) -> None:
         self.grid.clear_all()
         self.snake.reset()
@@ -43,6 +53,10 @@ class Game:
         self.snake.hungry.reset()
         self.level = 1
         self.score = 0
+        if Global.SHOW_REAL_SPEED:
+            self.calc_speed_running.clear()
+            self.head_deque.clear()
+            self.real_speed = 0
 
     def main_menu(self) -> Motion:
         self.animation_manager.start()
@@ -81,17 +95,21 @@ class Game:
     def start_game(self) -> tuple[Motion, GameState]:
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
+        if Global.SHOW_REAL_SPEED:
+            self.calc_speed_running.set()
 
         while True:
             EventManager.get_event()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
             alive, result = self.play()
+            speed = f"{self.snake.move_speed}/{self.real_speed}" if Global.SHOW_REAL_SPEED else self.snake.move_speed
             self.board.add(
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
                 Text(f"len: {self.snake.length}  score: {self.get_score()}",
                      pygame.Color("springgreen"), "right_top", alpha=255),
-                Text(f"speed: {self.snake.move_speed}", pygame.Color("white"), "middle_top", alpha=255),
+                Text(f"speed: {speed}",
+                     pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
             self.draw_surface()
@@ -99,17 +117,29 @@ class Game:
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
                     EventManager.check_key_or_button(pygame.MOUSEBUTTONDOWN, 3):
+                # enter pause menu
                 self.snake_move_timer.pause()
+                if Global.SHOW_REAL_SPEED:
+                    self.calc_speed_running.clear()
+                    self.head_deque.clear()
+
                 motion = self.pause()
                 if motion in {Motion.START_GAME, Motion.MAIN_MENU}:
                     return motion, result
                 if motion == Motion.CONTINUE:
                     self.snake_move_timer.start()
+                    if Global.SHOW_REAL_SPEED:
+                        self.calc_speed_running.set()
                 else:
                     raise ValueError(f"Invalid motion: {motion}")
 
             if not alive:
+                # game over
                 self.snake_move_timer.pause()
+                if Global.SHOW_REAL_SPEED:
+                    self.calc_speed_running.clear()
+                    self.head_deque.clear()
+                    self.real_speed = 0
                 return Motion.GAME_OVER, result
 
             self.clock.tick(Global.FPS)
@@ -120,12 +150,20 @@ class Game:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
         status = (True, GameState.PLAYING)
+
         if self.snake_move_timer.arrived:
             self.snake.walk()
+
+            if Global.SHOW_REAL_SPEED:
+                head_pos = (self.snake.x[0], self.snake.y[0])
+                cur_time = time.time()
+                self.head_deque.append((head_pos, cur_time))
+
             collision = self.check_collision()
             if collision[0]:
                 # check upgrade after eating food
                 self.check_upgrade()
+
             self.update_hungry_level()
             status = self.check_alive()
         return status
@@ -287,6 +325,25 @@ class Game:
         elif winning:
             result = GameState.WINNING
         return alive, result
+
+    def calc_real_speed(self) -> None:
+        """
+        thread: calculate the real-time speed of the snake, unit: block per second
+        """
+        while True:
+            if len(self.head_deque) < self.head_deque.maxlen:
+                time.sleep(0.1)
+                continue
+            total_distance = 0
+            for i in range(0, len(self.head_deque) - 1):
+                distance = abs(self.head_deque[i + 1][0][0] - self.head_deque[i][0][0]) + \
+                           abs(self.head_deque[i + 1][0][1] - self.head_deque[i][0][1])
+                total_distance += distance
+            total_time = self.head_deque[-1][1] - self.head_deque[0][1]
+            speed = total_distance / total_time
+            self.real_speed = round(speed, 1)
+            time.sleep(0.1)
+            self.calc_speed_running.wait()
 
     def game_over(self, result: GameState = GameState.FAILED) -> Motion:
         """
