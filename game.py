@@ -108,8 +108,7 @@ class Game:
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
                 Text(f"len: {self.snake.length}  score: {self.get_score()}",
                      pygame.Color("springgreen"), "right_top", alpha=255),
-                Text(f"speed: {speed}",
-                     pygame.Color("white"), "middle_top", alpha=255),
+                Text(f"speed: {speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
             self.draw_surface()

@@ -3,7 +3,7 @@ import json
 import os
 import sys
 import time
-from threading import Thread, Event
+from threading import Event, Thread
 from typing import Callable, NoReturn
 
 import cv2
