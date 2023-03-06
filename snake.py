@@ -13,6 +13,7 @@ class Direction(enum.Enum):
     DOWN = 1
     LEFT = 2
     RIGHT = 3
+    NONE = 4
 
 
 class Snake:
@@ -38,9 +39,9 @@ class Snake:
 
         self.move_speed: int = Global.INIT_SPEED
         self.speed_changed: bool = False
-        self.direction: str = "right"
+        self.direction: Direction = Direction.RIGHT
+        self.direction_buffer: Direction = Direction.NONE
         self.changing_direction: bool = False
-        self.direction_buffer: str = ""
 
     def reset(self) -> None:
         self.length = self.init_length
@@ -51,9 +52,9 @@ class Snake:
 
         self.move_speed = Global.INIT_SPEED
         self.speed_changed = False
-        self.direction = "right"
+        self.direction = Direction.RIGHT
+        self.direction_buffer = Direction.NONE
         self.changing_direction = False
-        self.direction_buffer = ""
 
     def draw(self, surface: pygame.Surface) -> None:
         surface.blit(
@@ -68,13 +69,13 @@ class Snake:
                  self.y[i] * Global.BLOCK_SIZE + Global.TOP_PADDING)
             )
 
-    def change_direction(self, target_direction: str) -> bool:
-        if target_direction not in ("left", "right", "up", "down"):
+    def change_direction(self, target_direction: Direction) -> bool:
+        if target_direction not in Direction or target_direction == Direction.NONE:
             raise ValueError(f"Invalid direction: {target_direction}")
         if self.direction == target_direction:
             return False
-        if {target_direction, self.direction} == {"left", "right"} or \
-                {target_direction, self.direction} == {"up", "down"}:
+        if {target_direction, self.direction} == {Direction.LEFT, Direction.RIGHT} or \
+                {target_direction, self.direction} == {Direction.UP, Direction.DOWN}:
             # prevent 180-degree turns
             return False
         if self.changing_direction:
@@ -96,13 +97,13 @@ class Snake:
             self.y[i] = self.y[i - 1]
 
         # move head
-        if self.direction == "left":
+        if self.direction == Direction.LEFT:
             self.x[0] -= 1
-        elif self.direction == "right":
+        elif self.direction == Direction.RIGHT:
             self.x[0] += 1
-        elif self.direction == "up":
+        elif self.direction == Direction.UP:
             self.y[0] -= 1
-        elif self.direction == "down":
+        elif self.direction == Direction.DOWN:
             self.y[0] += 1
 
         if teleport:
@@ -121,10 +122,10 @@ class Snake:
         self.changing_direction = False  # unlock direction
         self.hungry.hungry_step_count += 1
 
-        if self.direction_buffer != "":
+        if self.direction_buffer != Direction.NONE:
             # pop buffer
             self.change_direction(self.direction_buffer)
-            self.direction_buffer = ""
+            self.direction_buffer = Direction.NONE
 
     def head_over_border(self) -> tuple[bool, str]:
         """

@@ -8,7 +8,7 @@ from event import EventManager
 from food import FoodManager
 from grid import Grid
 from settings import Global, KeyBoard
-from snake import Snake
+from snake import Direction, Snake
 from util import GameState, Motion, Util
 from wall import Wall
 
@@ -208,13 +208,13 @@ class Game:
 
     def control(self) -> None:
         if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.left_list):
-            self.snake.change_direction("left")
+            self.snake.change_direction(Direction.LEFT)
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.right_list):
-            self.snake.change_direction("right")
+            self.snake.change_direction(Direction.RIGHT)
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.up_list):
-            self.snake.change_direction("up")
+            self.snake.change_direction(Direction.UP)
         elif EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.down_list):
-            self.snake.change_direction("down")
+            self.snake.change_direction(Direction.DOWN)
 
     def get_score(self) -> int:
         return self.snake.length - self.snake.init_length + self.score

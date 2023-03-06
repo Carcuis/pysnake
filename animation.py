@@ -5,7 +5,7 @@ import pygame
 
 from grid import Grid
 from settings import Global
-from snake import Snake
+from snake import Direction, Snake
 from util import Util
 
 
@@ -13,7 +13,7 @@ class LittleSnake(Snake):
     def __init__(self, x: int, y: int, length: int, move_speed: int, grid: Grid) -> None:
         super().__init__(grid)
         self._grid = grid
-        self.direction = "down"
+        self.direction = Direction.DOWN
         self.length = length
         self.x = [x] * self.length
         self.y = [y - (i + 1) for i in range(self.length)]
