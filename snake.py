@@ -9,11 +9,12 @@ from settings import Global
 
 @enum.unique
 class Direction(enum.Enum):
-    NONE = 0
-    UP = 1
+    # clockwise
+    UP = 0
+    RIGHT = 1
     DOWN = 2
     LEFT = 3
-    RIGHT = 4
+    NONE = 4
 
 
 class Snake:
@@ -87,7 +88,15 @@ class Snake:
         self.direction = target_direction  # finally change direction
         return True
 
-    def walk(self, teleport=True, reg_grid=True) -> None:
+    def walk(self, teleport=True, reg_grid=True) -> bool:
+        """
+        Move snake one step
+
+        :param teleport: teleport head if is over border after movement
+        :param reg_grid: register body type of new head to grid cell
+        :return: over_border: bool
+        """
+
         # save tail
         old_tail_x, old_tail_y = self.x[-1], self.y[-1]
 
@@ -106,18 +115,21 @@ class Snake:
         elif self.direction == Direction.DOWN:
             self.y[0] += 1
 
-        if teleport:
-            # teleport head if is over border after movement
-            if self.x[0] < 0:
-                self.x[0] = Global.GRID_COL - 1
-            elif self.x[0] >= Global.GRID_COL:
-                self.x[0] = 0
-            if self.y[0] < 0:
-                self.y[0] = Global.GRID_ROW - 1
-            elif self.y[0] >= Global.GRID_ROW:
-                self.y[0] = 0
+        over_border = False
+        if self.x[0] < 0 or self.x[0] >= Global.GRID_COL or self.y[0] < 0 or self.y[0] >= Global.GRID_ROW:
+            over_border = True
+            if teleport:
+                # teleport head if is over border after movement
+                if self.x[0] < 0:
+                    self.x[0] = Global.GRID_COL - 1
+                elif self.x[0] >= Global.GRID_COL:
+                    self.x[0] = 0
+                if self.y[0] < 0:
+                    self.y[0] = Global.GRID_ROW - 1
+                elif self.y[0] >= Global.GRID_ROW:
+                    self.y[0] = 0
 
-        if reg_grid:
+        if reg_grid and not over_border:
             # register body type of new head to grid cell
             self._grid.set_type(self.x[0], self.y[0], 'body')
             if (old_tail_x, old_tail_y) not in zip(self.x, self.y):
@@ -131,6 +143,8 @@ class Snake:
             # pop buffer
             self.change_direction(self.direction_buffer)
             self.direction_buffer = Direction.NONE
+
+        return over_border
 
     def increase_length(self, length: int) -> bool:
         if length < 0:

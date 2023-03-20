@@ -36,6 +36,8 @@ class Game:
 
         self.level: int = 1
         self.score: int = 0
+        self.move_distance: int = 0
+        self.eat_food_count: int = 0
 
         if Global.SHOW_REAL_SPEED:
             self.head_deque: deque = deque(maxlen=5)  # store head positions of snake, used to calculate real_speed
@@ -53,6 +55,8 @@ class Game:
         self.snake.hungry.reset()
         self.level = 1
         self.score = 0
+        self.move_distance = 0
+        self.eat_food_count = 0
         if Global.SHOW_REAL_SPEED:
             self.calc_speed_running.clear()
             self.head_deque.clear()
@@ -102,11 +106,11 @@ class Game:
             EventManager.get_event()
 
             self.set_base_color(Global.BACK_GROUND_COLOR)
-            alive, result = self.play()
+            alive, result, _, _, _ = self.play(teleport=Global.TELEPORT)
             speed = f"{self.snake.move_speed}/{self.real_speed}" if Global.SHOW_REAL_SPEED else self.snake.move_speed
             self.board.add(
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
-                Text(f"len: {self.snake.length}  score: {self.get_score()}",
+                Text(f"score: {self.get_score()}  len: {self.snake.length}",
                      pygame.Color("springgreen"), "right_top", alpha=255),
                 Text(f"speed: {speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
@@ -143,15 +147,32 @@ class Game:
 
             self.clock.tick(Global.FPS)
 
-    def play(self) -> tuple[bool, GameState]:
-        self.control()
-        if self.snake.speed_changed:
+    def play(self, direction: Direction | None = None, full_speed=False, teleport=False) -> \
+            tuple[bool, GameState, bool, bool, bool]:
+        """
+        control snake to move and update game status
+
+        :param direction: if not None, control snake by `direction`, else control by keyboard
+        :param full_speed: set if snake move at full speed (ignore timer)
+        :param teleport: set if snake can teleport when hit the border
+        :return: (alive, game_state, collision_with_food, collision_with_body, collision_with_wall)
+        """
+
+        if direction is not None:
+            self.snake.change_direction(direction)
+        else:
+            # control by keyboard
+            self.control()
+        if not full_speed and self.snake.speed_changed:
             self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
             self.snake.speed_changed = False
-        status = (True, GameState.PLAYING)
 
-        if self.snake_move_timer.arrived:
-            self.snake.walk()
+        status = (True, GameState.PLAYING)
+        collision = (False, False, False)
+
+        if full_speed or self.snake_move_timer.arrived:
+            self.snake.walk(teleport=teleport)
+            self.move_distance += 1
 
             if Global.SHOW_REAL_SPEED:
                 head_pos = (self.snake.x[0], self.snake.y[0])
@@ -165,7 +186,7 @@ class Game:
 
             self.update_hungry_level()
             status = self.check_alive()
-        return status
+        return status[0], status[1], collision[0], collision[1], collision[2]
 
     def pause(self) -> Motion:
         blur_surface = pre_surface = self.surface.copy()
@@ -272,31 +293,30 @@ class Game:
                     self.snake.increase_length(food.increase_length)
                     self.snake.increase_speed(food.increase_speed)
                     self.score += food.add_score
+                    self.eat_food_count += 1
                     return True
         return False
 
     def collide_with_body(self) -> bool:
         if (self.snake.x[0], self.snake.y[0]) in zip(self.snake.x[4:], self.snake.y[4:]):
-            self.snake.health.increase(-1)
+            self.snake.health.increase(-Global.EAT_BODY_DAMAGE)
             return True
         return False
 
     def collide_with_wall(self) -> bool:
         if self.grid.has_wall(self.snake.x[0], self.snake.y[0]):
-            self.snake.health.increase(-2)
+            self.snake.health.increase(-Global.HIT_WALL_DAMAGE)
             return True
         return False
 
     def update_hungry_level(self) -> None:
-        if self.snake.hungry.hungry_step_count >= max(50 - (self.level - 1) * 4, 20):
+        if self.snake.hungry.hungry_step_count % max(50 - (self.level - 1) * 4, 20) == 0:
             if self.snake.hungry.get_satiety() > 0:
                 # increase hungry value till satiety -> 0
                 self.snake.hungry.increase_satiety(-1)
             else:
                 # start to decrease health value
                 self.snake.health.increase(-1)
-            # reset hungry step count
-            self.snake.hungry.hungry_step_count = 0
 
     def check_upgrade(self) -> None:
         """

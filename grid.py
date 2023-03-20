@@ -8,7 +8,7 @@ class Grid:
         self.height: int = height
         self.contents: npt.NDArray[np.uint8] = np.zeros((height, width), dtype=np.uint8)
         self.type_dict: dict[str, int] = {
-            'nothing': 0, 'wall': 1, 'body': 100,
+            'nothing': 0, 'wall': 101, 'body': 100,
             # food: [10, 100)
             'apple': 10, 'beef': 11, 'iron': 12, 'gold': 13, 'slimeball': 14, 'heart': 15
         }
@@ -31,10 +31,15 @@ class Grid:
 
     def check_type_value(self, value: int) -> None:
         """ check if `value` or `value - 100` in Grid.type_dict """
-        if value <= 100:
+        if value in {100, 101, 201}:
+            # body on empty, wall, body on wall
+            return
+        if value < 100:
+            # maybe food or empty
             _value = value
             _str = f"{value}"
         else:
+            # maybe body on food
             _value = value - 100
             _str = f"{value} or {_value}"
         if _value not in self.type_dict.values():
@@ -44,8 +49,10 @@ class Grid:
         return self.width, self.height
 
     def get_value(self, x: int, y: int) -> int:
-        """ get the original value of a cell, x: column, y: row """
-        return self.contents[y, x]
+        """ get the original value of a cell, x: column, y: row, return 101(wall) if out of range """
+        if 0 <= x < self.width and 0 <= y < self.height:
+            return self.contents[y, x]
+        return 101  # wall
 
     def set_value(self, x: int, y: int, value: int) -> None:
         """ set the original value of a cell, x: column, y: row """
@@ -56,10 +63,17 @@ class Grid:
         """ get the `type` of a cell, return full type (e.g. `body on wall`) unless set ignore_body=True """
         value = self.get_value(x, y)
         if value < 100:
+            # food or empty
             return self.type_dict_inv[value]
-        value_under_body = value % 100
-        body = "body on " if not ignore_body else ""
-        return f"{body}{self.type_dict_inv[value_under_body]}"
+        if value == 101:
+            return "wall"
+        if value == 201:
+            return "body on wall"
+
+        # body on food or body on empty
+        value_under_body = value - 100
+        body_on = "body on " if not ignore_body else ""
+        return f"{body_on}{self.type_dict_inv[value_under_body]}"
 
     def set_type(self, x: int, y: int, new_type: str, replace=False) -> None:
         """
@@ -83,6 +97,7 @@ class Grid:
             if new_type != 'body':
                 raise ValueError(f"Cannot set type '{new_type}' to cell: cell not empty. Current: '{old_type}'.")
             if self.has_body(x, y):
+                # cell already has body, do not set again
                 new_type_value = old_type_value
             else:
                 new_type_value = old_type_value + 100
@@ -107,15 +122,14 @@ class Grid:
 
     def has_food(self, x: int, y: int) -> bool:
         value = self.get_value(x, y)
-        if 10 <= value < 100 or 110 <= value < 200:
-            return True
-        return False
+        return 10 <= value < 100 or 110 <= value < 200
 
     def has_wall(self, x: int, y: int) -> bool:
-        return self.get_value(x, y) in (1, 101)
+        return self.get_value(x, y) in (101, 201)
 
     def has_body(self, x: int, y: int) -> bool:
-        return self.get_value(x, y) >= 100
+        value = self.get_value(x, y)
+        return 110 <= value < 200 or value in (100, 201)
 
     def has_type(self, x: int, y: int, _type: str) -> bool:
         """ check if cell has a specific `_type` """
@@ -123,6 +137,7 @@ class Grid:
         if self.has_body(x, y):
             if _type == 'body':
                 return True
+            # type under body
             current_type = self.get_type(x, y)[len("body on "):]
         else:
             current_type = self.get_type(x, y)
@@ -149,10 +164,10 @@ if __name__ == '__main__':
     grid = Grid(5, 5)
     print(grid.contents)
     print("empty count: ", grid.get_empty_count(), "\n")
-    grid[1, 2] = 101
-    print("set: grid[1, 2] = 101\n", grid.contents)
+    grid.set_value(1, 2, 201)
+    print("set: (1, 2) = 101\n", grid.contents)
     print("empty count: ", grid.get_empty_count(), "\n")
-    print("value of (1, 2): ", grid[1, 2])
+    print("value of (1, 2): ", grid.get_value(1, 2))
     print("type of (1, 2): ", grid.get_type(1, 2))
     print("type of (1, 2), ignored body: ", grid.get_type(1, 2, ignore_body=True))
     print(f"{grid.is_type(1, 2, 'body') = }")

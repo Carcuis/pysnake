@@ -4,7 +4,7 @@ import pygame
 class Global:
     # === UI ===
     # block size must be an integer
-    BLOCK_SIZE: int = 12
+    BLOCK_SIZE: int = 15
     UI_SCALE: int = 25
 
     # paddings must be an integer multiple of block size
@@ -28,7 +28,7 @@ class Global:
 
     # === snake ===
     INIT_LENGTH: int = 3
-    INIT_POS: tuple[int, int] = (10, 2)  # initial position (x, y) of tail
+    INIT_POS: tuple[int, int] = (min(2, GRID_COL - INIT_LENGTH - 1), min(5, GRID_ROW - 1))  # initial position of tail
 
     INIT_HEALTH: int = 8
     MAX_HEALTH: int = 8
@@ -44,7 +44,12 @@ class Global:
     MAX_LEVEL: int = 10
 
     # === others ===
+    FOOD_MAX_COUNT_PER_KIND: int = 3
     WALL_COUNT_IN_THOUSANDTHS: int = 20
+    HIT_WALL_DAMAGE: int = 2  # the reduction of health when the snake hits the wall
+    EAT_BODY_DAMAGE: int = 1  # the reduction of health when the snake hits itself
+    TELEPORT: bool = True  # whether the snake can teleport when it hits the border
+    WITH_AI: bool = False  # whether to train the AI
 
 
 class KeyBoard:

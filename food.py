@@ -9,13 +9,20 @@ from settings import Global
 class FoodManager:
     def __init__(self, grid: Grid) -> None:
         self._grid: Grid = grid
+
         self.apple = Apple()
-        self.beef = Beef()
-        self.iron = Iron()
-        self.gold = Gold()
-        self.slimeball = SlimeBall()
-        self.heart = Heart()
-        self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
+        if not Global.WITH_AI:
+            # full list of food
+            self.beef = Beef()
+            self.iron = Iron()
+            self.gold = Gold()
+            self.slimeball = SlimeBall()
+            self.heart = Heart()
+            self.food_list = (self.apple, self.beef, self.iron, self.gold, self.slimeball, self.heart)
+        else:
+            # only has apple, for ai-training
+            self.food_list = (self.apple,)
+
         self.update_all()
 
     def reset(self) -> None:
@@ -80,8 +87,8 @@ class FoodBase:
             self.y.append(new_y)
             self.count += 1
 
-            # add food at random until count >= 3
-            if self.count < 3 and random.randint(1, 4) == 1:
+            # add food at random until count >= max_count
+            if self.count < Global.FOOD_MAX_COUNT_PER_KIND and random.randint(1, 4) == 1:
                 continue
 
             break
