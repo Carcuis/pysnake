@@ -11,6 +11,9 @@ A python snake game based on pygame.
 |---------------|---------|
 | pygame        | latest  |
 | opencv-python | latest  |
+| matplotlib    | latest  |
+| numpy         | latest  |
+| tqdm          | latest  |
 | torch         | 1.13.1  |
 
 ## Run the main game

@@ -1,3 +1,6 @@
+matplotlib
+numpy
 opencv-python
 pygame
 torch==1.13.1
+tqdm
