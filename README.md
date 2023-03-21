@@ -13,17 +13,20 @@ A python snake game based on pygame.
 | opencv-python | latest  |
 | torch         | 1.13.1  |
 
-* Windows
+## Run the main game
 
-  ```bat
-  python main.py
-  ```
+```bash
+python3 main.py
+```
 
-* Linux & Darwin
+## Train the model using Reinforcement Learning (DQN)
 
-  ```bash
-  python3 main.py
-  ```
-
+```bash
+python3 ai.py --mode train
+```
   
+## Play by AI
 
+```bash
+python3 ai.py --mode play
+```
