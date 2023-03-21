@@ -254,7 +254,7 @@ def train():
     # np.random.seed(0)
     # torch.manual_seed(0)
     replay_buffer = ReplayBuffer(buffer_size)
-    state_dim = 88
+    state_dim = get_game_state(game).size
     hidden_dim = 64
     action_dim = 4
     agent = DQN(state_dim, hidden_dim, action_dim, lr, gamma, epsilon, target_update, device)
