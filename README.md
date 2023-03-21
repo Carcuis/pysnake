@@ -7,12 +7,11 @@ A python snake game based on pygame.
 
 ## Requirements
 
-| Package       | version     |
-| ------------- | ----------- |
-| pygame        | >= 2.1.2    |
-| opencv-python | >= 4.5.1.48 |
-
-## Run
+| Package       | version |
+|---------------|---------|
+| pygame        | latest  |
+| opencv-python | latest  |
+| torch         | 1.13.1  |
 
 * Windows
 
