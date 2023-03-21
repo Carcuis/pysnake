@@ -76,7 +76,7 @@ class DQN:
         # save the whole model
         torch.save(self.q_net, model_save_path)
 
-    def load(self, path: str) -> None:
+    def load(self, path: str, device: torch.device) -> None:
         """ load the model """
         model_save_path = path
 
@@ -87,7 +87,7 @@ class DQN:
         # self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
         # load the whole model
-        self.q_net = torch.load(model_save_path)
+        self.q_net = torch.load(model_save_path, map_location=device)
 
     def take_action(self, state: npt.NDArray) -> int:  # epsilon-贪婪策略采取动作
         """ take action according to epsilon-greedy policy using Q-network """
@@ -334,7 +334,7 @@ def auto_play():
     game = Game()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     agent = DQN(1, 1, 1, 0, 0, 0, 0, device)
-    agent.load("weights/20230315_105629_max_42.pt")
+    agent.load("weights/20230315_105629_max_42.pt", device)
     max_score = 0
     time_start = time.time()
     while True:
