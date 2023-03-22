@@ -314,19 +314,24 @@ def train():
 
 
 def plot_result(return_list: list[float | int]):
+    time_str = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+    if not os.path.exists("weights/img"):
+        os.makedirs("weights/img")
     episodes_list = list(range(len(return_list)))
     plt.plot(episodes_list, return_list)
     plt.xlabel("Episodes")
     plt.ylabel("Returns")
     plt.title("DQN on pysnake")
-    plt.show()
+    plt.savefig(f"weights/img/result_{time_str}.png")
+    print(f"result saved to weights/img/result_{time_str}.png")
 
     mv_return = moving_average(return_list, 9)
     plt.plot(episodes_list, mv_return)
     plt.xlabel("Episodes")
     plt.ylabel("Returns")
     plt.title("DQN on pysnake")
-    plt.show()
+    plt.savefig(f"weights/img/mv_result_{time_str}.png")
+    print(f"moving average result saved to weights/img/mv_result_{time_str}.png")
 
 
 def auto_play(path: str):
