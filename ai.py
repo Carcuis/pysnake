@@ -329,11 +329,11 @@ def plot_result(return_list: list[float | int]):
     plt.show()
 
 
-def auto_play():
+def auto_play(path: str):
     game = Game()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     agent = DQN(1, 1, 1, 0, 0, 0, 0, device)
-    agent.load("weights/20230315_105629_max_42.pt", device)
+    agent.load(path, device)
     max_score = 0
     time_start = time.time()
 
@@ -373,7 +373,7 @@ if __name__ == "__main__":
         train()
     elif args.mode == "play":
         try:
-            auto_play()
+            auto_play("weights/20230315_105629_max_42.pt")
         except KeyboardInterrupt:
             print("Keyboard Interrupt.")
     else:
