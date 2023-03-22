@@ -7,8 +7,9 @@ from settings import Global
 
 
 class FoodManager:
-    def __init__(self, grid: Grid) -> None:
+    def __init__(self, grid: Grid, surface: pygame.Surface) -> None:
         self._grid: Grid = grid
+        self._surface: pygame.Surface = surface
 
         self.apple = Apple()
         if not Global.WITH_AI:
@@ -30,15 +31,15 @@ class FoodManager:
             food.x.clear()
             food.y.clear()
             food.count = 0
-            food.update(self._grid)
+            food.update(self._grid, self._surface)
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self) -> None:
         for food in self.food_list:
-            food.draw(surface)
+            food.draw(self._surface)
 
     def update_all(self) -> None:
         for food in self.food_list:
-            food.update(self._grid)
+            food.update(self._grid, self._surface)
 
 
 class FoodBase:
@@ -64,7 +65,7 @@ class FoodBase:
                  self.y[i] * Global.BLOCK_SIZE + Global.TOP_PADDING)
             )
 
-    def update(self, grid: Grid, index=None) -> None:
+    def update(self, grid: Grid, surface: pygame.Surface, index=None) -> None:
         # delete specific food after is eaten
         if index is not None:
             grid.clear_type(self.x[index], self.y[index], self.name)
@@ -86,6 +87,11 @@ class FoodBase:
             self.x.append(new_x)
             self.y.append(new_y)
             self.count += 1
+            surface.blit(
+                self.image,
+                (new_x * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                 new_y * Global.BLOCK_SIZE + Global.TOP_PADDING)
+            )
 
             # add food at random until count >= max_count
             if self.count < Global.FOOD_MAX_COUNT_PER_KIND and random.randint(1, 4) == 1:

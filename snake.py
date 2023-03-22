@@ -27,6 +27,8 @@ class Snake:
             pygame.image.load("resources/img/green-23d12f-10x10.png").convert(),
             (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
         )
+        self.wall_image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
+        self.wall_image = pygame.transform.scale(self.wall_image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
 
         self._grid: Grid = grid
         self.health: Health = Health()
@@ -88,13 +90,14 @@ class Snake:
         self.direction = target_direction  # finally change direction
         return True
 
-    def walk(self, teleport=True, reg_grid=True) -> bool:
+    def walk(self, surface: pygame.Surface | None = None, teleport=True, reg_grid=True):
         """
         Move snake one step
 
+        :param surface: in game surface, set to None if not draw after movement
         :param teleport: teleport head if is over border after movement
         :param reg_grid: register body type of new head to grid cell
-        :return: over_border: bool
+        :return:
         """
 
         # save tail
@@ -115,9 +118,8 @@ class Snake:
         elif self.direction == Direction.DOWN:
             self.y[0] += 1
 
-        over_border = False
-        if self.x[0] < 0 or self.x[0] >= Global.GRID_COL or self.y[0] < 0 or self.y[0] >= Global.GRID_ROW:
-            over_border = True
+        if not (0 <= self.x[0] < Global.GRID_COL and 0 <= self.y[0] < Global.GRID_ROW):
+            # head over border
             if teleport:
                 # teleport head if is over border after movement
                 if self.x[0] < 0:
@@ -129,12 +131,38 @@ class Snake:
                 elif self.y[0] >= Global.GRID_ROW:
                     self.y[0] = 0
 
-        if reg_grid and not over_border:
-            # register body type of new head to grid cell
-            self._grid.set_type(self.x[0], self.y[0], 'body')
-            if (old_tail_x, old_tail_y) not in zip(self.x, self.y):
+        if 0 <= self.x[0] < Global.GRID_COL and 0 <= self.y[0] < Global.GRID_ROW:
+            # head inside border
+            if reg_grid:
+                # register body type of new head to grid cell
+                self._grid.set_type(self.x[0], self.y[0], 'body')
+            if surface is not None:
+                # draw head
+                surface.blit(self.head_block, (self.x[0] * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                                               self.y[0] * Global.BLOCK_SIZE + Global.TOP_PADDING))
+
+        if 0 <= self.x[1] < Global.GRID_COL and 0 <= self.y[1] < Global.GRID_ROW:
+            # neck inside border
+            if surface is not None:
+                # draw neck
+                surface.blit(self.body_block, (self.x[1] * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                                               self.y[1] * Global.BLOCK_SIZE + Global.TOP_PADDING))
+
+        if 0 <= old_tail_x < Global.GRID_COL and 0 <= old_tail_y < Global.GRID_ROW:
+            # old tail inside border
+            if reg_grid and (old_tail_x, old_tail_y) not in zip(self.x, self.y):
                 # unset old tail's body type from the grid cell if it does not collide with body
                 self._grid.clear_type(old_tail_x, old_tail_y, 'body')
+            if surface is not None:
+                # erase tail from surface
+                if self._grid.is_empty(old_tail_x, old_tail_y):
+                    surface.fill(Global.BACK_GROUND_COLOR,
+                                 (old_tail_x * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                                  old_tail_y * Global.BLOCK_SIZE + Global.TOP_PADDING,
+                                  Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+                elif self._grid.has_wall(old_tail_x, old_tail_y):
+                    surface.blit(self.wall_image, (old_tail_x * Global.BLOCK_SIZE + Global.LEFT_PADDING,
+                                                   old_tail_y * Global.BLOCK_SIZE + Global.TOP_PADDING))
 
         self.changing_direction = False  # unlock direction
         self.hungry.hungry_step_count += 1
@@ -144,7 +172,7 @@ class Snake:
             self.change_direction(self.direction_buffer)
             self.direction_buffer = Direction.NONE
 
-        return over_border
+        return
 
     def increase_length(self, length: int) -> bool:
         if length < 0:

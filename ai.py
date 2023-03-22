@@ -158,7 +158,6 @@ def get_game_state(game: Game) -> npt.NDArray:
 
 def update_game_surface(game: Game, reward: int, max_score: int, time_start: float) -> None:
     EventManager.get_event()
-    game.set_base_color(Global.BACK_GROUND_COLOR)
     total_time = time.time() - time_start
     hours = int(total_time / 3600)
     minutes = int((total_time % 3600) // 60)
@@ -174,7 +173,7 @@ def update_game_surface(game: Game, reward: int, max_score: int, time_start: flo
         Text("{:02d}: {:02d}: {:02d}".format(hours, minutes, seconds), pygame.Color("white"),
              position=(0.7, 1), alpha=255)
     )
-    game.draw_surface()
+    game.update_board()
     Util.update_screen()
     game.clock.tick()
 
@@ -269,16 +268,16 @@ def train():
             with tqdm(total=num_episodes, desc=f"Iteration {it}") as pbar:
                 for i_episode in range(num_episodes):
                     state = get_game_state(game)
-                    done = False
-                    while not done:
+                    alive = True
+                    game.init_game_surface()
+                    while alive:
                         action = agent.take_action(state)
                         direction = get_direction_from_action(action)
                         alive, _, collide_with_food, collide_with_body, collide_with_wall = \
                             game.play(direction=direction, full_speed=True, teleport=Global.TELEPORT)
                         reward = get_game_reward(game, collide_with_food, collide_with_body, collide_with_wall)
                         next_state = get_game_state(game)
-                        done = not alive
-                        replay_buffer.add(state, action, reward, next_state, done)
+                        replay_buffer.add(state, action, reward, next_state, not alive)
                         state = next_state
                         if replay_buffer.size > minimal_size:
                             # 当buffer数据的数量超过一定值后,才进行Q网络训练
@@ -306,7 +305,7 @@ def train():
                         })
                     pbar.update(1)
         except KeyboardInterrupt:
-            print("KeyboardInterrupt")
+            print("Keyboard Interrupt.")
             break
 
     print(f"max score: {max_score}")
@@ -337,18 +336,22 @@ def auto_play():
     agent.load("weights/20230315_105629_max_42.pt", device)
     max_score = 0
     time_start = time.time()
+
     while True:
-        state = get_game_state(game)
-        action = agent.take_action(state)
-        direction = get_direction_from_action(action)
-        alive, _, cwf, cwb, cww = game.play(direction=direction, full_speed=True, teleport=Global.TELEPORT)
-        reward = get_game_reward(game, cwf, cwb, cww)
-        if not alive:
-            result = game.get_score()
-            if result > max_score:
-                max_score = result
-            game.reset_game()
-        update_game_surface(game, reward, max_score, time_start)
+        game.init_game_surface()
+        alive = True
+        while alive:
+            state = get_game_state(game)
+            action = agent.take_action(state)
+            direction = get_direction_from_action(action)
+            alive, _, cwf, cwb, cww = game.play(direction=direction, full_speed=True, teleport=Global.TELEPORT)
+            reward = get_game_reward(game, cwf, cwb, cww)
+            update_game_surface(game, reward, max_score, time_start)
+
+        result = game.get_score()
+        if result > max_score:
+            max_score = result
+        game.reset_game()
 
 
 if __name__ == "__main__":

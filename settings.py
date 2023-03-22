@@ -22,7 +22,8 @@ class Global:
                                     GRID_ROW * BLOCK_SIZE + TOP_PADDING + BOTTOM_PADDING)
 
     # R, G, B
-    BACK_GROUND_COLOR: tuple[int, int, int] = (31, 59, 100)
+    BACK_GROUND_COLOR: tuple[int, int, int] = (30, 60, 100)
+    STATUS_BAR_COLOR: tuple[int, int, int] = (14, 29, 48)
 
     FPS: int = 60
 

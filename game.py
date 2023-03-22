@@ -30,7 +30,7 @@ class Game:
         self.animation_manager = AnimationManager(self.grid)
         self.snake = Snake(self.grid)
         self.wall = Wall(self.grid)
-        self.food_manager = FoodManager(self.grid)
+        self.food_manager = FoodManager(self.grid, self.surface)
         self.board = Board()
         self.snake_move_timer = Util.timer()
 
@@ -101,11 +101,11 @@ class Game:
         self.snake_move_timer.start()
         if Global.SHOW_REAL_SPEED:
             self.calc_speed_running.set()
+        self.init_game_surface()
 
         while True:
             EventManager.get_event()
 
-            self.set_base_color(Global.BACK_GROUND_COLOR)
             alive, result, _, _, _ = self.play(teleport=Global.TELEPORT)
             speed = f"{self.snake.move_speed}/{self.real_speed}" if Global.SHOW_REAL_SPEED else self.snake.move_speed
             self.board.add(
@@ -115,7 +115,7 @@ class Game:
                 Text(f"speed: {speed}", pygame.Color("white"), "middle_top", alpha=255),
                 Text(f"level: {self.level}", pygame.Color("chartreuse"), "middle_bottom", alpha=255)
             )
-            self.draw_surface()
+            self.update_board()
             Util.update_screen()
 
             if EventManager.check_key_or_button(pygame.KEYDOWN, KeyBoard.pause_list) or \
@@ -171,7 +171,7 @@ class Game:
         collision = (False, False, False)
 
         if full_speed or self.snake_move_timer.arrived:
-            self.snake.walk(teleport=teleport)
+            self.snake.walk(self.surface, teleport=teleport)
             self.move_distance += 1
 
             if Global.SHOW_REAL_SPEED:
@@ -224,6 +224,7 @@ class Game:
                 blur_kernel_size -= 6
                 if blur_kernel_size <= 1:
                     self.board.clear_button()
+                    self.surface.blit(pre_surface, (0, 0))
                     return Motion.CONTINUE
 
             self.surface.blit(blur_surface, (0, 0))
@@ -252,10 +253,19 @@ class Game:
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def draw_surface(self) -> None:
+    def init_game_surface(self) -> None:
+        self.set_base_color(Global.BACK_GROUND_COLOR)
         self.wall.draw(self.surface)
         self.snake.draw(self.surface)
-        self.food_manager.draw(self.surface)
+        self.food_manager.draw()
+
+    def update_board(self) -> None:
+        # self.wall.draw(self.surface)
+        # self.snake.draw(self.surface)
+        # self.food_manager.draw(self.surface)
+        self.surface.fill(Global.STATUS_BAR_COLOR, (0, 0, self.surface.get_width(), Global.TOP_PADDING))
+        self.surface.fill(Global.STATUS_BAR_COLOR, (0, self.surface.get_height() - Global.BOTTOM_PADDING,
+                                                    self.surface.get_width(), Global.BOTTOM_PADDING))
         self.snake.health.draw(self.surface)
         self.snake.hungry.draw(self.surface)
         self.board.draw(self.surface)
@@ -287,7 +297,7 @@ class Game:
         for food in self.food_manager.food_list:
             for i in range(food.count):
                 if self.is_collision(self.snake.x[0], self.snake.y[0], food.x[i], food.y[i]):
-                    food.update(self.grid, index=i)
+                    food.update(self.grid, self.surface, index=i)
                     self.snake.hungry.increase_satiety(food.add_satiety)
                     self.snake.health.increase(-food.toxic_level)
                     self.snake.increase_length(food.increase_length)
