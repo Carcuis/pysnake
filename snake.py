@@ -5,6 +5,7 @@ import pygame
 from grid import Grid
 from health import Health, Hungry
 from settings import Global
+from util import Util
 
 
 @enum.unique
@@ -118,7 +119,7 @@ class Snake:
         elif self.direction == Direction.DOWN:
             self.y[0] += 1
 
-        if not (0 <= self.x[0] < Global.GRID_COL and 0 <= self.y[0] < Global.GRID_ROW):
+        if not Util.is_inside_border(self.x[0], self.y[0]):
             # head over border
             if teleport:
                 # teleport head if is over border after movement
@@ -131,7 +132,7 @@ class Snake:
                 elif self.y[0] >= Global.GRID_ROW:
                     self.y[0] = 0
 
-        if 0 <= self.x[0] < Global.GRID_COL and 0 <= self.y[0] < Global.GRID_ROW:
+        if Util.is_inside_border(self.x[0], self.y[0]):
             # head inside border
             if reg_grid:
                 # register body type of new head to grid cell
@@ -141,14 +142,14 @@ class Snake:
                 surface.blit(self.head_block, (self.x[0] * Global.BLOCK_SIZE + Global.LEFT_PADDING,
                                                self.y[0] * Global.BLOCK_SIZE + Global.TOP_PADDING))
 
-        if 0 <= self.x[1] < Global.GRID_COL and 0 <= self.y[1] < Global.GRID_ROW:
+        if Util.is_inside_border(self.x[1], self.y[1]):
             # neck inside border
             if surface is not None:
                 # draw neck
                 surface.blit(self.body_block, (self.x[1] * Global.BLOCK_SIZE + Global.LEFT_PADDING,
                                                self.y[1] * Global.BLOCK_SIZE + Global.TOP_PADDING))
 
-        if 0 <= old_tail_x < Global.GRID_COL and 0 <= old_tail_y < Global.GRID_ROW:
+        if Util.is_inside_border(old_tail_x, old_tail_y):
             # old tail inside border
             if reg_grid and (old_tail_x, old_tail_y) not in zip(self.x, self.y):
                 # unset old tail's body type from the grid cell if it does not collide with body

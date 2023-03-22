@@ -9,6 +9,8 @@ from typing import Callable, NoReturn
 import cv2
 import pygame
 
+from settings import Global
+
 
 @enum.unique
 class GameState(enum.Enum):
@@ -181,6 +183,10 @@ class Util:
         Actually draw surface to screen.
         """
         pygame.display.flip()
+
+    @staticmethod
+    def is_inside_border(x: int, y: int) -> bool:
+        return 0 <= x < Global.GRID_COL and 0 <= y < Global.GRID_ROW
 
     @staticmethod
     def load_data_from_json_file(file_name: str) -> dict:
