@@ -310,7 +310,8 @@ class Game:
         return False
 
     def update_hungry_level(self) -> None:
-        if self.snake.hungry.hungry_step_count % max(50 - (self.level - 1) * 4, 20) == 0:
+        if self.snake.hungry.hungry_step_count > 0 and \
+                self.snake.hungry.hungry_step_count % max(50 - (self.level - 1) * 4, 20) == 0:
             if self.snake.hungry.get_satiety() > 0:
                 # increase hungry value till satiety -> 0
                 self.snake.hungry.increase_satiety(-1)
