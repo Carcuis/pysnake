@@ -148,9 +148,6 @@ def get_game_state(game: Game) -> npt.NDArray:
         game.snake.x[0] - game.food_manager.apple.x[0],
         game.snake.y[0] - game.food_manager.apple.y[0],
         game.snake.hungry.hungry_step_count,
-        max(200 - game.snake.hungry.hungry_step_count, 100),
-        game.snake.x[0],
-        game.snake.y[0],
         game.snake.direction.value
     ))
     return np.concatenate((game_state, get_surroundings(game, 4)))
@@ -220,7 +217,7 @@ def get_game_reward(game: Game, collide_with_food: bool, collide_with_body: bool
     # reward = max(- game.snake.hungry.hungry_step_count, - 50)
     # reward = - game.snake.hungry.hungry_step_count
     # reward = 1
-    reward = (20 - abs(game.snake.x[0] - game.food_manager.apple.x[0]) -
+    reward = (100 - abs(game.snake.x[0] - game.food_manager.apple.x[0]) -
               abs(game.snake.y[0] - game.food_manager.apple.y[0]) - game.snake.hungry.hungry_step_count)
 
     if collide_with_food:
@@ -364,8 +361,8 @@ if __name__ == "__main__":
     parser.add_argument("--mode", type=str, default="play", help="train or play by ai")
     args = parser.parse_args()
     if args.mode in ("train", "play"):
-        Global.GRID_ROW = Global.GRID_COL = 10
-        Global.BLOCK_SIZE = 100
+        Global.GRID_ROW = Global.GRID_COL = 50
+        # Global.BLOCK_SIZE = 100
         Global.SCREEN_SIZE = (Global.GRID_COL * Global.BLOCK_SIZE + Global.LEFT_PADDING + Global.RIGHT_PADDING,
                               Global.GRID_ROW * Global.BLOCK_SIZE + Global.TOP_PADDING + Global.BOTTOM_PADDING)
         Global.WITH_AI = True
@@ -378,7 +375,7 @@ if __name__ == "__main__":
         train()
     elif args.mode == "play":
         try:
-            auto_play("weights/20230315_105629_max_42.pt")
+            auto_play("weights/20230325_134330_max_88.pt")
         except KeyboardInterrupt:
             print("Keyboard Interrupt.")
     else:
