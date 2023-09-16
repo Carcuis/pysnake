@@ -73,18 +73,15 @@ class RepeatedTimer(Thread):
 
 class Timer:
     def __init__(self, interval: float = -1) -> None:
-        self._timer: RepeatedTimer | None = None
+        self._timer = RepeatedTimer(interval, self._set_status)
         self.started: bool = False
         self.paused: bool = False
-        self._interval: float = interval
         self._arrived: bool = False
 
     def set_interval_sec(self, interval: float) -> None:
         if interval <= 0:
             raise ValueError(f"the interval of Timer must be > 0, current: {interval}")
-        self._interval = interval
-        if self.started:
-            self._timer.interval = interval
+        self._timer.interval = interval
 
     def _set_status(self) -> None:
         self._arrived = True
@@ -95,10 +92,9 @@ class Timer:
             self._timer.resume()
             self.paused = False
             return
-        if self._interval <= 0:
-            raise ValueError(f"the interval of Timer must be > 0, current: {self._interval}")
+        if self._timer.interval <= 0:
+            raise ValueError(f"the interval of Timer must be > 0, current: {self._timer.interval}")
         self.started = True
-        self._timer = RepeatedTimer(self._interval, self._set_status)
         self._timer.start()
 
     def pause(self) -> None:
