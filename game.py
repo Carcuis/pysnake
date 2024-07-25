@@ -43,9 +43,8 @@ class Game:
         if Global.SHOW_REAL_SPEED:
             self.head_deque: deque = deque(maxlen=5)  # store head positions of snake, used to calculate real_speed
             self.real_speed: int = 0
-            self.thread_calc_speed = Thread(target=self.calc_real_speed, daemon=True)
-            self.thread_calc_speed.start()
             self.calc_speed_running = Event()
+            Thread(target=self.calc_real_speed, daemon=True).start()
 
     def reset_game(self) -> None:
         self.grid.clear_all()
@@ -362,7 +361,7 @@ class Game:
         thread: calculate the real-time speed of the snake, unit: block per second
         """
         while True:
-            if len(self.head_deque) < self.head_deque.maxlen:
+            if len(self.head_deque) < self.head_deque.maxlen:    # pyright: ignore reportGeneralTypeIssues
                 time.sleep(0.1)
                 continue
             total_distance = 0
