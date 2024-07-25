@@ -107,7 +107,7 @@ class Game:
             EventManager.get_event()
 
             alive, result, _, _, _ = self.play(teleport=Global.TELEPORT)
-            speed = f"{self.snake.move_speed}/{self.real_speed}" if Global.SHOW_REAL_SPEED else self.snake.move_speed
+            speed = f"{self.snake.move_speed} [{self.real_speed} bps]" if Global.SHOW_REAL_SPEED else self.snake.move_speed
             self.board.add(
                 Text(f"FPS: {round(self.clock.get_fps())}", pygame.Color("white"), "left_top", alpha=255),
                 Text(f"score: {self.get_score()}  len: {self.snake.length}",
