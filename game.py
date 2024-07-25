@@ -352,7 +352,7 @@ class Game:
         result = GameState.PLAYING
         if failed:
             result = GameState.FAILED
-        elif winning:
+        if winning:
             result = GameState.WINNING
         return alive, result
 
