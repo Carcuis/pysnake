@@ -23,9 +23,9 @@ class GameState(enum.Enum):
 
 
 @enum.unique
-class Motion(enum.Enum):
+class Action(enum.Enum):
     """
-    Enum representing the motions of each menu.
+    Enum representing the actions of each menu.
     """
     START_GAME = 0
     MAIN_MENU = 1

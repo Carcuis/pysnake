@@ -12,7 +12,7 @@ from food import FoodManager
 from grid import Grid
 from settings import Global, KeyBoard
 from snake import Direction, Snake
-from util import GameState, Motion, Util
+from util import Action, GameState, Util
 from wall import Wall
 
 
@@ -63,7 +63,7 @@ class Game:
             self.head_deque.clear()
             self.real_speed = 0
 
-    def main_menu(self) -> Motion:
+    def main_menu(self) -> Action:
         self.animation_manager.start()
 
         start_button = Button(
@@ -89,15 +89,15 @@ class Game:
             if start_button.is_triggered:
                 self.animation_manager.pause()
                 self.board.clear_button()
-                return Motion.START_GAME
+                return Action.START_GAME
 
             if exit_button.is_triggered:
-                return Motion.QUIT_GAME
+                return Action.QUIT_GAME
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
 
-    def start_game(self) -> tuple[Motion, GameState]:
+    def start_game(self) -> tuple[Action, GameState]:
         self.snake_move_timer.set_interval_sec(1 / (1.5 * self.snake.move_speed))
         self.snake_move_timer.start()
         if Global.SHOW_REAL_SPEED:
@@ -127,15 +127,15 @@ class Game:
                     self.calc_speed_running.clear()
                     self.head_deque.clear()
 
-                motion = self.pause()
-                if motion in {Motion.START_GAME, Motion.MAIN_MENU}:
-                    return motion, result
-                if motion == Motion.CONTINUE:
+                next_action = self.pause()
+                if next_action in {Action.START_GAME, Action.MAIN_MENU}:
+                    return next_action, result
+                if next_action == Action.CONTINUE:
                     self.snake_move_timer.start()
                     if Global.SHOW_REAL_SPEED:
                         self.calc_speed_running.set()
                 else:
-                    raise ValueError(f"Invalid motion: {motion}")
+                    raise ValueError(f"Invalid action: {next_action}")
 
             if not alive:
                 # game over
@@ -144,7 +144,7 @@ class Game:
                     self.calc_speed_running.clear()
                     self.head_deque.clear()
                     self.real_speed = 0
-                return Motion.GAME_OVER, result
+                return Action.GAME_OVER, result
 
             self.clock.tick(Global.FPS)
 
@@ -189,7 +189,7 @@ class Game:
             status = self.check_alive()
         return status[0], status[1], collision[0], collision[1], collision[2]
 
-    def pause(self) -> Motion:
+    def pause(self) -> Action:
         blur_surface = pre_surface = self.surface.copy()
 
         resume_button = Button(
@@ -226,7 +226,7 @@ class Game:
                 if blur_kernel_size <= 1:
                     self.board.clear_button()
                     self.surface.blit(pre_surface, (0, 0))
-                    return Motion.CONTINUE
+                    return Action.CONTINUE
 
             self.surface.blit(blur_surface, (0, 0))
 
@@ -244,12 +244,12 @@ class Game:
             if restart_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                return Motion.START_GAME
+                return Action.START_GAME
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                return Motion.MAIN_MENU
+                return Action.MAIN_MENU
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
@@ -376,11 +376,11 @@ class Game:
             time.sleep(0.1)
             self.calc_speed_running.wait()
 
-    def game_over(self, result: GameState = GameState.FAILED) -> Motion:
+    def game_over(self, result: GameState = GameState.FAILED) -> Action:
         """
         the game-over menu
-        :param result: int: 1 -> game over(failed, default); 2 -> winning
-        :return:
+        :param result: GameState (default: GameState.FAILED)
+        :return: Action: next_action
         """
         blur_surface = pre_surface = self.surface.copy()
         final_score = self.get_score()
@@ -465,12 +465,12 @@ class Game:
             if restart_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                return Motion.START_GAME
+                return Action.START_GAME
 
             if back_to_main_menu_button.is_triggered:
                 self.board.clear_button()
                 self.reset_game()
-                return Motion.MAIN_MENU
+                return Action.MAIN_MENU
 
             Util.update_screen()
             self.clock.tick(Global.FPS)
