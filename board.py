@@ -26,6 +26,7 @@ class Text:
 
 class TextManager:
     def __init__(self) -> None:
+        pygame.font.init()
         self.text_array: list[Text] = []
 
     def add(self, text: Text) -> None:

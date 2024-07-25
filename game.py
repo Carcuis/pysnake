@@ -18,7 +18,6 @@ from wall import Wall
 
 class Game:
     def __init__(self) -> None:
-        pygame.init()
         pygame.display.set_caption("PySnake")
         pygame.display.set_icon(pygame.image.load("resources/img/icon.png"))
         self.surface = pygame.display.set_mode(Global.SCREEN_SIZE, pygame.RESIZABLE)
