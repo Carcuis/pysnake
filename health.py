@@ -5,8 +5,10 @@ from settings import Global
 
 class Health:
     def __init__(self) -> None:
-        self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/heart.png").convert_alpha(),
+            (Global.UI_SCALE, Global.UI_SCALE)
+        )
         self.value: int = Global.INIT_HEALTH
 
     def reset(self) -> None:
@@ -26,8 +28,10 @@ class Health:
 
 class Hungry:
     def __init__(self) -> None:
-        self.image = pygame.image.load("resources/img/hunger_bigger.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (Global.UI_SCALE, Global.UI_SCALE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/hunger_bigger.png").convert_alpha(),
+            (Global.UI_SCALE, Global.UI_SCALE)
+        )
         self.hungry_step_count: int = 0
         self._value: int = 0
 

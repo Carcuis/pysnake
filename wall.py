@@ -9,8 +9,10 @@ from settings import Global
 class Wall:
     def __init__(self, grid: Grid) -> None:
         self._grid: Grid = grid
-        self.image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.coords: set[tuple] = set()
         self.random_gen(Global.WALL_COUNT_IN_THOUSANDTHS)
 

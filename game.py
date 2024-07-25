@@ -22,8 +22,10 @@ class Game:
         pygame.display.set_caption("PySnake")
         pygame.display.set_icon(pygame.image.load("resources/img/icon.png"))
         self.surface = pygame.display.set_mode(Global.SCREEN_SIZE, pygame.RESIZABLE)
-        self.banner_img = pygame.image.load("resources/img/banner.png").convert_alpha()
-        self.banner_img = pygame.transform.rotozoom(self.banner_img, 0, Global.SCREEN_SIZE[0] * 0.001)
+        self.banner_img = pygame.transform.rotozoom(
+            pygame.image.load("resources/img/banner.png").convert_alpha(),
+            0, Global.SCREEN_SIZE[0] * 0.001
+        )
         self.clock = pygame.time.Clock()
 
         self.grid = Grid(Global.GRID_COL, Global.GRID_ROW)

@@ -45,7 +45,10 @@ class FoodManager:
 class FoodBase:
     def __init__(self) -> None:
         self.name: str = ""
-        self.image: pygame.Surface | None = None
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/red-f01414-10x10.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.count: int = 0
         self.x: list[int] = []
         self.y: list[int] = []
@@ -104,8 +107,10 @@ class Apple(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "apple"
-        self.image = pygame.image.load("resources/img/apple_bigger.png").convert()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/apple_bigger.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 1
         self.toxic_level = 0
         self.add_score = 0
@@ -117,8 +122,10 @@ class Beef(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "beef"
-        self.image = pygame.image.load("resources/img/beef_bigger.png").convert()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/beef_bigger.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 2
         self.toxic_level = 0
         self.add_score = 0
@@ -130,8 +137,10 @@ class Iron(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "iron"
-        self.image = pygame.image.load("resources/img/iron_block.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/iron_block.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 1
         self.toxic_level = 0
         self.add_score = 2
@@ -143,8 +152,10 @@ class Gold(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "gold"
-        self.image = pygame.image.load("resources/img/gold_bigger.png").convert()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/gold_bigger.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 2
         self.toxic_level = 0
         self.add_score = 4
@@ -156,8 +167,10 @@ class SlimeBall(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "slimeball"
-        self.image = pygame.image.load("resources/img/slimeball_bigger.png").convert()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/slimeball_bigger.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 1
         self.toxic_level = 1
         self.add_score = 1
@@ -169,8 +182,10 @@ class Heart(FoodBase):
     def __init__(self) -> None:
         super().__init__()
         self.name = "heart"
-        self.image = pygame.image.load("resources/img/heart.png").convert_alpha()
-        self.image = pygame.transform.scale(self.image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.image = pygame.transform.scale(
+            pygame.image.load("resources/img/heart.png").convert_alpha(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
         self.add_satiety = 1
         self.toxic_level = -1
         self.add_score = 1

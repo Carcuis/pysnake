@@ -28,8 +28,10 @@ class Snake:
             pygame.image.load("resources/img/green-23d12f-10x10.png").convert(),
             (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
         )
-        self.wall_image = pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert()
-        self.wall_image = pygame.transform.scale(self.wall_image, (Global.BLOCK_SIZE, Global.BLOCK_SIZE))
+        self.wall_image = pygame.transform.scale(
+            pygame.image.load("resources/img/grey-e6e6e6-10x10.png").convert(),
+            (Global.BLOCK_SIZE, Global.BLOCK_SIZE)
+        )
 
         self._grid: Grid = grid
         self.health: Health = Health()
