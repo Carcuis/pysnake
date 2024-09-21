@@ -105,11 +105,11 @@ class DQN:
         # self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
         # load the whole model
-        self.q_net = torch.load(path, map_location=self.device)
+        self.q_net = torch.load(path, map_location=self.device, weights_only=False)
 
         if load_mode == "train":
             self.q_net.train()
-            self.target_q_net = torch.load(path, map_location=self.device)
+            self.target_q_net = torch.load(path, map_location=self.device, weights_only=False)
             self.target_q_net.train()
         elif load_mode == "eval":
             self.q_net.eval()
