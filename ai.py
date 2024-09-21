@@ -54,14 +54,21 @@ class DQN:
 
     def __init__(self, state_dim: int, hidden_dim: int, action_dim: int,
                  learning_rate: float, gamma: float, epsilon: float, target_update: int, device: torch.device,
-                 pre_trained_model_path: str | None = None) -> None:
+                 mode: str, model_path: str = "") -> None:
         self.action_dim: int = action_dim
         self.device: torch.device = device
-        if pre_trained_model_path is None:
-            self.q_net: Qnet = Qnet(state_dim, hidden_dim, self.action_dim).to(device)  # Q网络
-            self.target_q_net: Qnet = Qnet(state_dim, hidden_dim, self.action_dim).to(device)
+        if mode == "train":
+            if model_path == "":
+                self.q_net: Qnet = Qnet(state_dim, hidden_dim, self.action_dim).to(device)  # Q网络
+                self.target_q_net: Qnet = Qnet(state_dim, hidden_dim, self.action_dim).to(device)
+            else:
+                self.load(model_path, "train")
+        elif mode == "eval":
+            if model_path == "":
+                raise ValueError("model path must be provided in `eval` mode")
+            self.load(model_path, "eval")
         else:
-            self.load(pre_trained_model_path, "train")
+            raise ValueError(f"mode: {mode} error, must be `train` or `eval`")
         self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=learning_rate)
         self.gamma: float = gamma  # 折扣因子
         self.epsilon: float = epsilon  # epsilon-贪婪策略
@@ -278,7 +285,7 @@ class AI:
 
         return reward
 
-    def train_model(self, path: str | None = None) -> None:
+    def train_model(self, path: str = "") -> None:
         """
         train the model
 
@@ -305,7 +312,7 @@ class AI:
         state_dim = self.get_game_state(game).size
         hidden_dim = 64
         action_dim = 4
-        agent = DQN(state_dim, hidden_dim, action_dim, lr, gamma, epsilon, target_update, device, path)
+        agent = DQN(state_dim, hidden_dim, action_dim, lr, gamma, epsilon, target_update, device, "train", path)
 
         max_score = 0
         return_list: list[int | float] = []
@@ -398,8 +405,7 @@ class AI:
 
         game = Game()
         device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-        agent = DQN(1, 1, 1, 0, 0, 0, 0, device)
-        agent.load(path, "eval")
+        agent = DQN(1, 1, 1, 0, 0, 0, 0, device, "eval", path)
         max_score = 0
         time_start = time.time()
 
@@ -422,26 +428,20 @@ class AI:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", type=str, choices=("train", "play"), help="`train` or `play` by ai", required=True)
-    parser.add_argument("--model_path", type=str, help="path to model, available for both `train` and `play` mode")
+    parser.add_argument("--train", action="store_true", help="use `train` mode instead of default `play` mode")
     parser.add_argument(
-        "--use_pretrained_model", action="store_true",
-        help="whether to use pretrained model, if model_path is not specified and this argument is set, \
-              a default model will be used, else the model specified by model_path will be used \
-              and this argument will be ignored",
+        "--model-path", type=str,
+        help="path to a pre-trained model, available for both `train` and `play` mode"
     )
     args = parser.parse_args()
 
-    mode = args.mode
-    model_path = args.model_path
-    use_pretrained_model = args.use_pretrained_model
-    if model_path is not None and not os.path.exists(model_path):
+    mode: str = "train" if args.train else "play"
+    model_path: str = args.model_path or ""
+    if model_path == "":
+        if mode == "play":
+            model_path = "weights/20230401_123536_final_max_92.pt"
+    elif not os.path.exists(model_path):
         raise ValueError(f"model path {model_path} does not exist")
-    if model_path is None:
-        if mode == "play" or use_pretrained_model:
-            model_path = "weights/20230325_234759_final_max_77.pt"
-    else:
-        use_pretrained_model = True
 
     Global.GRID_ROW = Global.GRID_COL = 50
     # Global.BLOCK_SIZE = 100
@@ -456,12 +456,14 @@ def main():
 
     ai = AI()
     if mode == "train":
-        if use_pretrained_model:
+        if model_path == "":
+            print("No pre-trained model found, training a new model...")
+        else:
             print(f"USING pre-trained model {model_path}")
         ai.train_model(model_path)
     elif mode == "play":
         try:
-            print(f"USING model {model_path}")
+            print(f"USING pre-trained model {model_path}")
             ai.auto_play(model_path)
         except KeyboardInterrupt:
             print("Keyboard Interrupt.")
