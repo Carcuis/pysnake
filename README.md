@@ -1,4 +1,5 @@
 # PySnake
+
 ![banner](resources/img/banner.png)
 
 A python snake game based on pygame.
@@ -12,9 +13,9 @@ A python snake game based on pygame.
 | pygame        |   latest   |
 | opencv-python |   latest   |
 | matplotlib    |   latest   |
-| numpy         |   latest   |
+| numpy         |   <2.0.0   |
 | tqdm          |   latest   |
-| torch         | \>= 1.13.1 |
+| torch         |   latest   |
 
 ## Run the main game
 
@@ -25,11 +26,11 @@ python3 main.py
 ## Train the model using Reinforcement Learning (DQN)
 
 ```bash
-python3 ai.py --mode train
+python3 ai.py --train [--model-path MODEL_PATH]
 ```
-  
+
 ## Play by AI
 
 ```bash
-python3 ai.py --mode play
+python3 ai.py [--model-path MODEL_PATH]
 ```
