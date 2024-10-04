@@ -2,5 +2,5 @@ matplotlib
 numpy<2.0.0
 opencv-python
 pygame
-torch>=1.13.1
+torch
 tqdm
