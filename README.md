@@ -13,7 +13,7 @@ A python snake game based on pygame.
 | pygame        |   latest   |
 | opencv-python |   latest   |
 | matplotlib    |   latest   |
-| numpy         |   <2.0.0   |
+| numpy         |   latest   |
 | tqdm          |   latest   |
 | torch         |   latest   |
 
