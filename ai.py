@@ -121,8 +121,8 @@ class DQN:
         if np.random.random() < self.epsilon:
             action = np.random.randint(self.action_dim)
         else:
-            state = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
-            action = self.q_net(state).argmax().item()
+            state_tensor = torch.from_numpy(state).float().unsqueeze(0).to(self.device)
+            action = self.q_net(state_tensor).argmax().item()
         return action
 
     def update(self, transition_dict: dict) -> None:
