@@ -69,7 +69,7 @@ class DQN:
             self.load(model_path, "eval")
         else:
             raise ValueError(f"mode: {mode} error, must be `train` or `eval`")
-        self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=learning_rate)
+        self.optimizer = torch.optim.Adam(self.q_net.parameters(), lr=learning_rate)    # pyright: ignore[reportPrivateImportUsage]
         self.gamma: float = gamma  # 折扣因子
         self.epsilon: float = epsilon  # epsilon-贪婪策略
         self.target_update: int = target_update  # 目标网络更新频率
