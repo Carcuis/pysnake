@@ -167,9 +167,7 @@ class Util:
         :return: produced surface
         """
         array = pygame.surfarray.array3d(surface)
-        array = cv2.cvtColor(cv2.transpose(array), cv2.COLOR_RGB2BGR)
         array = cv2.GaussianBlur(array, (kernel_size, kernel_size), sigma_x)
-        array = cv2.transpose(cv2.cvtColor(array, cv2.COLOR_BGR2RGB))
         surface = pygame.surfarray.make_surface(array)
         return surface
 
