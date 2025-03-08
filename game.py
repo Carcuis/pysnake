@@ -361,7 +361,7 @@ class Game:
         thread: calculate the real-time speed of the snake, unit: block per second
         """
         while True:
-            if len(self.head_deque) < self.head_deque.maxlen:    # pyright: ignore reportGeneralTypeIssues
+            if len(self.head_deque) < self.head_deque.maxlen:    # pyright: ignore[reportOperatorIssue]
                 time.sleep(0.1)
                 continue
             total_distance = 0
